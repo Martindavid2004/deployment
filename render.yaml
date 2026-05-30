@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: codoai-backend
+    env: python
+    buildCommand: cd backend && pip install -r requirements.txt
+    startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port 10000
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.0
+      - key: MONGODB_URI
+        sync: false
+      - key: MONGODB_DB_NAME
+        value: codoai
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: 60
+      - key: CORS_ORIGINS
+        value: https://codoai.vercel.app,https://codoai-frontend.onrender.com,http://localhost:5173
+      - key: GOOGLE_API_KEY
+        sync: false

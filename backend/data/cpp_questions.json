@@ -1,0 +1,470 @@
+{
+  "easy": {
+    "output": [
+      {
+        "question": "What is the output?",
+        "code": "int x = 5;\nint y = 2;\ncout << x / y;",
+        "options": [
+          "3",
+          "2.5",
+          "Error",
+          "2"
+        ],
+        "correct_answer": 3,
+        "explanation": "Integer division truncates the decimal. 5/2 = 2."
+      },
+      {
+        "question": "What will this print?",
+        "code": "string s = \"Hello\";\ncout << s.length();",
+        "options": [
+          "Error",
+          "6",
+          "5",
+          "4"
+        ],
+        "correct_answer": 2,
+        "explanation": "length() returns number of characters."
+      },
+      {
+        "question": "What is the output?",
+        "code": "int arr[] = {1, 2, 3};\ncout << sizeof(arr) / sizeof(arr[0]);",
+        "options": [
+          "12",
+          "Error",
+          "4",
+          "3"
+        ],
+        "correct_answer": 3,
+        "explanation": "sizeof(arr)/sizeof(arr[0]) gives array length."
+      }
+    ],
+    "find_bug": [
+      {
+        "question": "What's wrong?",
+        "code": "int main() {\n    int x = 5\n    cout << x;\n    return 0;\n}",
+        "options": [
+          "Wrong return type",
+          "Missing namespace",
+          "Missing semicolon after int x = 5",
+          "Nothing wrong"
+        ],
+        "correct_answer": 2,
+        "explanation": "C++ statements must end with semicolons."
+      },
+      {
+        "question": "Find the bug:",
+        "code": "#include <iostream>\nint main() {\n    cout << \"Hello\";\n    return 0;\n}",
+        "options": [
+          "Wrong include",
+          "Missing semicolon",
+          "No bug",
+          "Missing using namespace std;"
+        ],
+        "correct_answer": 3,
+        "explanation": "Need 'using namespace std;' or use 'std::cout'."
+      },
+      {
+        "question": "What's the issue?",
+        "code": "int* ptr;\n*ptr = 10;",
+        "options": [
+          "Wrong syntax",
+          "No issue",
+          "Missing semicolon",
+          "Dereferencing uninitialized pointer"
+        ],
+        "correct_answer": 3,
+        "explanation": "Pointer must be initialized before dereferencing."
+      }
+    ],
+    "missing_code": [
+      {
+        "question": "Fill in the blank:",
+        "code": "int arr[] = {1, 2, 3, 4, 5};\nint size = _____(arr) / _____(arr[0]);",
+        "options": [
+          "size, size",
+          "length, length",
+          "sizeof, sizeof",
+          "count, count"
+        ],
+        "correct_answer": 2,
+        "explanation": "sizeof operator gets size in bytes."
+      },
+      {
+        "question": "Complete the code:",
+        "code": "string text = \"hello\";\n_____(text.begin(), text.end());",
+        "options": [
+          "convert",
+          "modify",
+          "transform",
+          "change"
+        ],
+        "correct_answer": 2,
+        "explanation": "transform() applies function to range."
+      },
+      {
+        "question": "What should replace the blank?",
+        "code": "vector<int> vec;\nvec._____(5);",
+        "options": [
+          "push_back",
+          "append",
+          "add",
+          "insert"
+        ],
+        "correct_answer": 0,
+        "explanation": "push_back() adds elements to vector."
+      }
+    ],
+    "error": [
+      {
+        "question": "What error occurs?",
+        "code": "int arr[3] = {1, 2, 3};\ncout << arr[5];",
+        "options": [
+          "Array index error",
+          "Compile error",
+          "Undefined behavior",
+          "Segmentation fault"
+        ],
+        "correct_answer": 2,
+        "explanation": "C++ doesn't check bounds, causes undefined behavior."
+      },
+      {
+        "question": "What error will occur?",
+        "code": "int* ptr = nullptr;\ncout << *ptr;",
+        "options": [
+          "Compile error",
+          "NullPointerException",
+          "No error",
+          "Segmentation fault"
+        ],
+        "correct_answer": 3,
+        "explanation": "Dereferencing null pointer causes segfault."
+      },
+      {
+        "question": "What error occurs?",
+        "code": "int x = 5;\nint y = 0;\ncout << x / y;",
+        "options": [
+          "Compile error",
+          "ArithmeticException",
+          "DivisionByZeroException",
+          "Undefined behavior"
+        ],
+        "correct_answer": 3,
+        "explanation": "Division by zero is undefined behavior in C++."
+      }
+    ],
+    "best_practice": [
+      {
+        "question": "Best way to pass large objects?",
+        "code": "void func(_____ string s) {}",
+        "options": [
+          "string&",
+          "string",
+          "const string&",
+          "string*"
+        ],
+        "correct_answer": 2,
+        "explanation": "const reference avoids copying and prevents modification."
+      },
+      {
+        "question": "Best way to initialize variables?",
+        "code": null,
+        "options": [
+          "int x(5);",
+          "int x;",
+          "int x = 5;",
+          "int x{5};"
+        ],
+        "correct_answer": 3,
+        "explanation": "Uniform initialization {} prevents narrowing conversions."
+      },
+      {
+        "question": "Best way to manage dynamic memory?",
+        "code": null,
+        "options": [
+          "Use smart pointers (unique_ptr, shared_ptr)",
+          "Use new and delete",
+          "Use raw pointers",
+          "Use malloc and free"
+        ],
+        "correct_answer": 0,
+        "explanation": "Smart pointers automatically manage memory."
+      }
+    ]
+  },
+  "medium": {
+    "output": [
+      {
+        "question": "What is the output?",
+        "code": "int x = 5;\nint& ref = x;\nref = 10;\ncout << x;",
+        "options": [
+          "Undefined",
+          "10",
+          "Error",
+          "5"
+        ],
+        "correct_answer": 1,
+        "explanation": "References are aliases. Changing ref changes x."
+      },
+      {
+        "question": "What will this print?",
+        "code": "int arr[] = {1, 2, 3};\nint* ptr = arr;\ncout << *(ptr + 1);",
+        "options": [
+          "1",
+          "Error",
+          "3",
+          "2"
+        ],
+        "correct_answer": 3,
+        "explanation": "Pointer arithmetic: ptr+1 points to second element."
+      },
+      {
+        "question": "What is the output?",
+        "code": "string s1 = \"Hello\";\nstring s2 = s1;\ns2[0] = 'h';\ncout << s1[0];",
+        "options": [
+          "h",
+          "Undefined",
+          "H",
+          "Error"
+        ],
+        "correct_answer": 2,
+        "explanation": "Strings are copied by value. s1 unchanged."
+      }
+    ],
+    "find_bug": [
+      {
+        "question": "Find the bug:",
+        "code": "int* createArray() {\n    int arr[5] = {1,2,3,4,5};\n    return arr;\n}",
+        "options": [
+          "No bug",
+          "Missing semicolon",
+          "Wrong return type",
+          "Returning pointer to local array"
+        ],
+        "correct_answer": 3,
+        "explanation": "Local array is destroyed after function returns."
+      },
+      {
+        "question": "What's wrong?",
+        "code": "class MyClass {\n    int* ptr;\npublic:\n    MyClass() { ptr = new int; }\n};",
+        "options": [
+          "Missing destructor to delete ptr",
+          "Wrong constructor syntax",
+          "ptr should not be pointer",
+          "No bug"
+        ],
+        "correct_answer": 0,
+        "explanation": "Need destructor to prevent memory leak."
+      }
+    ],
+    "missing_code": [
+      {
+        "question": "Fill in the blank:",
+        "code": "class Base {\npublic:\n    _____ void func() { }\n};",
+        "options": [
+          "virtual",
+          "abstract",
+          "pure",
+          "override"
+        ],
+        "correct_answer": 0,
+        "explanation": "virtual enables polymorphism."
+      },
+      {
+        "question": "Complete the code:",
+        "code": "vector<int> vec = {1, 2, 3};\nfor (_____ x : vec) {\n    cout << x;\n}",
+        "options": [
+          "auto",
+          "auto&",
+          "const auto&",
+          "int"
+        ],
+        "correct_answer": 0,
+        "explanation": "auto deduces type automatically."
+      }
+    ],
+    "error": [
+      {
+        "question": "What error occurs?",
+        "code": "int* ptr = new int[5];\ndelete ptr;",
+        "options": [
+          "Segmentation fault",
+          "No error",
+          "Compile error",
+          "Memory leak (should use delete[])"
+        ],
+        "correct_answer": 3,
+        "explanation": "Use delete[] for arrays, delete for single objects."
+      },
+      {
+        "question": "What error will occur?",
+        "code": "vector<int> vec = {1, 2, 3};\nvec.erase(vec.begin());\ncout << vec[3];",
+        "options": [
+          "Segmentation fault",
+          "No error",
+          "Undefined behavior",
+          "Out of range exception"
+        ],
+        "correct_answer": 2,
+        "explanation": "After erase, vec has 2 elements. vec[3] is out of bounds."
+      }
+    ],
+    "best_practice": [
+      {
+        "question": "Best way to prevent object copying?",
+        "code": "class MyClass {",
+        "options": [
+          "Use const",
+          "Delete copy constructor and assignment",
+          "Make constructor private",
+          "Use static"
+        ],
+        "correct_answer": 1,
+        "explanation": "Delete copy operations: MyClass(const MyClass&) = delete;"
+      },
+      {
+        "question": "Best way to iterate over container?",
+        "code": "vector<int> vec = {1, 2, 3};",
+        "options": [
+          "for (int i = 0; i < vec.size(); i++)",
+          "while loop with iterator",
+          "for (const auto& x : vec)",
+          "for (auto x : vec)"
+        ],
+        "correct_answer": 2,
+        "explanation": "Range-based for with const reference is efficient."
+      }
+    ]
+  },
+  "hard": {
+    "output": [
+      {
+        "question": "What is the output?",
+        "code": "int x = 5;\nint* ptr = &x;\nint** pptr = &ptr;\ncout << **pptr;",
+        "options": [
+          "Undefined",
+          "Error",
+          "Address",
+          "5"
+        ],
+        "correct_answer": 3,
+        "explanation": "Double pointer: **pptr dereferences twice to get x."
+      },
+      {
+        "question": "What will this print?",
+        "code": "class Base {\npublic:\n    void func() { cout << \"Base\"; }\n};\nclass Derived : public Base {\npublic:\n    void func() { cout << \"Derived\"; }\n};\nBase* ptr = new Derived();\nptr->func();",
+        "options": [
+          "Derived",
+          "Both",
+          "Base",
+          "Error"
+        ],
+        "correct_answer": 2,
+        "explanation": "Without virtual, base version is called (static binding)."
+      }
+    ],
+    "find_bug": [
+      {
+        "question": "Find the subtle bug:",
+        "code": "class MyClass {\n    int* data;\npublic:\n    MyClass(int val) { data = new int(val); }\n    ~MyClass() { delete data; }\n};",
+        "options": [
+          "No bug",
+          "Wrong destructor syntax",
+          "Missing copy constructor and assignment operator",
+          "data should not be pointer"
+        ],
+        "correct_answer": 2,
+        "explanation": "Rule of Three: need copy constructor and assignment for deep copy."
+      },
+      {
+        "question": "What's wrong?",
+        "code": "class Base {\npublic:\n    ~Base() { }\n};\nclass Derived : public Base { };",
+        "options": [
+          "Destructor should be virtual",
+          "Missing derived destructor",
+          "Wrong inheritance",
+          "No bug"
+        ],
+        "correct_answer": 0,
+        "explanation": "Base class destructor should be virtual for polymorphism."
+      }
+    ],
+    "missing_code": [
+      {
+        "question": "What keyword is needed?",
+        "code": "class Derived : public Base {\npublic:\n    void func() _____ { }\n};",
+        "options": [
+          "final",
+          "override",
+          "const",
+          "virtual"
+        ],
+        "correct_answer": 1,
+        "explanation": "override ensures function overrides base class method."
+      },
+      {
+        "question": "Complete the template:",
+        "code": "_____ <typename T>\nT max(T a, T b) {\n    return (a > b) ? a : b;\n}",
+        "options": [
+          "template",
+          "typename",
+          "class",
+          "generic"
+        ],
+        "correct_answer": 0,
+        "explanation": "template keyword declares function template."
+      }
+    ],
+    "error": [
+      {
+        "question": "What error occurs?",
+        "code": "int* ptr = new int(5);\ndelete ptr;\ncout << *ptr;",
+        "options": [
+          "Undefined behavior (use after free)",
+          "Segmentation fault",
+          "Compile error",
+          "No error"
+        ],
+        "correct_answer": 0,
+        "explanation": "Accessing deleted memory is undefined behavior."
+      },
+      {
+        "question": "What error will occur?",
+        "code": "vector<int> vec = {1, 2, 3};\nfor (auto it = vec.begin(); it != vec.end(); ++it) {\n    if (*it == 2) vec.erase(it);\n}",
+        "options": [
+          "Segmentation fault",
+          "No error",
+          "Iterator invalidation",
+          "Compile error"
+        ],
+        "correct_answer": 2,
+        "explanation": "erase() invalidates iterators. Need to update iterator."
+      }
+    ],
+    "best_practice": [
+      {
+        "question": "Best way to implement move semantics?",
+        "code": "class MyClass {",
+        "options": [
+          "Use copy constructor",
+          "Use pointers",
+          "Implement move constructor and move assignment",
+          "Use references"
+        ],
+        "correct_answer": 2,
+        "explanation": "Move semantics: MyClass(MyClass&&) and operator=(MyClass&&)."
+      },
+      {
+        "question": "Best way to handle exceptions in constructors?",
+        "code": null,
+        "options": [
+          "Use if-else in constructor body",
+          "Don't throw exceptions",
+          "Use return codes",
+          "Use constructor initialization list with try-catch"
+        ],
+        "correct_answer": 3,
+        "explanation": "Function-try-block catches exceptions in initialization list."
+      }
+    ]
+  }
+}

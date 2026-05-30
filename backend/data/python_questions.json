@@ -1,0 +1,470 @@
+{
+  "easy": {
+    "output": [
+      {
+        "question": "What is the output of this code?",
+        "code": "x = [1, 2, 3]\nprint(len(x))",
+        "options": [
+          "[1, 2, 3]",
+          "2",
+          "Error",
+          "3"
+        ],
+        "correct_answer": 3,
+        "explanation": "The len() function returns the number of items in a list. The list has 3 elements."
+      },
+      {
+        "question": "What will this code print?",
+        "code": "print(type([]))",
+        "options": [
+          "[]",
+          "list",
+          "<class 'list'>",
+          "<class 'array'>"
+        ],
+        "correct_answer": 2,
+        "explanation": "The type() function returns the class type. For a list, it returns <class 'list'>."
+      },
+      {
+        "question": "What is the output?",
+        "code": "x = 'Hello'\nprint(x[0])",
+        "options": [
+          "e",
+          "Error",
+          "Hello",
+          "H"
+        ],
+        "correct_answer": 2,
+        "explanation": "String indexing starts at 0. x[0] returns the first character 'H'."
+      }
+    ],
+    "find_bug": [
+      {
+        "question": "What is wrong with this code?",
+        "code": "def greet(name)\n    print(f'Hello {name}')",
+        "options": [
+          "Missing return statement",
+          "Wrong indentation",
+          "Missing colon after function definition",
+          "Nothing is wrong"
+        ],
+        "correct_answer": 0,
+        "explanation": "Python function definitions must end with a colon (:)."
+      },
+      {
+        "question": "Find the bug in this code:",
+        "code": "for i in range(5)\n    print(i)",
+        "options": [
+          "Wrong range syntax",
+          "Missing parentheses",
+          "No bug",
+          "Missing colon after for statement"
+        ],
+        "correct_answer": 0,
+        "explanation": "For loops in Python must end with a colon."
+      },
+      {
+        "question": "What's wrong here?",
+        "code": "if x = 5:\n    print('Five')",
+        "options": [
+          "Missing colon",
+          "Nothing wrong",
+          "Wrong indentation",
+          "Should use == instead of ="
+        ],
+        "correct_answer": 0,
+        "explanation": "Use == for comparison, = is for assignment."
+      }
+    ],
+    "missing_code": [
+      {
+        "question": "What should replace the blank?",
+        "code": "numbers = [1, 2, 3, 4, 5]\nresult = _____(numbers)\nprint(result)  # Output: 15",
+        "options": [
+          "max",
+          "len",
+          "sum",
+          "min"
+        ],
+        "correct_answer": 2,
+        "explanation": "sum() adds all elements. sum([1,2,3,4,5]) = 15."
+      },
+      {
+        "question": "Fill in the blank:",
+        "code": "text = 'hello'\nprint(text._____())  # Output: HELLO",
+        "options": [
+          "capitalize",
+          "lower",
+          "upper",
+          "title"
+        ],
+        "correct_answer": 2,
+        "explanation": "upper() converts all characters to uppercase."
+      },
+      {
+        "question": "Complete the code:",
+        "code": "my_list = [1, 2, 3]\nmy_list._____(4)\nprint(my_list)  # [1, 2, 3, 4]",
+        "options": [
+          "append",
+          "insert",
+          "add",
+          "push"
+        ],
+        "correct_answer": 3,
+        "explanation": "append() adds an element to the end of a list."
+      }
+    ],
+    "error": [
+      {
+        "question": "What error will this raise?",
+        "code": "my_list = [1, 2, 3]\nprint(my_list[5])",
+        "options": [
+          "KeyError",
+          "TypeError",
+          "IndexError",
+          "ValueError"
+        ],
+        "correct_answer": 2,
+        "explanation": "Accessing a non-existent index raises IndexError."
+      },
+      {
+        "question": "What error occurs here?",
+        "code": "x = '5'\ny = x + 5",
+        "options": [
+          "SyntaxError",
+          "ValueError",
+          "NameError",
+          "TypeError"
+        ],
+        "correct_answer": 3,
+        "explanation": "Cannot concatenate string and integer directly."
+      },
+      {
+        "question": "What error will this code raise?",
+        "code": "my_dict = {'a': 1}\nprint(my_dict['b'])",
+        "options": [
+          "AttributeError",
+          "ValueError",
+          "IndexError",
+          "KeyError"
+        ],
+        "correct_answer": 3,
+        "explanation": "Accessing a non-existent key raises KeyError."
+      }
+    ],
+    "best_practice": [
+      {
+        "question": "Best way to check if key exists?",
+        "code": "my_dict = {'name': 'John'}",
+        "options": [
+          "try: my_dict['name']",
+          "my_dict.has_key('name')",
+          "'name' in my_dict",
+          "my_dict['name'] != None"
+        ],
+        "correct_answer": 1,
+        "explanation": "Using 'in' is the most Pythonic way."
+      },
+      {
+        "question": "Best way to swap two variables?",
+        "code": "a = 5\nb = 10",
+        "options": [
+          "a = a + b; b = a - b; a = a - b",
+          "swap(a, b)",
+          "temp = a; a = b; b = temp",
+          "a, b = b, a"
+        ],
+        "correct_answer": 2,
+        "explanation": "Python allows tuple unpacking for elegant swapping."
+      },
+      {
+        "question": "Best way to create an empty list?",
+        "code": null,
+        "options": [
+          "my_list = []",
+          "my_list = list()",
+          "my_list = Array()",
+          "my_list = new list()"
+        ],
+        "correct_answer": 0,
+        "explanation": "[] is more concise and Pythonic than list()."
+      }
+    ]
+  },
+  "medium": {
+    "output": [
+      {
+        "question": "What is the output?",
+        "code": "x = [1, 2, 3]\ny = x\ny.append(4)\nprint(len(x))",
+        "options": [
+          "None",
+          "4",
+          "Error",
+          "3"
+        ],
+        "correct_answer": 3,
+        "explanation": "Lists are mutable. y = x creates a reference, not a copy."
+      },
+      {
+        "question": "What will this print?",
+        "code": "x = [1, 2, 3]\nprint(x * 2)",
+        "options": [
+          "[2, 4, 6]",
+          "Error",
+          "[1, 2, 3, 2]",
+          "[1, 2, 3, 1, 2, 3]"
+        ],
+        "correct_answer": 1,
+        "explanation": "Multiplying a list repeats its elements."
+      },
+      {
+        "question": "What is the output?",
+        "code": "def func(x=[]):\n    x.append(1)\n    return len(x)\nprint(func() + func())",
+        "options": [
+          "2",
+          "4",
+          "3",
+          "1"
+        ],
+        "correct_answer": 0,
+        "explanation": "Mutable defaults persist. First call: [1] (len=1), second: [1,1] (len=2). Total: 3."
+      }
+    ],
+    "find_bug": [
+      {
+        "question": "What's the bug?",
+        "code": "def add_item(item, my_list=[]):\n    my_list.append(item)\n    return my_list",
+        "options": [
+          "No bug",
+          "Wrong parameter order",
+          "Missing return",
+          "Mutable default argument"
+        ],
+        "correct_answer": 0,
+        "explanation": "Mutable defaults are shared across calls."
+      },
+      {
+        "question": "Find the issue:",
+        "code": "for i in range(10):\n    if i == 5:\n        break\nprint(i)",
+        "options": [
+          "Variable i exists after loop",
+          "break is wrong",
+          "Missing else",
+          "No issue"
+        ],
+        "correct_answer": 2,
+        "explanation": "This is actually correct. In Python, loop variables persist after the loop."
+      }
+    ],
+    "missing_code": [
+      {
+        "question": "Fill in the blank:",
+        "code": "numbers = [1, 2, 3, 4, 5]\nsquares = [x___2 for x in numbers]",
+        "options": [
+          "**",
+          "^",
+          "pow",
+          "*"
+        ],
+        "correct_answer": 0,
+        "explanation": "** is the exponentiation operator in Python."
+      },
+      {
+        "question": "Complete the code:",
+        "code": "my_dict = {'a': 1, 'b': 2}\nvalue = my_dict.___('c', 0)",
+        "options": [
+          "get",
+          "find",
+          "retrieve",
+          "fetch"
+        ],
+        "correct_answer": 3,
+        "explanation": "get() returns default value if key doesn't exist."
+      }
+    ],
+    "error": [
+      {
+        "question": "What error occurs?",
+        "code": "result = '5' + 5",
+        "options": [
+          "ValueError",
+          "AttributeError",
+          "SyntaxError",
+          "TypeError"
+        ],
+        "correct_answer": 1,
+        "explanation": "Cannot add string and integer."
+      },
+      {
+        "question": "What error will this raise?",
+        "code": "x = [1, 2, 3]\nx[1:10] = []",
+        "options": [
+          "ValueError",
+          "TypeError",
+          "No error",
+          "IndexError"
+        ],
+        "correct_answer": 0,
+        "explanation": "Slice assignment doesn't raise errors for out-of-range indices."
+      }
+    ],
+    "best_practice": [
+      {
+        "question": "Best way to open a file?",
+        "code": null,
+        "options": [
+          "f = open('file.txt'); data = f.read(); f.close()",
+          "with open('file.txt') as f: data = f.read()",
+          "f = open('file.txt'); data = f.read()",
+          "data = open('file.txt').read()"
+        ],
+        "correct_answer": 0,
+        "explanation": "'with' ensures proper file closure."
+      },
+      {
+        "question": "Best way to iterate with index?",
+        "code": "items = ['a', 'b', 'c']",
+        "options": [
+          "for i in range(len(items)): item = items[i]",
+          "for item in items: i = items.index(item)",
+          "for i, item in enumerate(items):",
+          "i = 0; for item in items: i += 1"
+        ],
+        "correct_answer": 0,
+        "explanation": "enumerate() is the Pythonic way."
+      }
+    ]
+  },
+  "hard": {
+    "output": [
+      {
+        "question": "What is the output?",
+        "code": "def func(x=[]):\n    x.append(1)\n    return x\na = func()\nb = func()\nprint(a is b)",
+        "options": [
+          "None",
+          "Error",
+          "False",
+          "True"
+        ],
+        "correct_answer": 2,
+        "explanation": "Both calls use the same default list object."
+      },
+      {
+        "question": "What will this print?",
+        "code": "x = [1, 2, 3]\ny = x[:]\ny.append(4)\nprint(x == y)",
+        "options": [
+          "True",
+          "None",
+          "False",
+          "Error"
+        ],
+        "correct_answer": 3,
+        "explanation": "x[:] creates a shallow copy. x=[1,2,3], y=[1,2,3,4]."
+      }
+    ],
+    "find_bug": [
+      {
+        "question": "Find the subtle bug:",
+        "code": "class Counter:\n    count = 0\n    def increment(self):\n        count += 1",
+        "options": [
+          "No bug",
+          "Missing return",
+          "Should use self.count",
+          "Wrong indentation"
+        ],
+        "correct_answer": 2,
+        "explanation": "Needs self.count to modify class attribute."
+      },
+      {
+        "question": "What's wrong?",
+        "code": "def outer():\n    x = 1\n    def inner():\n        x = x + 1\n    inner()\n    return x",
+        "options": [
+          "UnboundLocalError - need nonlocal",
+          "SyntaxError",
+          "NameError",
+          "No error"
+        ],
+        "correct_answer": 0,
+        "explanation": "Need 'nonlocal x' to modify outer variable."
+      }
+    ],
+    "missing_code": [
+      {
+        "question": "What decorator is needed?",
+        "code": "class MyClass:\n    _____\n    def class_method(cls):\n        return cls.__name__",
+        "options": [
+          "@property",
+          "@classmethod",
+          "@abstractmethod",
+          "@staticmethod"
+        ],
+        "correct_answer": 2,
+        "explanation": "@classmethod gives access to cls."
+      },
+      {
+        "question": "Complete the code:",
+        "code": "class MyClass:\n    def __init__(self, value):\n        self._value = value\n    _____\n    def value(self):\n        return self._value",
+        "options": [
+          "@property",
+          "@decorator",
+          "@classmethod",
+          "@staticmethod"
+        ],
+        "correct_answer": 0,
+        "explanation": "@property makes method accessible as attribute."
+      }
+    ],
+    "error": [
+      {
+        "question": "What error occurs?",
+        "code": "x = 5\ndel x\nprint(x)",
+        "options": [
+          "NameError",
+          "ValueError",
+          "AttributeError",
+          "KeyError"
+        ],
+        "correct_answer": 2,
+        "explanation": "Variable x no longer exists after del."
+      },
+      {
+        "question": "What error will this raise?",
+        "code": "def func():\n    print(x)\n    x = 5\nfunc()",
+        "options": [
+          "NameError",
+          "SyntaxError",
+          "UnboundLocalError",
+          "ValueError"
+        ],
+        "correct_answer": 3,
+        "explanation": "x is local but used before assignment."
+      }
+    ],
+    "best_practice": [
+      {
+        "question": "Most efficient string concatenation?",
+        "code": "strings = ['a', 'b', 'c', 'd']",
+        "options": [
+          "result = ''; for s in strings: result += s",
+          "reduce(lambda x,y: x+y, strings)",
+          "''.join(strings)",
+          "sum(strings, '')"
+        ],
+        "correct_answer": 1,
+        "explanation": "join() is most efficient for multiple strings."
+      },
+      {
+        "question": "Best way to create a singleton?",
+        "code": null,
+        "options": [
+          "Use global variable",
+          "Use class variable",
+          "Use module-level instance",
+          "Use __new__ method"
+        ],
+        "correct_answer": 3,
+        "explanation": "__new__ controls instance creation."
+      }
+    ]
+  }
+}

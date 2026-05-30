@@ -1,0 +1,470 @@
+{
+  "easy": {
+    "output": [
+      {
+        "question": "What is the output?",
+        "code": "int x = 5;\nint y = 2;\nSystem.out.println(x / y);",
+        "options": [
+          "3",
+          "2.5",
+          "Error",
+          "2"
+        ],
+        "correct_answer": 3,
+        "explanation": "Integer division truncates the decimal part. 5/2 = 2."
+      },
+      {
+        "question": "What will this print?",
+        "code": "String s = \"Hello\";\nSystem.out.println(s.length());",
+        "options": [
+          "Error",
+          "6",
+          "5",
+          "4"
+        ],
+        "correct_answer": 2,
+        "explanation": "length() returns the number of characters in the string."
+      },
+      {
+        "question": "What is the output?",
+        "code": "int[] arr = {1, 2, 3};\nSystem.out.println(arr.length);",
+        "options": [
+          "2",
+          "Error",
+          "4",
+          "3"
+        ],
+        "correct_answer": 3,
+        "explanation": "Array length property returns the number of elements."
+      }
+    ],
+    "find_bug": [
+      {
+        "question": "What's wrong with this code?",
+        "code": "public class Test {\n    public static void main(String[] args) {\n        int x = 5\n        System.out.println(x);\n    }\n}",
+        "options": [
+          "Wrong class name",
+          "Missing return statement",
+          "Missing semicolon after int x = 5",
+          "Nothing wrong"
+        ],
+        "correct_answer": 2,
+        "explanation": "Java statements must end with semicolons."
+      },
+      {
+        "question": "Find the bug:",
+        "code": "String s = \"Hello\";\nif (s == \"Hello\") {\n    System.out.println(\"Match\");\n}",
+        "options": [
+          "Wrong syntax for if",
+          "Missing semicolon",
+          "No bug",
+          "Should use .equals() instead of =="
+        ],
+        "correct_answer": 3,
+        "explanation": "Use .equals() to compare string content, == compares references."
+      },
+      {
+        "question": "What's the issue?",
+        "code": "public class Test {\n    public void main(String[] args) {\n        System.out.println(\"Hello\");\n    }\n}",
+        "options": [
+          "Wrong return type",
+          "No issue",
+          "Missing class keyword",
+          "main should be static"
+        ],
+        "correct_answer": 3,
+        "explanation": "main method must be static to be called by JVM."
+      }
+    ],
+    "missing_code": [
+      {
+        "question": "Fill in the blank:",
+        "code": "int[] numbers = {1, 2, 3, 4, 5};\nSystem.out.println(numbers._____);  // Output: 5",
+        "options": [
+          "count",
+          "size",
+          "length",
+          "len"
+        ],
+        "correct_answer": 2,
+        "explanation": "Arrays use .length property (not a method)."
+      },
+      {
+        "question": "Complete the code:",
+        "code": "String text = \"hello\";\nSystem.out.println(text.___());  // Output: HELLO",
+        "options": [
+          "upper",
+          "capitalize",
+          "toUpperCase",
+          "uppercase"
+        ],
+        "correct_answer": 2,
+        "explanation": "toUpperCase() converts string to uppercase."
+      },
+      {
+        "question": "What should replace the blank?",
+        "code": "ArrayList<Integer> list = new ArrayList<>();\nlist._____(5);",
+        "options": [
+          "add",
+          "push",
+          "append",
+          "insert"
+        ],
+        "correct_answer": 0,
+        "explanation": "add() method adds elements to ArrayList."
+      }
+    ],
+    "error": [
+      {
+        "question": "What error will occur?",
+        "code": "int[] arr = {1, 2, 3};\nSystem.out.println(arr[5]);",
+        "options": [
+          "IndexError",
+          "ValueError",
+          "ArrayIndexOutOfBoundsException",
+          "NullPointerException"
+        ],
+        "correct_answer": 2,
+        "explanation": "Accessing invalid array index throws ArrayIndexOutOfBoundsException."
+      },
+      {
+        "question": "What error occurs?",
+        "code": "String s = null;\nSystem.out.println(s.length());",
+        "options": [
+          "IllegalArgumentException",
+          "ArrayIndexOutOfBoundsException",
+          "RuntimeException",
+          "NullPointerException"
+        ],
+        "correct_answer": 3,
+        "explanation": "Calling methods on null throws NullPointerException."
+      },
+      {
+        "question": "What error will this raise?",
+        "code": "int x = Integer.parseInt(\"abc\");",
+        "options": [
+          "InputMismatchException",
+          "IllegalArgumentException",
+          "ParseException",
+          "NumberFormatException"
+        ],
+        "correct_answer": 3,
+        "explanation": "parseInt throws NumberFormatException for invalid input."
+      }
+    ],
+    "best_practice": [
+      {
+        "question": "Best way to compare strings?",
+        "code": "String s1 = \"Hello\";\nString s2 = \"Hello\";",
+        "options": [
+          "s1.contentEquals(s2)",
+          "s1 == s2",
+          "s1.equals(s2)",
+          "s1.compareTo(s2) == 0"
+        ],
+        "correct_answer": 2,
+        "explanation": ".equals() compares content, == compares references."
+      },
+      {
+        "question": "Best way to create a constant?",
+        "code": null,
+        "options": [
+          "public final int MAX = 100;",
+          "public static int MAX = 100;",
+          "public const int MAX = 100;",
+          "public static final int MAX = 100;"
+        ],
+        "correct_answer": 3,
+        "explanation": "Use static final for constants in Java."
+      },
+      {
+        "question": "Best way to iterate over a list?",
+        "code": "List<String> list = Arrays.asList(\"a\", \"b\", \"c\");",
+        "options": [
+          "for (String item : list)",
+          "for (int i = 0; i < list.size(); i++)",
+          "Iterator<String> it = list.iterator()",
+          "list.forEach(item -> {})"
+        ],
+        "correct_answer": 0,
+        "explanation": "Enhanced for loop is most readable."
+      }
+    ]
+  },
+  "medium": {
+    "output": [
+      {
+        "question": "What is the output?",
+        "code": "String s1 = new String(\"Hello\");\nString s2 = new String(\"Hello\");\nSystem.out.println(s1 == s2);",
+        "options": [
+          "null",
+          "false",
+          "Error",
+          "true"
+        ],
+        "correct_answer": 1,
+        "explanation": "== compares references. Different objects return false."
+      },
+      {
+        "question": "What will this print?",
+        "code": "int x = 5;\nInteger y = x;\nSystem.out.println(x == y);",
+        "options": [
+          "false",
+          "null",
+          "Error",
+          "true"
+        ],
+        "correct_answer": 3,
+        "explanation": "Autoboxing converts int to Integer. Values are equal."
+      },
+      {
+        "question": "What is the output?",
+        "code": "List<Integer> list = Arrays.asList(1, 2, 3);\nlist.add(4);",
+        "options": [
+          "4",
+          "null",
+          "UnsupportedOperationException",
+          "Success"
+        ],
+        "correct_answer": 2,
+        "explanation": "Arrays.asList() returns fixed-size list."
+      }
+    ],
+    "find_bug": [
+      {
+        "question": "Find the bug:",
+        "code": "public class Test {\n    private int count = 0;\n    public void increment() {\n        count++;\n    }\n}",
+        "options": [
+          "Wrong access modifier",
+          "Missing return type",
+          "count should be static",
+          "No bug - code is correct"
+        ],
+        "correct_answer": 3,
+        "explanation": "This code is actually correct for instance variables."
+      },
+      {
+        "question": "What's wrong?",
+        "code": "try {\n    int x = 5 / 0;\n} catch (Exception e) {\n    System.out.println(\"Error\");\n} catch (ArithmeticException e) {\n    System.out.println(\"Math error\");\n}",
+        "options": [
+          "Specific exception after general exception",
+          "Missing finally",
+          "Wrong exception type",
+          "No bug"
+        ],
+        "correct_answer": 0,
+        "explanation": "Specific exceptions must come before general ones."
+      }
+    ],
+    "missing_code": [
+      {
+        "question": "Fill in the blank:",
+        "code": "public class Test _____ Runnable {\n    public void run() {}\n}",
+        "options": [
+          "implements",
+          "inherits",
+          "uses",
+          "extends"
+        ],
+        "correct_answer": 0,
+        "explanation": "Use 'implements' for interfaces."
+      },
+      {
+        "question": "Complete the code:",
+        "code": "Map<String, Integer> map = new HashMap<>();\nmap._____(\"key\", 10);",
+        "options": [
+          "put",
+          "insert",
+          "set",
+          "add"
+        ],
+        "correct_answer": 0,
+        "explanation": "put() adds key-value pairs to Map."
+      }
+    ],
+    "error": [
+      {
+        "question": "What error occurs?",
+        "code": "int[] arr = new int[5];\nfor (int i = 0; i <= 5; i++) {\n    arr[i] = i;\n}",
+        "options": [
+          "NullPointerException",
+          "No error",
+          "IllegalArgumentException",
+          "ArrayIndexOutOfBoundsException"
+        ],
+        "correct_answer": 3,
+        "explanation": "Loop goes to i=5, but valid indices are 0-4."
+      },
+      {
+        "question": "What error will this raise?",
+        "code": "Object obj = \"Hello\";\nInteger num = (Integer) obj;",
+        "options": [
+          "TypeException",
+          "RuntimeException",
+          "ClassCastException",
+          "IllegalCastException"
+        ],
+        "correct_answer": 2,
+        "explanation": "Cannot cast String to Integer."
+      }
+    ],
+    "best_practice": [
+      {
+        "question": "Best way to handle resources?",
+        "code": null,
+        "options": [
+          "Manual close() in finally",
+          "try-with-resources",
+          "try-catch-finally",
+          "Automatic garbage collection"
+        ],
+        "correct_answer": 1,
+        "explanation": "try-with-resources automatically closes resources."
+      },
+      {
+        "question": "Best collection for unique elements?",
+        "code": null,
+        "options": [
+          "ArrayList",
+          "TreeMap",
+          "HashSet",
+          "LinkedList"
+        ],
+        "correct_answer": 2,
+        "explanation": "HashSet stores unique elements efficiently."
+      }
+    ]
+  },
+  "hard": {
+    "output": [
+      {
+        "question": "What is the output?",
+        "code": "Integer a = 127;\nInteger b = 127;\nSystem.out.println(a == b);",
+        "options": [
+          "null",
+          "Error",
+          "false",
+          "true"
+        ],
+        "correct_answer": 3,
+        "explanation": "Integer cache: -128 to 127 are cached, same object."
+      },
+      {
+        "question": "What will this print?",
+        "code": "Integer a = 128;\nInteger b = 128;\nSystem.out.println(a == b);",
+        "options": [
+          "true",
+          "null",
+          "false",
+          "Error"
+        ],
+        "correct_answer": 2,
+        "explanation": "128 is outside cache range, different objects."
+      }
+    ],
+    "find_bug": [
+      {
+        "question": "Find the subtle bug:",
+        "code": "public class Test {\n    private static int count = 0;\n    public Test() {\n        count++;\n    }\n    public int getCount() {\n        return count;\n    }\n}",
+        "options": [
+          "Wrong return type",
+          "count should not be static",
+          "No bug - code is correct",
+          "Missing synchronized"
+        ],
+        "correct_answer": 2,
+        "explanation": "This is correct for counting instances."
+      },
+      {
+        "question": "What's wrong?",
+        "code": "public class Parent {\n    private void method() {}\n}\npublic class Child extends Parent {\n    public void method() {}\n}",
+        "options": [
+          "Cannot override private method",
+          "Wrong access modifier",
+          "Missing @Override",
+          "No bug"
+        ],
+        "correct_answer": 0,
+        "explanation": "Private methods cannot be overridden."
+      }
+    ],
+    "missing_code": [
+      {
+        "question": "What annotation is needed?",
+        "code": "public class Child extends Parent {\n    _____\n    public void method() {\n        super.method();\n    }\n}",
+        "options": [
+          "@Super",
+          "@Override",
+          "@Method",
+          "@Inherited"
+        ],
+        "correct_answer": 1,
+        "explanation": "@Override indicates method overriding."
+      },
+      {
+        "question": "Complete the generic declaration:",
+        "code": "public class Box_____ {\n    private T value;\n}",
+        "options": [
+          "<T>",
+          "{T}",
+          "[T]",
+          "(T)"
+        ],
+        "correct_answer": 0,
+        "explanation": "Generics use angle brackets <T>."
+      }
+    ],
+    "error": [
+      {
+        "question": "What error occurs?",
+        "code": "List<String> list = new ArrayList<>();\nlist.add(\"Hello\");\nString s = list.get(0);\nlist.remove(0);\nSystem.out.println(list.get(0));",
+        "options": [
+          "IndexOutOfBoundsException",
+          "NullPointerException",
+          "ConcurrentModificationException",
+          "No error"
+        ],
+        "correct_answer": 0,
+        "explanation": "After remove, list is empty. get(0) throws exception."
+      },
+      {
+        "question": "What error will this raise?",
+        "code": "Thread t = new Thread();\nt.start();\nt.start();",
+        "options": [
+          "ThreadException",
+          "No error",
+          "IllegalThreadStateException",
+          "RuntimeException"
+        ],
+        "correct_answer": 2,
+        "explanation": "Cannot start a thread twice."
+      }
+    ],
+    "best_practice": [
+      {
+        "question": "Best way to make class immutable?",
+        "code": null,
+        "options": [
+          "Make all methods final",
+          "Use synchronized",
+          "Make fields final and private, no setters",
+          "Implement Cloneable"
+        ],
+        "correct_answer": 2,
+        "explanation": "Immutable: final fields, no setters, defensive copies."
+      },
+      {
+        "question": "Best way to implement singleton?",
+        "code": null,
+        "options": [
+          "Static instance with private constructor",
+          "Synchronized getInstance()",
+          "Double-checked locking",
+          "Enum with single instance"
+        ],
+        "correct_answer": 3,
+        "explanation": "Enum singleton is thread-safe and prevents reflection attacks."
+      }
+    ]
+  }
+}

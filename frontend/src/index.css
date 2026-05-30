@@ -1,0 +1,161 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Theme CSS Variables */
+:root {
+  /* Dark Mode Colors */
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --bg-hover: #475569;
+  
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-tertiary: #94a3b8;
+  
+  --border-color: #334155;
+  --border-light: #475569;
+  
+  --input-bg: #1e293b;
+  --input-border: #334155;
+  --input-text: #f1f5f9;
+  
+  /* Accent Colors (same in both themes) */
+  --emerald-50: #f0fdf4;
+  --emerald-100: #dcfce7;
+  --emerald-200: #bbf7d0;
+  --emerald-300: #86efac;
+  --emerald-400: #4ade80;
+  --emerald-500: #22c55e;
+  --emerald-600: #16a34a;
+  --emerald-700: #15803d;
+  
+  --sky-200: #bfdbfe;
+  --sky-300: #7dd3fc;
+  --sky-400: #38bdf8;
+  --sky-500: #0ea5e9;
+}
+
+.light-theme {
+  /* Light Mode Colors */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-tertiary: #e2e8f0;
+  --bg-hover: #cbd5e1;
+  
+  --text-primary: #1e293b;
+  --text-secondary: #334155;
+  --text-tertiary: #64748b;
+  
+  --border-color: #e2e8f0;
+  --border-light: #cbd5e1;
+  
+  --input-bg: #f8fafc;
+  --input-border: #e2e8f0;
+  --input-text: #1e293b;
+}
+
+html, body {
+  @apply transition-colors duration-300;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* Global element styling */
+input, textarea, select {
+  background-color: var(--input-bg) !important;
+  color: var(--input-text) !important;
+  border-color: var(--input-border) !important;
+}
+
+a {
+  @apply transition-colors duration-200;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-light);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}
+
+/* Placeholder styling */
+::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* Selection styling */
+::selection {
+  background-color: var(--emerald-500);
+  color: var(--text-primary);
+}
+
+/* Focus styling */
+:focus-visible {
+  outline-color: var(--emerald-500);
+}
+
+/* Database and Tooltip styles if used */
+.tooltip {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border-color: var(--border-light);
+}
+
+/* Modal/Dialog styles */
+.modal, .dialog {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Card styling */
+.card {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+/* Button base styling */
+.btn-base {
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background-color: var(--emerald-500);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: var(--emerald-600);
+}
+
+/* Code and pre styling */
+code {
+  background-color: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+pre {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
