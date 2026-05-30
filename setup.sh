@@ -1,5 +1,4 @@
 #!/bin/bash
-# Quick setup script for Coding Practice Module
 
 set -e
 
