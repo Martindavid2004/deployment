@@ -1,0 +1,225 @@
+{
+  "info": {
+    "name": "Competitive Mode API",
+    "description": "API endpoints for testing competitive mode functionality",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Start Matchmaking",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"problem_id\": \"{{problem_id}}\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/competitive/matchmaking",
+          "host": ["{{base_url}}"],
+          "path": ["competitive", "matchmaking"]
+        }
+      }
+    },
+    {
+      "name": "List My Matches",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/competitive/matches?status=active",
+          "host": ["{{base_url}}"],
+          "path": ["competitive", "matches"],
+          "query": [
+            {
+              "key": "status",
+              "value": "active",
+              "disabled": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Match Details",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/competitive/matches/{{match_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["competitive", "matches", "{{match_id}}"]
+        }
+      }
+    },
+    {
+      "name": "Start Match",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/competitive/matches/{{match_id}}/start",
+          "host": ["{{base_url}}"],
+          "path": ["competitive", "matches", "{{match_id}}", "start"]
+        }
+      }
+    },
+    {
+      "name": "Submit Solution",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"match_id\": \"{{match_id}}\",\n  \"code\": \"def solution(n):\\n    return n * 2\",\n  \"language\": \"python\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/competitive/matches/{{match_id}}/submit",
+          "host": ["{{base_url}}"],
+          "path": ["competitive", "matches", "{{match_id}}", "submit"]
+        }
+      }
+    },
+    {
+      "name": "Use Hint",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/competitive/matches/{{match_id}}/hint",
+          "host": ["{{base_url}}"],
+          "path": ["competitive", "matches", "{{match_id}}", "hint"]
+        }
+      }
+    },
+    {
+      "name": "Get Competitive Leaderboard",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/competitive/leaderboard?limit=50",
+          "host": ["{{base_url}}"],
+          "path": ["competitive", "leaderboard"],
+          "query": [
+            {
+              "key": "limit",
+              "value": "50"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Create Custom Match",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"problem_id\": \"{{problem_id}}\",\n  \"player1_id\": \"{{user1_id}}\",\n  \"player2_id\": \"{{user2_id}}\",\n  \"time_limit_seconds\": 1800\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/competitive/matches",
+          "host": ["{{base_url}}"],
+          "path": ["competitive", "matches"]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "match_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "problem_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user1_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user2_id",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
