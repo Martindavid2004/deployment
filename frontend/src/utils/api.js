@@ -11,13 +11,13 @@ const getApiBase = () => {
   // 2. Check for Vercel deployment
   if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
     console.log('☁️ Detected Vercel deployment, using Render Backend');
-    return 'https://codo-ai.onrender.com';
+    return 'https://deployment-plto.onrender.com';
   }
 
   // 3. Check for Netlify deployment - use production Render backend
   if (typeof window !== 'undefined' && window.location.hostname.includes('netlify.app')) {
     console.log('🌐 Detected Netlify deployment, using Render Backend');
-    return 'https://codo-ai.onrender.com';
+    return 'https://deployment-plto.onrender.com';
   }
 
   // For development with port forwarding

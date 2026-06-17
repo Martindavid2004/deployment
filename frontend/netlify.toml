@@ -7,13 +7,13 @@
 # Environment variables for production
 [build.environment]
   NODE_ENV = "production"
-  VITE_API_URL = "https://codo-ai.onrender.com"
+  VITE_API_URL = "https://deployment-plto.onrender.com"
   NPM_CONFIG_PRODUCTION = "false"
 
 # Redirect API calls to the backend
 [[redirects]]
   from = "/api/*"
-  to = "https://codo-ai.onrender.com/:splat"
+  to = "https://deployment-plto.onrender.com/:splat"
   status = 200
   force = false
 
@@ -29,4 +29,4 @@
 
 # Environment variable overrides (can be set in Netlify dashboard too)
 [context.production]
-  environment = { VITE_API_URL = "https://codo-ai.onrender.com" }
+  environment = { VITE_API_URL = "https://deployment-plto.onrender.com" }
