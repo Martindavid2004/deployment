@@ -118,7 +118,7 @@ app.add_middleware(DevTunnelCORSMiddleware)
 # CORS configuration - Keep for additional compatibility
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins for dev tunnels
+    allow_origins=settings.cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
