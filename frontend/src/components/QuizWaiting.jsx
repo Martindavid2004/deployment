@@ -31,7 +31,7 @@ const QuizWaiting = memo(function QuizWaiting({ results, matchId }) {
               <div className="text-4xl font-bold text-white mb-2">
                 {results.score}
               </div>
-              <div className="text-gray-400 text-sm">Total Score</div>
+              <div className="text-gray-400 text-base">Total Score</div>
             </div>
 
             <div className="bg-white/5 rounded-xl p-6 text-center border border-white/10">
@@ -39,7 +39,7 @@ const QuizWaiting = memo(function QuizWaiting({ results, matchId }) {
               <div className="text-4xl font-bold text-white mb-2">
                 {results.correct}/{results.total}
               </div>
-              <div className="text-gray-400 text-sm">Correct Answers</div>
+              <div className="text-gray-400 text-base">Correct Answers</div>
             </div>
 
             <div className="bg-white/5 rounded-xl p-6 text-center border border-white/10">
@@ -47,13 +47,13 @@ const QuizWaiting = memo(function QuizWaiting({ results, matchId }) {
               <div className="text-4xl font-bold text-white mb-2">
                 +{results.time_bonus}
               </div>
-              <div className="text-gray-400 text-sm">Time Bonus</div>
+              <div className="text-gray-400 text-base">Time Bonus</div>
             </div>
           </div>
 
           {/* Score Breakdown */}
           <div className="bg-purple-600/10 rounded-xl p-6 mb-8 border border-purple-500/30">
-            <h3 className="text-lg font-semibold text-white mb-4">Score Breakdown</h3>
+            <h3 className="text-xl font-semibold text-white mb-4">Score Breakdown</h3>
             <div className="space-y-3">
               <div className="flex justify-between text-gray-300">
                 <span>Base Points ({results.correct} correct)</span>
@@ -63,7 +63,7 @@ const QuizWaiting = memo(function QuizWaiting({ results, matchId }) {
                 <span>Time Bonus</span>
                 <span className="font-semibold text-green-400">+{results.time_bonus}</span>
               </div>
-              <div className="border-t border-white/20 pt-3 flex justify-between text-white text-lg font-bold">
+              <div className="border-t border-white/20 pt-3 flex justify-between text-white text-xl font-bold">
                 <span>Total Score</span>
                 <span>{results.score}</span>
               </div>
@@ -78,7 +78,7 @@ const QuizWaiting = memo(function QuizWaiting({ results, matchId }) {
                 <h3 className="text-xl font-semibold text-white">
                   Waiting for Other Players...
                 </h3>
-                <p className="text-gray-400 text-sm">
+                <p className="text-gray-400 text-base">
                   The leaderboard will appear when all players finish or time expires
                 </p>
               </div>
@@ -94,14 +94,14 @@ const QuizWaiting = memo(function QuizWaiting({ results, matchId }) {
 
           {/* Accuracy Display */}
           <div className="bg-white/5 rounded-xl p-6 mb-8">
-            <h3 className="text-lg font-semibold text-white mb-4">Your Accuracy</h3>
+            <h3 className="text-xl font-semibold text-white mb-4">Your Accuracy</h3>
             <div className="relative">
               <div className="w-full bg-white/20 rounded-full h-4">
                 <div 
                   className="bg-gradient-to-r from-green-600 to-green-400 h-4 rounded-full transition-all flex items-center justify-end pr-2"
                   style={{ width: `${(results.correct / results.total) * 100}%` }}
                 >
-                  <span className="text-white text-xs font-bold">
+                  <span className="text-white text-sm font-bold">
                     {Math.round((results.correct / results.total) * 100)}%
                   </span>
                 </div>
@@ -120,7 +120,7 @@ const QuizWaiting = memo(function QuizWaiting({ results, matchId }) {
           </div>
 
           {/* Auto-refresh notice */}
-          <p className="text-center text-gray-500 text-sm mt-6">
+          <p className="text-center text-gray-500 text-base mt-6">
             This page will automatically update when all players finish
           </p>
         </div>
@@ -131,13 +131,13 @@ const QuizWaiting = memo(function QuizWaiting({ results, matchId }) {
             <div className="text-2xl font-bold text-white mb-1">
               {results.total_players || 0}
             </div>
-            <div className="text-gray-400 text-sm">Total Players</div>
+            <div className="text-gray-400 text-base">Total Players</div>
           </div>
           <div className="bg-white/5 rounded-xl p-4 text-center border border-white/10">
             <div className="text-2xl font-bold text-white mb-1">
               {results.total || 0}
             </div>
-            <div className="text-gray-400 text-sm">Questions</div>
+            <div className="text-gray-400 text-base">Questions</div>
           </div>
           <div className="bg-white/5 rounded-xl p-4 text-center border border-white/10">
             <div className="text-2xl font-bold text-white mb-1">
@@ -146,7 +146,7 @@ const QuizWaiting = memo(function QuizWaiting({ results, matchId }) {
                 'N/A'
               }
             </div>
-            <div className="text-gray-400 text-sm">Your Accuracy</div>
+            <div className="text-gray-400 text-base">Your Accuracy</div>
           </div>
         </div>
       </div>

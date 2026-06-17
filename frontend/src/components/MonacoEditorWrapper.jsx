@@ -17,7 +17,7 @@ export default function MonacoEditorWrapper({
   }, [language]);
 
   return (
-    <div className="rounded-xl border border-emerald-500/70 overflow-hidden bg-slate-950">
+    <div className="rounded-xl border border-emerald-500/70 overflow-hidden bg-theme-bg-secondary">
       <Editor
         height={height}
         defaultLanguage={monacoLang}

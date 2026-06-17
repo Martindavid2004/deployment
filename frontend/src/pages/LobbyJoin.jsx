@@ -64,7 +64,7 @@ export default function LobbyJoin() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center py-8 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-[var(--bg-primary)] via-[var(--bg-tertiary)] to-[var(--bg-primary)] flex items-center justify-center py-8 px-4">
       <div className="max-w-md w-full">
         <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl p-8">
           <div className="text-center mb-8">
@@ -87,7 +87,7 @@ export default function LobbyJoin() {
                 className="w-full px-6 py-4 rounded-lg bg-white/10 border-2 border-white/20 text-white text-center text-3xl font-mono font-bold tracking-widest placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                 required
               />
-              <p className="text-gray-400 text-sm mt-2 text-center">
+              <p className="text-gray-400 text-base mt-2 text-center">
                 Enter the 6-character code shared by the host
               </p>
             </div>

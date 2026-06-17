@@ -19,7 +19,6 @@ import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 import Navbar from "./components/Navbar";
-import LanguageSelector from "./components/LanguageSelector";
 
 import { initialProblems } from "./data/problems";
 import { computeUserStats } from "./utils/stats";
@@ -222,6 +221,7 @@ export default function App() {
     <BrowserRouter>
       <AppContent 
         user={user} 
+        setUser={setUser}
         onLogin={handleLogin}
         onLogout={handleLogout} 
         theme={theme} 
@@ -241,6 +241,7 @@ export default function App() {
 
 function AppContent({
   user,
+  setUser,
   onLogin,
   onLogout,
   theme,
@@ -260,26 +261,19 @@ function AppContent({
   const isGamePage = location.pathname.match(/\/(competitive\/match\/|quiz\/|competitive\/)[^/]+/);
 
   return (
-    <div className="min-h-screen text-slate-100 transition-colors duration-300" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
+    <div className="min-h-screen transition-colors duration-300" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
       {location.pathname !== "/" && !isGamePage && (
         <Navbar
           user={user}
           onLogout={onLogout}
           theme={theme}
           toggleTheme={toggleTheme}
+          currentLanguage={currentLanguage}
+          setCurrentLanguage={setCurrentLanguage}
         />
       )}
 
-      {user && !isGamePage && (
-        <div className="fixed top-16 right-4 z-30">
-          <LanguageSelector
-            current={currentLanguage}
-            onChange={setCurrentLanguage}
-          />
-        </div>
-      )}
-
-      <div className={isGamePage ? "w-full h-screen" : "max-w-6xl mx-auto px-4 py-6"}>
+      <div className={isGamePage ? "w-full h-screen" : "w-full 2xl:max-w-[1920px] mx-auto px-4 md:px-8 xl:px-12 py-6"}>
         <Routes>
           <Route path="/" element={<Home user={user} stats={stats} />} />
           <Route
@@ -307,6 +301,7 @@ function AppContent({
             element={requireAuth(
               <Profile
                 user={user}
+                setUser={setUser}
                 attempts={attempts}
                 problems={problems}
                 currentLanguage={currentLanguage}

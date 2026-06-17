@@ -5,7 +5,7 @@ This service handles code compilation and execution through the Piston API.
 Supports Python, Java, and C++ with proper error handling and timeout management.
 """
 
-import aiohttp
+import httpx
 import asyncio
 from dataclasses import dataclass
 from typing import Optional
@@ -90,39 +90,39 @@ class PistonExecutor:
             }
             
             # Make request to Piston API
-            timeout_config = aiohttp.ClientTimeout(total=timeout + 2)  # Add buffer
+            timeout_config = httpx.Timeout(timeout + 2.0)  # Add buffer
             
             print(f"DEBUG Piston: Calling API for language={language}, stdin='{stdin}'")
             logger.info(f"Calling Piston API for language={language}, code_length={len(code)}, stdin='{stdin}'")
             
-            async with aiohttp.ClientSession(timeout=timeout_config) as session:
-                async with session.post(
+            async with httpx.AsyncClient(timeout=timeout_config) as client:
+                response = await client.post(
                     f"{self.base_url}/execute",
                     json=payload
-                ) as response:
-                    logger.info(f"Piston API response status: {response.status}")
-                    
-                    if response.status != 200:
-                        error_text = await response.text()
-                        logger.error(f"Piston API error: {response.status} - {error_text}")
-                        return ExecutionResult(
-                            success=False,
-                            output="",
-                            compile_error="",
-                            runtime_error=f"API error: {response.status}",
-                            execution_time=0.0,
-                            timed_out=False
-                        )
-                    
-                    response_data = await response.json()
-                    print(f"DEBUG Piston: Raw response data: {response_data}")
-                    logger.info(f"Piston API response: {response_data}")
-                    result = self._parse_piston_response(response_data)
-                    print(f"DEBUG Piston: Parsed result: {result}")
-                    logger.info(f"Parsed result: success={result.success}, output_length={len(result.output)}")
-                    return result
+                )
+                logger.info(f"Piston API response status: {response.status_code}")
+                
+                if response.status_code != 200:
+                    error_text = response.text
+                    logger.error(f"Piston API error: {response.status_code} - {error_text}")
+                    return ExecutionResult(
+                        success=False,
+                        output="",
+                        compile_error="",
+                        runtime_error=f"API error: {response.status_code}",
+                        execution_time=0.0,
+                        timed_out=False
+                    )
+                
+                response_data = response.json()
+                print(f"DEBUG Piston: Raw response data: {response_data}")
+                logger.info(f"Piston API response: {response_data}")
+                result = self._parse_piston_response(response_data)
+                print(f"DEBUG Piston: Parsed result: {result}")
+                logger.info(f"Parsed result: success={result.success}, output_length={len(result.output)}")
+                return result
         
-        except asyncio.TimeoutError:
+        except (asyncio.TimeoutError, httpx.TimeoutException):
             logger.warning(f"Code execution timed out after {timeout} seconds")
             return ExecutionResult(
                 success=False,
@@ -133,7 +133,7 @@ class PistonExecutor:
                 timed_out=True
             )
         
-        except aiohttp.ClientError as e:
+        except httpx.RequestError as e:
             logger.error(f"Network error calling Piston API: {e}")
             return ExecutionResult(
                 success=False,

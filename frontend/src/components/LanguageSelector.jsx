@@ -8,16 +8,21 @@ const LABELS = {
 
 export default function LanguageSelector({ current, onChange }) {
   return (
-    <div className="flex items-center gap-1 px-1.5 py-1 rounded-full bg-slate-900/90 border border-slate-700 shadow-lg">
+    <div className="flex items-center gap-1 px-1.5 py-1 rounded-full border shadow-lg" style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-color)' }}>
       {LANGUAGES.map((lang) => (
         <button
           key={lang}
           onClick={() => onChange(lang)}
-          className={`px-2.5 py-1 rounded-full text-[11px] font-medium ${
+          className={`px-2.5 py-1 rounded-full text-sm font-medium transition-colors ${
             current === lang
-              ? "bg-emerald-500 text-slate-950"
-              : "text-slate-300 hover:bg-slate-800"
+              ? "text-white"
+              : ""
           }`}
+          style={current === lang ? {
+            background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-strong))'
+          } : {
+            color: 'var(--text-secondary)'
+          }}
         >
           {LABELS[lang]}
         </button>

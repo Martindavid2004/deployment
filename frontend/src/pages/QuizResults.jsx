@@ -78,7 +78,7 @@ export default function QuizResults() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[var(--bg-primary)] via-[var(--bg-tertiary)] to-[var(--bg-primary)] flex items-center justify-center">
         <div className="text-white text-xl">Loading results...</div>
       </div>
     );
@@ -89,7 +89,7 @@ export default function QuizResults() {
   const totalCount = results.questions.length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-8 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-[var(--bg-primary)] via-[var(--bg-tertiary)] to-[var(--bg-primary)] py-8 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-6">
@@ -110,25 +110,25 @@ export default function QuizResults() {
                 <div className="text-3xl font-bold text-white mb-1">
                   {correctCount}/{totalCount}
                 </div>
-                <div className="text-gray-400 text-sm">Correct</div>
+                <div className="text-gray-400 text-base">Correct</div>
               </div>
               <div className="bg-white/5 rounded-lg p-4 text-center">
                 <div className="text-3xl font-bold text-white mb-1">
                   {Math.round((correctCount / totalCount) * 100)}%
                 </div>
-                <div className="text-gray-400 text-sm">Accuracy</div>
+                <div className="text-gray-400 text-base">Accuracy</div>
               </div>
               <div className="bg-white/5 rounded-lg p-4 text-center">
                 <div className="text-3xl font-bold text-green-400 mb-1">
                   {correctCount}
                 </div>
-                <div className="text-gray-400 text-sm">Correct</div>
+                <div className="text-gray-400 text-base">Correct</div>
               </div>
               <div className="bg-white/5 rounded-lg p-4 text-center">
                 <div className="text-3xl font-bold text-red-400 mb-1">
                   {totalCount - correctCount}
                 </div>
-                <div className="text-gray-400 text-sm">Incorrect</div>
+                <div className="text-gray-400 text-base">Incorrect</div>
               </div>
             </div>
           </div>
@@ -198,9 +198,9 @@ export default function QuizResults() {
                 onChange={(e) => setFilterType(e.target.value)}
                 className="px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
               >
-                <option value="all" className="bg-slate-800">All Questions</option>
-                <option value="correct" className="bg-slate-800">Correct Only</option>
-                <option value="incorrect" className="bg-slate-800">Incorrect Only</option>
+                <option value="all" className="bg-theme-bg-tertiary">All Questions</option>
+                <option value="correct" className="bg-theme-bg-tertiary">Correct Only</option>
+                <option value="incorrect" className="bg-theme-bg-tertiary">Incorrect Only</option>
               </select>
 
               {/* Filter by Difficulty */}
@@ -209,30 +209,30 @@ export default function QuizResults() {
                 onChange={(e) => setFilterDifficulty(e.target.value)}
                 className="px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
               >
-                <option value="all" className="bg-slate-800">All Difficulties</option>
-                <option value="easy" className="bg-slate-800">Easy</option>
-                <option value="medium" className="bg-slate-800">Medium</option>
-                <option value="hard" className="bg-slate-800">Hard</option>
+                <option value="all" className="bg-theme-bg-tertiary">All Difficulties</option>
+                <option value="easy" className="bg-theme-bg-tertiary">Easy</option>
+                <option value="medium" className="bg-theme-bg-tertiary">Medium</option>
+                <option value="hard" className="bg-theme-bg-tertiary">Hard</option>
               </select>
             </div>
 
             <div className="flex gap-2">
               <button
                 onClick={expandAll}
-                className="px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-all text-sm"
+                className="px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-all text-base"
               >
                 Expand All
               </button>
               <button
                 onClick={collapseAll}
-                className="px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-all text-sm"
+                className="px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-all text-base"
               >
                 Collapse All
               </button>
             </div>
           </div>
 
-          <div className="mt-4 text-gray-400 text-sm">
+          <div className="mt-4 text-gray-400 text-base">
             Showing {filteredQuestions.length} of {totalCount} questions
           </div>
         </div>
@@ -270,14 +270,14 @@ export default function QuizResults() {
                         <span className="text-white font-semibold">
                           Question {actualIndex + 1}
                         </span>
-                        <span className="px-2 py-1 bg-purple-600/30 text-purple-300 rounded text-xs">
+                        <span className="px-2 py-1 bg-purple-600/30 text-purple-300 rounded text-sm">
                           {getQuestionTypeIcon(question.question_type)} {question.question_type.replace('_', ' ')}
                         </span>
-                        <span className="px-2 py-1 bg-blue-600/30 text-blue-300 rounded text-xs capitalize">
+                        <span className="px-2 py-1 bg-blue-600/30 text-blue-300 rounded text-sm capitalize">
                           {question.difficulty}
                         </span>
                       </div>
-                      <p className="text-gray-300 text-sm line-clamp-2">
+                      <p className="text-gray-300 text-base line-clamp-2">
                         {question.question}
                       </p>
                     </div>
@@ -304,7 +304,7 @@ export default function QuizResults() {
                     {question.code && (
                       <div className="mb-4">
                         <h4 className="text-white font-semibold mb-2">Code:</h4>
-                        <div className="bg-slate-900/50 rounded-lg p-4 border border-white/10">
+                        <div className="bg-theme-bg-tertiary/50 rounded-lg p-4 border border-white/10">
                           <pre className="text-gray-300 overflow-x-auto">
                             <code>{question.code}</code>
                           </pre>
@@ -338,12 +338,12 @@ export default function QuizResults() {
                                 {isPlayerAnswer && !isCorrect && <XCircle size={20} className="text-red-400" />}
                                 <span className="text-white">{option}</span>
                                 {isCorrect && (
-                                  <span className="ml-auto px-2 py-1 bg-green-600 text-white text-xs rounded">
+                                  <span className="ml-auto px-2 py-1 bg-green-600 text-white text-sm rounded">
                                     Correct Answer
                                   </span>
                                 )}
                                 {isPlayerAnswer && !isCorrect && (
-                                  <span className="ml-auto px-2 py-1 bg-red-600 text-white text-xs rounded">
+                                  <span className="ml-auto px-2 py-1 bg-red-600 text-white text-sm rounded">
                                     Your Answer
                                   </span>
                                 )}
@@ -368,7 +368,7 @@ export default function QuizResults() {
 
         {filteredQuestions.length === 0 && (
           <div className="bg-white/10 backdrop-blur-md rounded-xl p-12 text-center">
-            <p className="text-gray-400 text-lg">No questions match the selected filters</p>
+            <p className="text-gray-400 text-xl">No questions match the selected filters</p>
           </div>
         )}
       </div>

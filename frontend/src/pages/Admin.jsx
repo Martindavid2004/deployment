@@ -45,17 +45,17 @@ export default function Admin({ problems, setProblems }) {
   };
 
   return (
-    <div className="text-xs">
-      <div className="border border-emerald-500/60 rounded-2xl p-4 bg-slate-950/90">
-        <h1 className="text-lg font-semibold mb-1">Admin panel</h1>
-        <p className="text-slate-400 mb-3">
+    <div className="text-sm">
+      <div className="border border-emerald-500/60 rounded-2xl p-4 bg-theme-bg-secondary/90">
+        <h1 className="text-xl font-semibold mb-1">Admin panel</h1>
+        <p className="text-theme-text-tertiary mb-3">
           Add coding problems that will appear for students.
         </p>
         <form onSubmit={handleAdd} className="space-y-3">
           <div className="flex flex-col gap-1">
             <label>Title</label>
             <input
-              className="rounded-lg border border-slate-700 bg-slate-900 px-2 py-1 text-xs"
+              className="rounded-lg border border-theme-border bg-theme-bg-tertiary px-2 py-1 text-sm"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Check Prime Number"
@@ -64,7 +64,7 @@ export default function Admin({ problems, setProblems }) {
           <div className="flex flex-col gap-1">
             <label>Difficulty</label>
             <select
-              className="rounded-lg border border-slate-700 bg-slate-900 px-2 py-1 text-xs"
+              className="rounded-lg border border-theme-border bg-theme-bg-tertiary px-2 py-1 text-sm"
               value={difficulty}
               onChange={(e) => setDifficulty(e.target.value)}
             >
@@ -76,7 +76,7 @@ export default function Admin({ problems, setProblems }) {
           <div className="flex flex-col gap-1">
             <label>Topics (comma separated)</label>
             <input
-              className="rounded-lg border border-slate-700 bg-slate-900 px-2 py-1 text-xs"
+              className="rounded-lg border border-theme-border bg-theme-bg-tertiary px-2 py-1 text-sm"
               value={topics}
               onChange={(e) => setTopics(e.target.value)}
               placeholder="loops, arrays, recursion..."
@@ -85,7 +85,7 @@ export default function Admin({ problems, setProblems }) {
           <div className="flex flex-col gap-1">
             <label>Learning video URL</label>
             <input
-              className="rounded-lg border border-slate-700 bg-slate-900 px-2 py-1 text-xs"
+              className="rounded-lg border border-theme-border bg-theme-bg-tertiary px-2 py-1 text-sm"
               value={videoUrl}
               onChange={(e) => setVideoUrl(e.target.value)}
               placeholder="https://..."
@@ -93,26 +93,26 @@ export default function Admin({ problems, setProblems }) {
           </div>
           <button
             type="submit"
-            className="mt-2 px-4 py-2 rounded-full bg-emerald-500 text-slate-950 text-sm font-semibold hover:bg-emerald-400"
+            className="mt-2 px-4 py-2 rounded-full bg-emerald-500 text-theme-bg-primary text-base font-semibold hover:bg-emerald-400"
           >
             Add problem
           </button>
         </form>
       </div>
 
-      <div className="border border-slate-700 rounded-2xl p-4 mt-4">
-        <h2 className="text-sm font-semibold mb-2">Existing problems</h2>
+      <div className="border border-theme-border rounded-2xl p-4 mt-4">
+        <h2 className="text-base font-semibold mb-2">Existing problems</h2>
         <ul className="space-y-1">
           {problems.map((p) => (
             <li
               key={p.id}
-              className="flex justify-between items-center border border-slate-700 rounded-lg px-3 py-2"
+              className="flex justify-between items-center border border-theme-border rounded-lg px-3 py-2"
             >
               <div>
-                <div className="font-semibold text-slate-100">
+                <div className="font-semibold text-theme-text-primary">
                   #{p.id} — {p.title}
                 </div>
-                <div className="text-[11px] text-slate-400">
+                <div className="text-sm text-theme-text-tertiary">
                   {p.difficulty} • {p.topics.join(", ")}
                 </div>
               </div>

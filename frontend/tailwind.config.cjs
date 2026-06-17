@@ -16,6 +16,10 @@ module.exports = {
         'theme-text-tertiary': 'var(--text-tertiary)',
         'theme-border': 'var(--border-color)',
       },
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+        heading: ['"Plus Jakarta Sans"', 'sans-serif'],
+      }
     },
   },
   plugins: [],

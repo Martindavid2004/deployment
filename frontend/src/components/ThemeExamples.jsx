@@ -49,7 +49,7 @@ export function ComponentHybrid() {
       <h2 className="font-bold mb-2">Hybrid Method</h2>
       <div className="space-y-2">
         <p>CSS Variables for base colors</p>
-        <p className="text-sm text-opacity-75" style={{ color: 'var(--text-secondary)' }}>
+        <p className="text-base text-opacity-75" style={{ color: 'var(--text-secondary)' }}>
           Tailwind for layout and spacing
         </p>
       </div>
@@ -116,7 +116,7 @@ export function ThemeAwareCard({ title, description, content }) {
           {title}
         </h3>
         {description && (
-          <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
+          <p className="text-base mt-1" style={{ color: 'var(--text-secondary)' }}>
             {description}
           </p>
         )}
@@ -170,7 +170,7 @@ export function StatusBadge({ status }) {
 
   return (
     <span
-      className="inline-block px-3 py-1 rounded-full text-sm font-medium"
+      className="inline-block px-3 py-1 rounded-full text-base font-medium"
       style={{
         backgroundColor: colors.bg,
         color: colors.text,

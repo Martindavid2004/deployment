@@ -31,19 +31,19 @@ const useTheme = () => {
 // Helper function to get theme-aware styles
 const getThemeClasses = (isDark) => ({
   bg: {
-    primary: isDark ? 'bg-slate-950' : 'bg-gray-50',
-    secondary: isDark ? 'bg-slate-900' : 'bg-white',
-    tertiary: isDark ? 'bg-slate-800' : 'bg-gray-100',
-    hover: isDark ? 'hover:bg-slate-700' : 'hover:bg-gray-200',
+    primary: 'bg-theme-bg-primary',
+    secondary: 'bg-theme-bg-secondary',
+    tertiary: 'bg-theme-bg-tertiary',
+    hover: 'hover:bg-[color-mix(in_srgb,var(--bg-secondary)_80%,var(--bg-tertiary))]',
   },
   text: {
-    primary: isDark ? 'text-white' : 'text-gray-900',
-    secondary: isDark ? 'text-slate-300' : 'text-gray-700',
-    tertiary: isDark ? 'text-slate-400' : 'text-gray-500',
+    primary: 'text-theme-text-primary',
+    secondary: 'text-theme-text-secondary',
+    tertiary: 'text-theme-text-tertiary',
   },
   border: {
-    light: isDark ? 'border-slate-700' : 'border-gray-200',
-    dark: isDark ? 'border-slate-600' : 'border-gray-300',
+    light: 'border-theme-border',
+    dark: 'border-theme-border',
   },
 });
 
@@ -1220,7 +1220,7 @@ export default function CompetitiveMatch() {
           <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
           <h2 className={`text-xl font-bold ${theme.text.primary} mb-2`}>Match Validation Failed</h2>
           <p className={`${theme.text.secondary} mb-6`}>{problem.error}</p>
-          <p className={`text-xs ${theme.text.tertiary} mb-6`}>
+          <p className={`text-sm ${theme.text.tertiary} mb-6`}>
             This usually happens if the problem database was updated while you were in a match.
           </p>
           <button
@@ -1258,27 +1258,27 @@ export default function CompetitiveMatch() {
         } p-4`}>
         <div className="flex items-center justify-between mb-2">
           <div>
-            <h1 className={`text-lg font-semibold flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+            <h1 className={`text-xl font-semibold flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
               <span>{modeInfo.icon}</span>
               <span>{modeInfo.name}</span>
               {isMultiplayer ? (
-                <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
+                <span className={`text-base ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
                   {players.length} Players
                   {match.game_id && <span className="ml-2 font-mono text-purple-400">{match.game_id}</span>}
                 </span>
               ) : (
-                <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
+                <span className={`text-base ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
                   {match.player1?.username || 'Player 1'} vs {match.player2?.username || "Waiting..."}
                 </span>
               )}
             </h1>
-            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>{problem.title}</p>
+            <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>{problem.title}</p>
           </div>
 
           <div className="flex items-center gap-4">
             {/* Timer */}
             <div className={`text-right ${timeRemaining < 60 ? 'text-red-400' : isDark ? 'text-slate-300' : 'text-gray-700'}`}>
-              <div className={`text-xs ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Time Remaining</div>
+              <div className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Time Remaining</div>
               <div className="text-xl font-mono font-bold">
                 {formatTime(timeRemaining)}
               </div>
@@ -1287,8 +1287,8 @@ export default function CompetitiveMatch() {
             {/* Player Status */}
             {isMultiplayer ? (
               <div className="text-right">
-                <div className={`text-xs ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Completed</div>
-                <div className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+                <div className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Completed</div>
+                <div className={`text-base font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
                   {players.filter(p => p.completed).length} / {players.length}
                 </div>
               </div>
@@ -1298,7 +1298,7 @@ export default function CompetitiveMatch() {
             <button
               onClick={() => setShowLeaveConfirm(true)}
               disabled={matchCompleted}
-              className={`px-3 py-2 rounded text-xs font-medium flex items-center gap-2 transition-colors ${
+              className={`px-3 py-2 rounded text-sm font-medium flex items-center gap-2 transition-colors ${
                 matchCompleted
                   ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
                   : 'bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30'
@@ -1316,7 +1316,7 @@ export default function CompetitiveMatch() {
           <div className="mb-3 space-y-2">
             {/* Player 1 (Current User) */}
             <div className="flex items-center gap-3">
-              <div className={`w-32 text-xs ${isDark ? 'text-slate-300' : 'text-gray-700'} font-medium truncate`}>
+              <div className={`w-32 text-sm ${isDark ? 'text-slate-300' : 'text-gray-700'} font-medium truncate`}>
                 {match.player1?.username || 'Player 1'}
                 {match.player1?.user_id === currentUserId && (
                   <span className="ml-1 text-purple-400">(You)</span>
@@ -1331,7 +1331,7 @@ export default function CompetitiveMatch() {
                   }}
                 />
               </div>
-              <div className="w-20 text-xs text-right">
+              <div className="w-20 text-sm text-right">
                 {match.player1?.completed ? (
                   <span className="text-emerald-400 font-medium flex items-center gap-1"><Check size={14} /> Completed</span>
                 ) : (
@@ -1344,7 +1344,7 @@ export default function CompetitiveMatch() {
 
             {/* Player 2 (Opponent) */}
             <div className="flex items-center gap-3">
-              <div className={`w-32 text-xs ${isDark ? 'text-slate-300' : 'text-gray-700'} font-medium truncate`}>
+              <div className={`w-32 text-sm ${isDark ? 'text-slate-300' : 'text-gray-700'} font-medium truncate`}>
                 {match.player2?.username || 'Player 2'}
                 {match.player2?.user_id === currentUserId && (
                   <span className="ml-1 text-purple-400">(You)</span>
@@ -1359,7 +1359,7 @@ export default function CompetitiveMatch() {
                   }}
                 />
               </div>
-              <div className="w-20 text-xs text-right">
+              <div className="w-20 text-sm text-right">
                 {match.player2.completed ? (
                   <span className="text-emerald-400 font-medium flex items-center gap-1"><Check size={14} /> Completed</span>
                 ) : (
@@ -1378,7 +1378,7 @@ export default function CompetitiveMatch() {
             {players.map((player, idx) => (
               <div
                 key={player?.user_id || idx}
-                className={`flex-shrink-0 px-3 py-2 rounded-lg text-xs border ${player?.user_id === currentUserId
+                className={`flex-shrink-0 px-3 py-2 rounded-lg text-sm border ${player?.user_id === currentUserId
                   ? 'border-purple-500 bg-purple-500/20 text-purple-300'
                   : player?.completed
                     ? 'border-green-500 bg-green-500/20 text-green-300'
@@ -1391,7 +1391,7 @@ export default function CompetitiveMatch() {
                   {player?.completed && <Check size={14} />}
                 </div>
                 {player?.score !== undefined && player?.score !== null && (
-                  <div className={`text-xs mt-1 ${player?.completed ? 'text-green-400' : 'text-yellow-400'}`}>
+                  <div className={`text-sm mt-1 ${player?.completed ? 'text-green-400' : 'text-yellow-400'}`}>
                     Score: {player.score}%
                   </div>
                 )}
@@ -1416,37 +1416,37 @@ export default function CompetitiveMatch() {
         {/* Left: Problem Description */}
         <div className={`w-1/3 border-r ${theme.border.light} overflow-y-auto p-4 ${theme.bg.primary}`}>
           <div className="mb-4">
-            <h2 className={`text-sm font-semibold mb-2 text-emerald-400`}>Problem</h2>
+            <h2 className={`text-base font-semibold mb-2 text-emerald-400`}>Problem</h2>
             <div className="mb-2">
-              <span className={`text-xs px-2 py-1 rounded ${problem.difficulty === 'Easy' ? 'bg-green-500/20 text-green-400' :
+              <span className={`text-sm px-2 py-1 rounded ${problem.difficulty === 'Easy' ? 'bg-green-500/20 text-green-400' :
                 problem.difficulty === 'Medium' ? 'bg-yellow-500/20 text-yellow-400' :
                   'bg-red-500/20 text-red-400'
                 }`}>
                 {problem.difficulty}
               </span>
             </div>
-            <p className={`text-sm ${theme.text.secondary} leading-relaxed whitespace-pre-line`}>{problem.description}</p>
+            <p className={`text-base ${theme.text.secondary} leading-relaxed whitespace-pre-line`}>{problem.description}</p>
           </div>
 
           {problem.examples && problem.examples.length > 0 && (
             <div className="mb-4">
-              <h3 className="text-sm font-semibold mb-2 text-blue-400">Examples</h3>
+              <h3 className="text-base font-semibold mb-2 text-blue-400">Examples</h3>
               {problem.examples.map((ex, idx) => (
                 <div key={idx} className={`mb-3 p-3 ${theme.bg.tertiary} rounded ${theme.border.light} border`}>
-                  <div className={`text-xs mb-1 ${theme.text.tertiary}`}>Example {idx + 1}</div>
-                  <div className="text-xs space-y-2">
+                  <div className={`text-sm mb-1 ${theme.text.tertiary}`}>Example {idx + 1}</div>
+                  <div className="text-sm space-y-2">
                     <div>
                       <div className={`${theme.text.secondary} font-semibold mb-1`}>Input:</div>
-                      <div className={`font-mono text-xs text-emerald-400 ${theme.bg.secondary} p-2 rounded whitespace-pre`}>{ex.input}</div>
+                      <div className={`font-mono text-sm text-emerald-400 ${theme.bg.secondary} p-2 rounded whitespace-pre`}>{ex.input}</div>
                     </div>
                     <div>
                       <div className={`${theme.text.secondary} font-semibold mb-1`}>Output:</div>
-                      <div className={`font-mono text-xs text-blue-400 ${theme.bg.secondary} p-2 rounded whitespace-pre`}>{ex.output}</div>
+                      <div className={`font-mono text-sm text-blue-400 ${theme.bg.secondary} p-2 rounded whitespace-pre`}>{ex.output}</div>
                     </div>
                     {ex.explanation && (
                       <div>
                         <div className={`${theme.text.secondary} font-semibold mb-1`}>Explanation:</div>
-                        <div className={`text-xs ${theme.text.secondary}`}>{ex.explanation}</div>
+                        <div className={`text-sm ${theme.text.secondary}`}>{ex.explanation}</div>
                       </div>
                     )}
                   </div>
@@ -1460,7 +1460,7 @@ export default function CompetitiveMatch() {
               <button
                 onClick={handleUseHint}
                 disabled={usedHints}
-                className={`text-xs px-3 py-1 rounded ${usedHints
+                className={`text-sm px-3 py-1 rounded ${usedHints
                   ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
                   : 'bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30'
                   }`}
@@ -1471,7 +1471,7 @@ export default function CompetitiveMatch() {
                 </span>
               </button>
               {usedHints && (
-                <div className={`mt-2 p-2 border rounded text-xs ${isDark ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-300' : 'bg-yellow-50 border-yellow-200 text-yellow-700'}`}>
+                <div className={`mt-2 p-2 border rounded text-sm ${isDark ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-300' : 'bg-yellow-50 border-yellow-200 text-yellow-700'}`}>
                   {problem.hint}
                 </div>
               )}
@@ -1487,8 +1487,8 @@ export default function CompetitiveMatch() {
               <div className="flex items-center gap-3">
                 <Bug size={32} className="text-red-400" />
                 <div>
-                  <h3 className="text-sm font-bold text-red-400">Bug Hunt Challenge</h3>
-                  <p className="text-xs text-slate-400 mt-1">
+                  <h3 className="text-base font-bold text-red-400">Bug Hunt Challenge</h3>
+                  <p className="text-sm text-slate-400 mt-1">
                     The code below contains bugs! Find and fix all errors to make it pass the test cases.
                     <span className="text-red-300 font-semibold"> Copy/Paste is disabled</span> - you must manually edit the code.
                   </p>
@@ -1503,10 +1503,10 @@ export default function CompetitiveMatch() {
             <div className="flex-1 overflow-hidden p-4">
               <div className="h-full flex flex-col">
                 <div className="mb-3">
-                  <h3 className="text-sm font-semibold text-purple-400 mb-2">
+                  <h3 className="text-base font-semibold text-purple-400 mb-2">
                     Arrange the code lines in the correct order
                   </h3>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-sm text-slate-400">
                     Drag lines to reorder or use arrow buttons. At least 80% accuracy required.
                   </p>
                 </div>
@@ -1516,11 +1516,11 @@ export default function CompetitiveMatch() {
                   <div className="flex-1 flex items-center justify-center">
                     <div className={`text-center p-8 rounded-lg border ${isDark ? 'bg-red-500/10 border-red-500/30' : 'bg-red-50 border-red-300'}`}>
                       <AlertTriangle size={48} className="text-red-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-semibold text-red-400 mb-2">No Code Lines Available</h3>
-                      <p className={`text-sm mb-4 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
+                      <h3 className="text-xl font-semibold text-red-400 mb-2">No Code Lines Available</h3>
+                      <p className={`text-base mb-4 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
                         This problem doesn't have reference code for shuffling.
                       </p>
-                      <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>
+                      <p className={`text-sm ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>
                         Please try a different problem or contact an administrator.
                       </p>
                     </div>
@@ -1563,7 +1563,7 @@ export default function CompetitiveMatch() {
                                       <button
                                         onClick={() => handleLineMove(idx, "up")}
                                         disabled={idx === 0}
-                                        className={`text-xs px-2 py-1 rounded disabled:opacity-30 transition-colors ${isDark ? 'bg-slate-800 hover:bg-slate-700' : 'bg-gray-200 hover:bg-gray-300'}`}
+                                        className={`text-sm px-2 py-1 rounded disabled:opacity-30 transition-colors ${isDark ? 'bg-slate-800 hover:bg-slate-700' : 'bg-gray-200 hover:bg-gray-300'}`}
                                         title="Move up"
                                       >
                                         ↑
@@ -1571,16 +1571,16 @@ export default function CompetitiveMatch() {
                                       <button
                                         onClick={() => handleLineMove(idx, "down")}
                                         disabled={idx === arrangedLines.length - 1}
-                                        className={`text-xs px-2 py-1 rounded disabled:opacity-30 transition-colors ${isDark ? 'bg-slate-800 hover:bg-slate-700' : 'bg-gray-200 hover:bg-gray-300'}`}
+                                        className={`text-sm px-2 py-1 rounded disabled:opacity-30 transition-colors ${isDark ? 'bg-slate-800 hover:bg-slate-700' : 'bg-gray-200 hover:bg-gray-300'}`}
                                         title="Move down"
                                       >
                                         ↓
                                       </button>
                                     </div>
-                                    <div className={`text-xs font-bold w-8 text-center ${isDark ? 'text-slate-500' : 'text-gray-600'}`}>
+                                    <div className={`text-sm font-bold w-8 text-center ${isDark ? 'text-slate-500' : 'text-gray-600'}`}>
                                       {idx + 1}
                                     </div>
-                                    <div className={`flex-1 font-mono text-xs p-3 rounded overflow-x-auto whitespace-pre ${isDark ? 'text-slate-300 bg-slate-950' : 'text-gray-700 bg-gray-100'}`}>
+                                    <div className={`flex-1 font-mono text-sm p-3 rounded overflow-x-auto whitespace-pre ${isDark ? 'text-slate-300 bg-slate-950' : 'text-gray-700 bg-gray-100'}`}>
                                       {line}
                                     </div>
                                   </div>
@@ -1624,10 +1624,10 @@ export default function CompetitiveMatch() {
             <div className="flex-1 overflow-hidden p-4">
               <div className="h-full flex flex-col">
                 <div className="mb-3">
-                  <h3 className="text-sm font-semibold text-blue-400 mb-2">
+                  <h3 className="text-base font-semibold text-blue-400 mb-2">
                     <span className="flex items-center gap-2"><Target size={16} /> Create comprehensive test cases</span>
                   </h3>
-                  <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
+                  <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
                     Create diverse test cases covering edge cases. Minimum score: 60/100.
                   </p>
                 </div>
@@ -1636,11 +1636,11 @@ export default function CompetitiveMatch() {
                   {testCases.map((tc, idx) => (
                     <div key={idx} className={`border rounded p-3 ${isDark ? 'border-slate-700 bg-slate-900' : 'border-gray-300 bg-gray-100'}`}>
                       <div className="flex items-center justify-between mb-2">
-                        <div className={`text-xs font-semibold ${isDark ? 'text-slate-400' : 'text-gray-700'}`}>Test Case {idx + 1}</div>
+                        <div className={`text-sm font-semibold ${isDark ? 'text-slate-400' : 'text-gray-700'}`}>Test Case {idx + 1}</div>
                         {testCases.length > 1 && (
                           <button
                             onClick={() => removeTestCase(idx)}
-                            className="text-xs text-red-400 hover:text-red-300"
+                            className="text-sm text-red-400 hover:text-red-300"
                           >
                             Remove
                           </button>
@@ -1648,21 +1648,21 @@ export default function CompetitiveMatch() {
                       </div>
                       <div className="space-y-2">
                         <div>
-                          <label className={`text-xs block mb-1 ${isDark ? 'text-slate-400' : 'text-gray-700'}`}>Input</label>
+                          <label className={`text-sm block mb-1 ${isDark ? 'text-slate-400' : 'text-gray-700'}`}>Input</label>
                           <textarea
                             value={tc.input}
                             onChange={(e) => updateTestCase(idx, "input", e.target.value)}
-                            className={`w-full border rounded p-2 text-xs font-mono ${isDark ? 'bg-slate-950 border-slate-600 text-slate-300' : 'bg-white border-gray-400 text-gray-900'}`}
+                            className={`w-full border rounded p-2 text-sm font-mono ${isDark ? 'bg-slate-950 border-slate-600 text-slate-300' : 'bg-white border-gray-400 text-gray-900'}`}
                             rows="2"
                             placeholder='e.g., [1, 2, 3]'
                           />
                         </div>
                         <div>
-                          <label className={`text-xs block mb-1 ${isDark ? 'text-slate-400' : 'text-gray-700'}`}>Expected Output</label>
+                          <label className={`text-sm block mb-1 ${isDark ? 'text-slate-400' : 'text-gray-700'}`}>Expected Output</label>
                           <textarea
                             value={tc.expected}
                             onChange={(e) => updateTestCase(idx, "expected", e.target.value)}
-                            className={`w-full border rounded p-2 text-xs font-mono ${isDark ? 'bg-slate-950 border-slate-600 text-slate-300' : 'bg-white border-gray-400 text-gray-900'}`}
+                            className={`w-full border rounded p-2 text-sm font-mono ${isDark ? 'bg-slate-950 border-slate-600 text-slate-300' : 'bg-white border-gray-400 text-gray-900'}`}
                             rows="2"
                             placeholder='e.g., 6'
                           />
@@ -1710,7 +1710,7 @@ export default function CompetitiveMatch() {
                       <select
                         value={language}
                         onChange={(e) => handleLanguageSwitch(e.target.value)}
-                        className={`text-xs px-2 py-1 rounded border ${isDark ? 'bg-slate-800 border-slate-600' : 'bg-gray-100 border-gray-400'}`}
+                        className={`text-sm px-2 py-1 rounded border ${isDark ? 'bg-slate-800 border-slate-600' : 'bg-gray-100 border-gray-400'}`}
                       >
                         <option value="python">Python</option>
                         <option value="cpp">C++</option>
@@ -1718,18 +1718,18 @@ export default function CompetitiveMatch() {
                       </select>
                       {gameMode === "bug_hunt" ? (
                         <div className="flex items-center gap-2">
-                          <span className="text-xs text-red-400 font-semibold">Bug Hunt Mode</span>
-                          <span className={`text-xs ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
+                          <span className="text-sm text-red-400 font-semibold">Bug Hunt Mode</span>
+                          <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
                             | Fix all bugs | Copy/Paste Disabled | Switch languages anytime
                           </span>
                           {isExecuting && queuePosition !== null && (
-                            <span className="text-xs text-yellow-400 animate-pulse">
+                            <span className="text-sm text-yellow-400 animate-pulse">
                               | Queue position: {queuePosition}
                             </span>
                           )}
                         </div>
                       ) : (
-                        <span className={`text-xs ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Copy/Paste Disabled</span>
+                        <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Copy/Paste Disabled</span>
                       )}
                     </div>
 
@@ -1737,7 +1737,7 @@ export default function CompetitiveMatch() {
                       <button
                         onClick={handleRun}
                         disabled={loading || isExecuting || !code.trim()}
-                        className={`px-4 py-1 rounded text-xs font-medium ${loading || isExecuting || !code.trim()
+                        className={`px-4 py-1 rounded text-sm font-medium ${loading || isExecuting || !code.trim()
                           ? isDark ? 'bg-slate-700 text-slate-500 cursor-not-allowed' : 'bg-gray-300 text-gray-600 cursor-not-allowed'
                           : isDark ? 'bg-slate-700 text-white hover:bg-slate-600' : 'bg-gray-300 text-gray-900 hover:bg-gray-400'
                           }`}
@@ -1747,7 +1747,7 @@ export default function CompetitiveMatch() {
                       <button
                         onClick={() => handleSubmit(false)}
                         disabled={loading || !code.trim()}
-                        className={`px-4 py-1 rounded text-xs font-medium ${
+                        className={`px-4 py-1 rounded text-sm font-medium ${
                           modeInfo.color === 'emerald'
                             ? loading || !code.trim()
                               ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
@@ -1782,8 +1782,8 @@ export default function CompetitiveMatch() {
           {/* Output */}
           {output && (
             <div className={`h-48 border-t ${theme.border.light} ${theme.bg.primary} p-3 overflow-y-auto`}>
-              <div className={`text-xs font-semibold ${theme.text.tertiary} mb-1`}>Output</div>
-              <pre className={`text-xs ${theme.text.secondary} font-mono whitespace-pre-wrap`}>
+              <div className={`text-sm font-semibold ${theme.text.tertiary} mb-1`}>Output</div>
+              <pre className={`text-sm ${theme.text.secondary} font-mono whitespace-pre-wrap`}>
                 {output}
               </pre>
             </div>
@@ -1803,7 +1803,7 @@ export default function CompetitiveMatch() {
                   <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
                     Code Validation Failed
                   </h2>
-                  <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
+                  <p className={`text-base ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
                     Your code didn't pass all test cases
                   </p>
                 </div>
@@ -1812,23 +1812,23 @@ export default function CompetitiveMatch() {
               {/* Error Details */}
               <div className={`rounded-lg p-4 mb-4 ${isDark ? 'bg-slate-800' : 'bg-gray-100'}`}>
                 <div className="mb-3">
-                  <div className={`text-sm font-semibold mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+                  <div className={`text-base font-semibold mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
                     Test Results:
                   </div>
-                  <div className={`text-lg ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>
+                  <div className={`text-xl ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>
                     Passed: <span className="text-green-400 font-bold">{validationError.passed_tests}</span> / {validationError.total_tests}
                   </div>
-                  <div className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
+                  <div className={`text-base ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
                     Partial Score: <span className="text-yellow-400 font-bold">{validationError.score}%</span>
                   </div>
                 </div>
 
                 {validationError.compilation_error && (
                   <div className="mb-3">
-                    <div className={`text-sm font-semibold mb-1 ${isDark ? 'text-red-400' : 'text-red-600'}`}>
+                    <div className={`text-base font-semibold mb-1 ${isDark ? 'text-red-400' : 'text-red-600'}`}>
                       Compilation Error:
                     </div>
-                    <pre className={`text-xs font-mono p-3 rounded overflow-x-auto ${isDark ? 'bg-slate-950 text-red-300' : 'bg-red-50 text-red-700'}`}>
+                    <pre className={`text-sm font-mono p-3 rounded overflow-x-auto ${isDark ? 'bg-slate-950 text-red-300' : 'bg-red-50 text-red-700'}`}>
                       {validationError.compilation_error}
                     </pre>
                   </div>
@@ -1836,10 +1836,10 @@ export default function CompetitiveMatch() {
 
                 {validationError.failed_test && !validationError.compilation_error && (
                   <div>
-                    <div className={`text-sm font-semibold mb-1 ${isDark ? 'text-yellow-400' : 'text-yellow-600'}`}>
+                    <div className={`text-base font-semibold mb-1 ${isDark ? 'text-yellow-400' : 'text-yellow-600'}`}>
                       Failed Test Case:
                     </div>
-                    <div className={`text-xs font-mono p-3 rounded ${isDark ? 'bg-slate-950' : 'bg-gray-200'}`}>
+                    <div className={`text-sm font-mono p-3 rounded ${isDark ? 'bg-slate-950' : 'bg-gray-200'}`}>
                       <div className="mb-2">
                         <span className={isDark ? 'text-slate-400' : 'text-gray-600'}>Input:</span>
                         <div className={`mt-1 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>
@@ -1884,7 +1884,7 @@ export default function CompetitiveMatch() {
                 </button>
               </div>
 
-              <p className={`text-xs text-center mt-3 ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>
+              <p className={`text-sm text-center mt-3 ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>
                 Submitting with errors will record your partial score based on passed tests
               </p>
             </div>
@@ -1928,9 +1928,9 @@ export default function CompetitiveMatch() {
                         {finalResults.player1.username}
                       </div>
                       {finalResults.player1.userId === finalResults.currentUserId && (
-                        <div className="text-sm text-purple-400 mb-2">(You)</div>
+                        <div className="text-base text-purple-400 mb-2">(You)</div>
                       )}
-                      <div className={`text-sm font-medium mb-1 ${finalResults.player1.isWinner ? 'text-yellow-300' : isDark ? 'text-slate-400' : 'text-gray-600'
+                      <div className={`text-base font-medium mb-1 ${finalResults.player1.isWinner ? 'text-yellow-300' : isDark ? 'text-slate-400' : 'text-gray-600'
                         }`}>
                         {finalResults.player1.isWinner ? 'Champion' : '2nd Place'}
                       </div>
@@ -1955,9 +1955,9 @@ export default function CompetitiveMatch() {
                         {finalResults.player2.username}
                       </div>
                       {finalResults.player2.userId === finalResults.currentUserId && (
-                        <div className="text-sm text-purple-400 mb-2">(You)</div>
+                        <div className="text-base text-purple-400 mb-2">(You)</div>
                       )}
-                      <div className={`text-sm font-medium mb-1 ${finalResults.player2.isWinner ? 'text-yellow-300' : isDark ? 'text-slate-400' : 'text-gray-600'
+                      <div className={`text-base font-medium mb-1 ${finalResults.player2.isWinner ? 'text-yellow-300' : isDark ? 'text-slate-400' : 'text-gray-600'
                         }`}>
                         {finalResults.player2.isWinner ? 'Champion' : '2nd Place'}
                       </div>
@@ -1973,7 +1973,7 @@ export default function CompetitiveMatch() {
                 <div className={`rounded-lg p-4 mb-6 ${isDark ? 'bg-slate-800/50' : 'bg-gray-200'}`}>
                   <div className="grid grid-cols-2 gap-4 text-center">
                     <div>
-                      <div className={`text-xs mb-1 ${isDark ? 'text-slate-400' : 'text-gray-700'}`}>Rating Change</div>
+                      <div className={`text-sm mb-1 ${isDark ? 'text-slate-400' : 'text-gray-700'}`}>Rating Change</div>
                       <div className={`text-2xl font-bold ${finalResults.isWinner ? 'text-green-400' : 'text-red-400'
                         }`}>
                         {finalResults.isWinner ? '+' : '-'}{finalResults.ratingChange || 0}
@@ -1981,7 +1981,7 @@ export default function CompetitiveMatch() {
                     </div>
                     {finalResults.isWinner && finalResults.xpBonus && (
                       <div>
-                        <div className={`text-xs mb-1 ${isDark ? 'text-slate-400' : 'text-gray-700'}`}>XP Bonus</div>
+                        <div className={`text-sm mb-1 ${isDark ? 'text-slate-400' : 'text-gray-700'}`}>XP Bonus</div>
                         <div className="text-2xl font-bold text-emerald-400">
                           +{finalResults.xpBonus}
                         </div>
@@ -2044,10 +2044,10 @@ export default function CompetitiveMatch() {
                                 {player?.username || `Player ${idx + 1}`}
                               </span>
                               {isCurrentUser && (
-                                <span className="text-xs text-purple-400">(You)</span>
+                                <span className="text-sm text-purple-400">(You)</span>
                               )}
                             </div>
-                            <div className={`flex items-center gap-3 mt-1 text-xs ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
+                            <div className={`flex items-center gap-3 mt-1 text-sm ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
                               <span>Score: {player.score || finalResults.score || 0}</span>
                               {player.completion_time && (
                                 <span className="flex items-center gap-1">
@@ -2066,7 +2066,7 @@ export default function CompetitiveMatch() {
                 {/* Your Stats */}
                 <div className={`rounded-lg p-4 mb-6 ${isDark ? 'bg-slate-800/50' : 'bg-gray-200'}`}>
                   <div className="text-center">
-                    <div className={`text-xs mb-1 ${isDark ? 'text-slate-400' : 'text-gray-700'}`}>Your Final Score</div>
+                    <div className={`text-sm mb-1 ${isDark ? 'text-slate-400' : 'text-gray-700'}`}>Your Final Score</div>
                     <div className="text-3xl font-bold text-emerald-400">
                       {finalResults.score}
                     </div>

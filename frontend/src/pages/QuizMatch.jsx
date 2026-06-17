@@ -380,11 +380,11 @@ export default function QuizMatch() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[var(--bg-primary)] via-[var(--bg-tertiary)] to-[var(--bg-primary)] flex items-center justify-center">
         <div className="text-center">
           <div className="text-white text-xl mb-4">Loading quiz...</div>
           {error && (
-            <div className="text-red-400 text-sm max-w-md mx-auto">
+            <div className="text-red-400 text-base max-w-md mx-auto">
               {error}
             </div>
           )}
@@ -405,10 +405,10 @@ export default function QuizMatch() {
   // Safety check for questions
   if (!questions || questions.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[var(--bg-primary)] via-[var(--bg-tertiary)] to-[var(--bg-primary)] flex items-center justify-center">
         <div className="text-center">
           <div className="text-white text-xl mb-4">No questions available</div>
-          <div className="text-gray-400 text-sm">Please contact support if this issue persists.</div>
+          <div className="text-gray-400 text-base">Please contact support if this issue persists.</div>
         </div>
       </div>
     );
@@ -419,10 +419,10 @@ export default function QuizMatch() {
   // Safety check for current question
   if (!currentQuestion) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[var(--bg-primary)] via-[var(--bg-tertiary)] to-[var(--bg-primary)] flex items-center justify-center">
         <div className="text-center">
           <div className="text-white text-xl mb-4">Question not found</div>
-          <div className="text-gray-400 text-sm">Question index: {currentQuestionIndex}</div>
+          <div className="text-gray-400 text-base">Question index: {currentQuestionIndex}</div>
         </div>
       </div>
     );
@@ -432,7 +432,7 @@ export default function QuizMatch() {
   const selectedAnswer = answers[currentQuestionIndex];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-8 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-[var(--bg-primary)] via-[var(--bg-tertiary)] to-[var(--bg-primary)] py-8 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl p-6 mb-6">
@@ -449,7 +449,7 @@ export default function QuizMatch() {
               <Clock size={32} />
               <div className="text-right">
                 <div className="text-3xl font-bold">{formatTime(timeRemaining)}</div>
-                <div className="text-sm text-gray-400">Time Remaining</div>
+                <div className="text-base text-gray-400">Time Remaining</div>
               </div>
             </div>
           </div>
@@ -457,14 +457,14 @@ export default function QuizMatch() {
           {/* Status Indicators */}
           <div className="mt-4 flex items-center gap-4">
             {/* Network Status */}
-            <div className={`flex items-center gap-2 text-sm ${isOnline ? 'text-green-400' : 'text-red-400'}`}>
+            <div className={`flex items-center gap-2 text-base ${isOnline ? 'text-green-400' : 'text-red-400'}`}>
               {isOnline ? <Wifi size={16} /> : <WifiOff size={16} />}
               <span>{isOnline ? 'Online' : 'Offline'}</span>
             </div>
 
             {/* Auto-save Status */}
             {questions.length >= 30 && autoSaveStatus && (
-              <div className="flex items-center gap-2 text-sm text-green-400">
+              <div className="flex items-center gap-2 text-base text-green-400">
                 <CheckCircle size={16} />
                 <span>Progress saved</span>
               </div>
@@ -476,14 +476,14 @@ export default function QuizMatch() {
             <div className="mt-4 p-3 bg-red-500/20 border border-red-500/50 rounded-lg">
               <div className="flex items-center gap-2 text-red-300">
                 <AlertCircle size={20} />
-                <span className="text-sm">{error}</span>
+                <span className="text-base">{error}</span>
               </div>
             </div>
           )}
 
           {/* Progress Bar */}
           <div className="mt-4">
-            <div className="flex justify-between text-sm text-gray-400 mb-2">
+            <div className="flex justify-between text-base text-gray-400 mb-2">
               <span>Progress</span>
               <span>{answeredCount} / {questions.length} answered</span>
             </div>
@@ -512,10 +512,10 @@ export default function QuizMatch() {
             <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl p-8">
               {/* Question Type Badge */}
               <div className="flex items-center gap-3 mb-4">
-                <span className="px-3 py-1 bg-purple-600/30 text-purple-300 rounded-full text-sm font-semibold">
+                <span className="px-3 py-1 bg-purple-600/30 text-purple-300 rounded-full text-base font-semibold">
                   {currentQuestion.question_type.replace('_', ' ').toUpperCase()}
                 </span>
-                <span className="px-3 py-1 bg-blue-600/30 text-blue-300 rounded-full text-sm font-semibold">
+                <span className="px-3 py-1 bg-blue-600/30 text-blue-300 rounded-full text-base font-semibold">
                   {currentQuestion.points} points
                 </span>
               </div>
@@ -527,7 +527,7 @@ export default function QuizMatch() {
 
               {/* Code Block (if present) */}
               {currentQuestion.code && (
-                <div className="mb-6 bg-slate-900/50 rounded-lg p-4 border border-white/10">
+                <div className="mb-6 bg-theme-bg-tertiary/50 rounded-lg p-4 border border-white/10">
                   <pre className="text-gray-300 overflow-x-auto">
                     <code>{currentQuestion.code}</code>
                   </pre>
@@ -593,7 +593,7 @@ export default function QuizMatch() {
       {/* Confirmation Dialog */}
       {showConfirmDialog && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-slate-900 rounded-2xl p-8 max-w-md mx-4 border-2 border-yellow-500/50">
+          <div className="bg-theme-bg-tertiary rounded-2xl p-8 max-w-md mx-4 border-2 border-yellow-500/50">
             <div className="flex items-center gap-3 mb-4">
               <AlertCircle size={32} className="text-yellow-400" />
               <h3 className="text-2xl font-bold text-white">Unanswered Questions</h3>

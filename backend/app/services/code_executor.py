@@ -11,7 +11,7 @@ class CodeExecutor:
     def __init__(self):
         # Force local execution for now - AWS Lambda has output capture issues
         self.use_local = True
-        print(f"🔧 CodeExecutor initialized - use_local: {self.use_local} (Forced local execution)")
+        print(f"CodeExecutor initialized - use_local: {self.use_local} (Forced local execution)")
         
         if not self.use_local:
             try:
@@ -23,9 +23,9 @@ class CodeExecutor:
                     aws_secret_access_key=settings.aws_secret_access_key
                 )
                 self.function_name = settings.aws_lambda_function_name
-                print(f"✅ AWS Lambda client initialized: {self.function_name}")
+                print(f"AWS Lambda client initialized: {self.function_name}")
             except Exception as e:
-                print(f"⚠️ AWS Lambda unavailable, using local execution: {e}")
+                print(f"AWS Lambda unavailable, using local execution: {e}")
                 self.use_local = True
     
     async def execute_code_locally(
@@ -36,7 +36,7 @@ class CodeExecutor:
         timeout: int = 10
     ) -> Dict[str, Any]:
         """Execute code locally using subprocess"""
-        print(f"🐍 Executing locally: {language}")
+        print(f"Executing locally: {language}")
         try:
             start_time = time.time()
             
@@ -49,8 +49,8 @@ class CodeExecutor:
                     f.write(wrapped_code)
                     temp_file = f.name
                 
-                print(f"📝 Temp file: {temp_file}")
-                print(f"📦 Wrapped code preview: {wrapped_code[:200]}...")
+                print(f"Temp file: {temp_file}")
+                print(f"Wrapped code preview: {wrapped_code[:200]}...")
                 
                 try:
                     # Execute Python code
@@ -64,9 +64,9 @@ class CodeExecutor:
                     
                     execution_time = time.time() - start_time
                     
-                    print(f"📊 Return code: {result.returncode}")
-                    print(f"📤 Stdout: {result.stdout}")
-                    print(f"📤 Stderr: {result.stderr}")
+                    print(f"Return code: {result.returncode}")
+                    print(f"Stdout: {result.stdout}")
+                    print(f"Stderr: {result.stderr}")
                     
                     if result.returncode == 0:
                         return {
@@ -220,11 +220,11 @@ class CodeExecutor:
         """
         # Use local execution if AWS is not configured
         if self.use_local:
-            print("🏠 Using local execution")
+            print("Using local execution")
             return await self.execute_code_locally(code, language, test_input, timeout)
         
         # Use AWS Lambda
-        print("☁️ Attempting AWS Lambda execution")
+        print("Attempting AWS Lambda execution")
         try:
             import json
             payload = {
@@ -241,7 +241,7 @@ class CodeExecutor:
             )
             
             result = json.loads(response['Payload'].read())
-            print(f"☁️ Lambda result: {result}")
+            print(f"Lambda result: {result}")
             
             # Transform Lambda response to expected format
             # Lambda returns: {stdout, stderr, status: {id, description}, timme, memory}
@@ -257,7 +257,7 @@ class CodeExecutor:
             
         except Exception as e:
             # Fallback to local execution if Lambda fails
-            print(f"⚠️ Lambda failed, falling back to local: {e}")
+            print(f"Lambda failed, falling back to local: {e}")
             return await self.execute_code_locally(code, language, test_input, timeout)
     
     async def run_test_cases(

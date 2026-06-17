@@ -126,12 +126,12 @@ const QuizLeaderboard = memo(function QuizLeaderboard({ results, matchId }) {
                           {player.username}
                         </span>
                         {isCurrentUser && (
-                          <span className="px-2 py-1 bg-purple-600 text-white text-xs rounded-full">
+                          <span className="px-2 py-1 bg-purple-600 text-white text-sm rounded-full">
                             You
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-gray-400 mt-1">
+                      <div className="flex items-center gap-4 text-base text-gray-400 mt-1">
                         <span className="flex items-center gap-1">
                           <CheckCircle size={16} />
                           {player.correct}/{results.total} correct
@@ -151,7 +151,7 @@ const QuizLeaderboard = memo(function QuizLeaderboard({ results, matchId }) {
                       `}>
                         {player.score}
                       </div>
-                      <div className="text-sm text-gray-400">points</div>
+                      <div className="text-base text-gray-400">points</div>
                     </div>
                   </div>
                 </div>
@@ -183,13 +183,13 @@ const QuizLeaderboard = memo(function QuizLeaderboard({ results, matchId }) {
             <div className="text-2xl font-bold text-white mb-1">
               {results.total_players}
             </div>
-            <div className="text-gray-400 text-sm">Total Players</div>
+            <div className="text-gray-400 text-base">Total Players</div>
           </div>
           <div className="bg-white/5 rounded-xl p-4 text-center border border-white/10">
             <div className="text-2xl font-bold text-white mb-1">
               {results.total}
             </div>
-            <div className="text-gray-400 text-sm">Questions</div>
+            <div className="text-gray-400 text-base">Questions</div>
           </div>
           <div className="bg-white/5 rounded-xl p-4 text-center border border-white/10">
             <div className="text-2xl font-bold text-white mb-1">
@@ -198,7 +198,7 @@ const QuizLeaderboard = memo(function QuizLeaderboard({ results, matchId }) {
                 'N/A'
               }
             </div>
-            <div className="text-gray-400 text-sm">Top Accuracy</div>
+            <div className="text-gray-400 text-base">Top Accuracy</div>
           </div>
         </div>
       </div>

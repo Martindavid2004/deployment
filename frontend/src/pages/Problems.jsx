@@ -8,13 +8,6 @@ export default function Problems({ problems, attempts, currentLanguage }) {
   const [selectedStatus, setSelectedStatus] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Get all unique topics
-  const allTopics = useMemo(() => {
-    const topics = new Set();
-    problems.forEach(p => p.topics.forEach(t => topics.add(t)));
-    return Array.from(topics).sort();
-  }, [problems]);
-
   // Filter problems based on selected filters
   const filteredProblems = useMemo(() => {
     return problems.filter(p => {
@@ -87,39 +80,41 @@ export default function Problems({ problems, attempts, currentLanguage }) {
         <Link
           key={p.id}
           to={`/workspace/${p.id}`}
-          className="block rounded-xl border border-slate-700 bg-slate-950/80 px-3 py-2 hover:border-emerald-500/80 transition-colors"
+          className="block rounded-2xl px-5 py-5 transition-transform hover:-translate-y-1 hover:shadow-lg cc-card-muted flex flex-col h-full justify-between gap-4"
         >
-          <div className="flex justify-between gap-3">
-            <div>
-              <div className="font-semibold text-slate-100">
-                {p.title}
-              </div>
-              <div className="flex flex-wrap gap-1 mt-1">
-                <span
-                  className={`px-2 py-[2px] rounded-full text-[10px] ${p.difficulty === "Easy"
-                      ? "bg-emerald-500/15 text-emerald-300"
-                      : p.difficulty === "Medium"
-                        ? "bg-amber-500/15 text-amber-300"
-                        : "bg-rose-500/15 text-rose-300"
-                    }`}
-                >
-                  {p.difficulty}
-                </span>
-                {p.topics.map((t) => (
-                  <span
-                    key={t}
-                    className="px-2 py-[2px] rounded-full text-[10px] border border-slate-700 text-slate-300"
-                  >
-                    {t}
-                  </span>
-                ))}
-              </div>
+          <div>
+            <div className="font-bold text-lg mb-2">
+              {p.title}
             </div>
-            <div className="w-28">
-              <ProgressBar value={progress} />
-              <div className="text-[10px] text-slate-400 mt-1 text-right">
-                {completed ? <span className="flex items-center gap-1"><CheckCircle2 size={10} /> Completed</span> : "In progress"}
-              </div>
+            <div className="flex flex-wrap gap-2">
+              <span
+                className="px-3 py-1 rounded-full text-xs font-bold"
+                style={{
+                  backgroundColor:
+                    p.difficulty === "Easy"
+                      ? 'var(--ok-soft)'
+                      : p.difficulty === "Medium"
+                      ? 'var(--warn-soft)'
+                      : 'var(--danger-soft)',
+                  color: 'var(--text-primary)'
+                }}
+              >
+                {p.difficulty}
+              </span>
+              {p.topics.map((t) => (
+                <span
+                  key={t}
+                  className="px-3 py-1 rounded-full text-xs font-bold cc-pill"
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+          </div>
+          <div>
+            <ProgressBar value={progress} />
+            <div className="text-xs font-semibold mt-2 text-right" style={{ color: 'var(--text-tertiary)' }}>
+              {completed ? <span className="flex items-center justify-end gap-1"><CheckCircle2 size={12} /> COMPLETED</span> : roundsDone > 0 ? "IN PROGRESS" : "NOT STARTED"}
             </div>
           </div>
         </Link>
@@ -129,67 +124,73 @@ export default function Problems({ problems, attempts, currentLanguage }) {
 
   return (
     <div>
-      <h1 className="text-lg font-semibold mb-2">All problems</h1>
-      <p className="text-xs text-slate-400 mb-4">
+      <h1 className="text-xl font-semibold mb-2">All problems</h1>
+      <p className="text-sm mb-4" style={{ color: 'var(--text-tertiary)' }}>
         Practice step by step in {currentLanguage.toUpperCase()}.
       </p>
 
       {/* Completed Problems Section */}
       {completedProblems.length > 0 && (
-        <div className="mb-6 rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-4">
+        <div className="mb-6 rounded-xl p-4 cc-card" style={{ borderColor: 'var(--accent-primary)' }}>
           <div className="flex items-center gap-2 mb-3">
-            <h2 className="text-sm font-semibold text-emerald-300 flex items-center gap-2">
+            <h2 className="text-base font-semibold flex items-center gap-2" style={{ color: 'var(--accent-primary)' }}>
               <CheckCircle2 size={16} /> Completed Problems
             </h2>
-            <span className="text-xs text-slate-400">
+            <span className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
               ({completedProblems.length} completed)
             </span>
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {completedProblems.map((p) => {
               const att = attempts[p.key];
               return (
                 <Link
                   key={p.id}
                   to={`/workspace/${p.id}`}
-                  className="block rounded-lg border border-slate-700 bg-slate-950/80 p-3 hover:border-emerald-500/80 transition-colors"
+                  className="block rounded-2xl p-5 transition-transform hover:-translate-y-1 hover:shadow-lg cc-card-muted flex flex-col justify-between h-full gap-4"
                 >
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="font-semibold text-slate-100 text-xs">
-                      {p.title}
+                  <div>
+                    <div className="flex justify-between items-start mb-3">
+                      <div className="font-bold text-lg">
+                        {p.title}
+                      </div>
+                      <CheckCircle2 size={24} style={{ color: 'var(--accent-primary)' }} />
                     </div>
-                    <CheckCircle2 className="text-emerald-400" size={18} />
+
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      <span
+                        className="px-3 py-1 rounded-full text-xs font-bold"
+                        style={{
+                          backgroundColor:
+                            p.difficulty === "Easy"
+                              ? 'var(--ok-soft)'
+                              : p.difficulty === "Medium"
+                              ? 'var(--warn-soft)'
+                              : 'var(--danger-soft)',
+                          color: 'var(--text-primary)'
+                        }}
+                      >
+                        {p.difficulty}
+                      </span>
+                    </div>
                   </div>
 
-                  <div className="flex flex-wrap gap-1 mb-2">
-                    <span
-                      className={`px-2 py-[2px] rounded-full text-[10px] ${p.difficulty === "Easy"
-                          ? "bg-emerald-500/15 text-emerald-300"
-                          : p.difficulty === "Medium"
-                            ? "bg-amber-500/15 text-amber-300"
-                            : "bg-rose-500/15 text-rose-300"
-                        }`}
-                    >
-                      {p.difficulty}
-                    </span>
-                  </div>
-
-                  <div className="space-y-1 text-[10px] text-slate-400">
-                    <div className="flex justify-between">
-                      <span>Total Time:</span>
-                      <span className="text-slate-300 font-medium">
+                  <div className="space-y-2 text-sm pt-4 border-t" style={{ borderColor: 'var(--border-color)', color: 'var(--text-tertiary)' }}>
+                    <div className="flex justify-between items-center">
+                      <span className="uppercase text-xs font-semibold tracking-wider">Total Time</span>
+                      <span className="font-bold text-base" style={{ color: 'var(--text-primary)' }}>
                         {p.totalTime.toFixed(1)}s
                       </span>
                     </div>
-                    <div className="flex justify-between">
-                      <span>Rounds Completed:</span>
-                      <span className="text-slate-300 font-medium">
+                    <div className="flex justify-between items-center">
+                      <span className="uppercase text-xs font-semibold tracking-wider">Rounds</span>
+                      <span className="font-bold text-base" style={{ color: 'var(--text-primary)' }}>
                         {p.roundsCompleted}/4
                       </span>
                     </div>
-                    <div className="flex justify-between">
-                      <span>Language:</span>
-                      <span className="text-slate-300 font-medium uppercase">
+                    <div className="flex justify-between items-center">
+                      <span className="uppercase text-xs font-semibold tracking-wider">Language</span>
+                      <span className="font-bold text-base uppercase" style={{ color: 'var(--accent-primary)' }}>
                         {currentLanguage}
                       </span>
                     </div>
@@ -210,29 +211,26 @@ export default function Problems({ problems, attempts, currentLanguage }) {
             placeholder="Search problems by title or topic..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-3 py-2 text-xs rounded-lg border border-slate-700 bg-slate-950/80 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50"
+            className="w-full px-3 py-2 text-sm rounded-lg border focus:outline-none"
+            style={{ borderColor: 'var(--input-border)' }}
           />
         </div>
 
         {/* Filter Buttons */}
-        <div className="flex flex-wrap gap-3 text-xs">
+        <div className="flex flex-wrap gap-3 text-sm">
           {/* Difficulty Filter */}
           <div className="flex gap-1.5">
-            <span className="text-slate-400 self-center">Difficulty:</span>
+            <span className="self-center" style={{ color: 'var(--text-tertiary)' }}>Difficulty:</span>
             {["All", "Easy", "Medium", "Hard"].map(diff => (
               <button
                 key={diff}
                 onClick={() => setSelectedDifficulty(diff)}
-                className={`px-3 py-1.5 rounded-lg border transition-colors ${selectedDifficulty === diff
-                    ? diff === "Easy"
-                      ? "border-emerald-500 bg-emerald-500/20 text-emerald-300"
-                      : diff === "Medium"
-                        ? "border-amber-500 bg-amber-500/20 text-amber-300"
-                        : diff === "Hard"
-                          ? "border-rose-500 bg-rose-500/20 text-rose-300"
-                          : "border-blue-500 bg-blue-500/20 text-blue-300"
-                    : "border-slate-700 bg-slate-950/80 text-slate-400 hover:border-slate-600"
-                  }`}
+                className="px-3 py-1.5 rounded-lg border transition-colors"
+                style={{
+                  borderColor: selectedDifficulty === diff ? 'var(--accent-primary)' : 'var(--border-color)',
+                  backgroundColor: selectedDifficulty === diff ? 'color-mix(in srgb, var(--accent-primary) 20%, var(--bg-secondary))' : 'var(--bg-secondary)',
+                  color: selectedDifficulty === diff ? 'var(--text-primary)' : 'var(--text-secondary)'
+                }}
               >
                 {diff}
               </button>
@@ -241,15 +239,17 @@ export default function Problems({ problems, attempts, currentLanguage }) {
 
           {/* Status Filter */}
           <div className="flex gap-1.5">
-            <span className="text-slate-400 self-center">Status:</span>
+            <span className="self-center" style={{ color: 'var(--text-tertiary)' }}>Status:</span>
             {["All", "Completed", "In Progress"].map(status => (
               <button
                 key={status}
                 onClick={() => setSelectedStatus(status)}
-                className={`px-3 py-1.5 rounded-lg border transition-colors ${selectedStatus === status
-                    ? "border-emerald-500 bg-emerald-500/20 text-emerald-300"
-                    : "border-slate-700 bg-slate-950/80 text-slate-400 hover:border-slate-600"
-                  }`}
+                className="px-3 py-1.5 rounded-lg border transition-colors"
+                style={{
+                  borderColor: selectedStatus === status ? 'var(--accent-primary)' : 'var(--border-color)',
+                  backgroundColor: selectedStatus === status ? 'color-mix(in srgb, var(--accent-primary) 20%, var(--bg-secondary))' : 'var(--bg-secondary)',
+                  color: selectedStatus === status ? 'var(--text-primary)' : 'var(--text-secondary)'
+                }}
               >
                 {status}
               </button>
@@ -259,20 +259,20 @@ export default function Problems({ problems, attempts, currentLanguage }) {
 
         {/* Active Filters Summary */}
         {(selectedDifficulty !== "All" || selectedStatus !== "All" || searchQuery) && (
-          <div className="flex items-center gap-2 text-xs">
-            <span className="text-slate-400">Active filters:</span>
+          <div className="flex items-center gap-2 text-sm">
+            <span style={{ color: 'var(--text-tertiary)' }}>Active filters:</span>
             {selectedDifficulty !== "All" && (
-              <span className="px-2 py-1 rounded-md bg-slate-800 text-slate-300">
+              <span className="px-2 py-1 rounded-md cc-pill">
                 {selectedDifficulty}
               </span>
             )}
             {selectedStatus !== "All" && (
-              <span className="px-2 py-1 rounded-md bg-slate-800 text-slate-300">
+              <span className="px-2 py-1 rounded-md cc-pill">
                 {selectedStatus}
               </span>
             )}
             {searchQuery && (
-              <span className="px-2 py-1 rounded-md bg-slate-800 text-slate-300">
+              <span className="px-2 py-1 rounded-md cc-pill">
                 "{searchQuery}"
               </span>
             )}
@@ -282,7 +282,8 @@ export default function Problems({ problems, attempts, currentLanguage }) {
                 setSelectedStatus("All");
                 setSearchQuery("");
               }}
-              className="px-2 py-1 rounded-md text-slate-400 hover:text-slate-200 hover:bg-slate-800"
+              className="px-2 py-1 rounded-md"
+              style={{ color: 'var(--text-tertiary)' }}
             >
               Clear all
             </button>
@@ -291,21 +292,21 @@ export default function Problems({ problems, attempts, currentLanguage }) {
       </div>
 
       {/* Results Count */}
-      <div className="mb-4 text-xs text-slate-400">
+      <div className="mb-4 text-sm" style={{ color: 'var(--text-tertiary)' }}>
         Showing {filteredProblems.length} of {problems.length} problems
       </div>
 
       {/* Problems Sections */}
       {filteredProblems.length === 0 ? (
-        <div className="text-center py-12 text-slate-500">
-          <p className="text-sm">No problems found matching your filters.</p>
+        <div className="text-center py-12" style={{ color: 'var(--text-tertiary)' }}>
+          <p className="text-base">No problems found matching your filters.</p>
           <button
             onClick={() => {
               setSelectedDifficulty("All");
               setSelectedStatus("All");
               setSearchQuery("");
             }}
-            className="mt-3 text-xs text-emerald-400 hover:text-emerald-300"
+            className="mt-3 text-sm cc-link"
           >
             Clear filters
           </button>
@@ -316,14 +317,14 @@ export default function Problems({ problems, attempts, currentLanguage }) {
           {easyProblems.length > 0 && (
             <div className="mb-8">
               <div className="flex items-center gap-2 mb-3">
-                <h2 className="text-sm font-semibold text-emerald-300">
+                <h2 className="text-base font-semibold" style={{ color: 'var(--accent-primary)' }}>
                   Easy Problems
                 </h2>
-                <span className="text-xs text-slate-500">
+                <span className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
                   ({easyProblems.length})
                 </span>
               </div>
-              <div className="space-y-3 text-xs">
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {renderProblemsList(easyProblems)}
               </div>
             </div>
@@ -333,14 +334,14 @@ export default function Problems({ problems, attempts, currentLanguage }) {
           {mediumProblems.length > 0 && (
             <div className="mb-8">
               <div className="flex items-center gap-2 mb-3">
-                <h2 className="text-sm font-semibold text-amber-300">
+                <h2 className="text-base font-semibold" style={{ color: 'var(--accent-primary)' }}>
                   Medium Problems
                 </h2>
-                <span className="text-xs text-slate-500">
+                <span className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
                   ({mediumProblems.length})
                 </span>
               </div>
-              <div className="space-y-3 text-xs">
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {renderProblemsList(mediumProblems)}
               </div>
             </div>
@@ -350,14 +351,14 @@ export default function Problems({ problems, attempts, currentLanguage }) {
           {hardProblems.length > 0 && (
             <div className="mb-8">
               <div className="flex items-center gap-2 mb-3">
-                <h2 className="text-sm font-semibold text-rose-300">
+                <h2 className="text-base font-semibold" style={{ color: 'var(--accent-primary)' }}>
                   Hard Problems
                 </h2>
-                <span className="text-xs text-slate-500">
+                <span className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
                   ({hardProblems.length})
                 </span>
               </div>
-              <div className="space-y-3 text-xs">
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {renderProblemsList(hardProblems)}
               </div>
             </div>

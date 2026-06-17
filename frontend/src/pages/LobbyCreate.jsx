@@ -74,7 +74,7 @@ export default function LobbyCreate() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-8 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-[var(--bg-primary)] via-[var(--bg-tertiary)] to-[var(--bg-primary)] py-8 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl p-8">
           <div className="mb-6">
@@ -88,8 +88,8 @@ export default function LobbyCreate() {
               <div className="flex items-start gap-3">
                 <Bot size={32} className="text-blue-400" />
                 <div>
-                  <h3 className="text-lg font-bold text-blue-300 mb-1">AI-Generated Problems</h3>
-                  <p className="text-sm text-gray-300">
+                  <h3 className="text-xl font-bold text-blue-300 mb-1">AI-Generated Problems</h3>
+                  <p className="text-base text-gray-300">
                     Each game will feature a unique, randomly generated coding problem created by AI!
                     The difficulty is chosen automatically to provide the best competitive experience.
                   </p>
@@ -128,9 +128,9 @@ export default function LobbyCreate() {
                   >
                     <div className="flex items-center mb-2">
                       <span className="text-3xl mr-3">{mode.icon}</span>
-                      <h3 className="text-lg font-bold text-white">{mode.name}</h3>
+                      <h3 className="text-xl font-bold text-white">{mode.name}</h3>
                     </div>
-                    <p className="text-sm text-gray-300">{mode.description}</p>
+                    <p className="text-base text-gray-300">{mode.description}</p>
                   </div>
                 ))}
               </div>
@@ -149,9 +149,9 @@ export default function LobbyCreate() {
                     onChange={(e) => setFormData({ ...formData, quiz_language: e.target.value })}
                     className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                   >
-                    <option value="python" className="bg-slate-800">Python</option>
-                    <option value="java" className="bg-slate-800">Java</option>
-                    <option value="cpp" className="bg-slate-800">C++</option>
+                    <option value="python" className="bg-theme-bg-tertiary">Python</option>
+                    <option value="java" className="bg-theme-bg-tertiary">Java</option>
+                    <option value="cpp" className="bg-theme-bg-tertiary">C++</option>
                   </select>
                 </div>
 
@@ -173,10 +173,10 @@ export default function LobbyCreate() {
                     className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                   >
                     {[5, 10, 15, 20, 30, 40, 50, 60].map(n => (
-                      <option key={n} value={n} className="bg-slate-800">{n} questions</option>
+                      <option key={n} value={n} className="bg-theme-bg-tertiary">{n} questions</option>
                     ))}
                   </select>
-                  <p className="text-sm text-gray-400 mt-2">
+                  <p className="text-base text-gray-400 mt-2">
                     Time limit: {Math.floor(formData.time_limit_seconds / 60)} minutes ({formData.time_limit_seconds} seconds)
                   </p>
                 </div>
@@ -196,7 +196,7 @@ export default function LobbyCreate() {
                 onChange={(e) => setFormData({ ...formData, max_players: parseInt(e.target.value) })}
                 className="w-full h-2 bg-white/20 rounded-lg appearance-none cursor-pointer accent-purple-500"
               />
-              <div className="flex justify-between text-sm text-gray-400 mt-1">
+              <div className="flex justify-between text-base text-gray-400 mt-1">
                 <span>2 players</span>
                 <span>15 players</span>
               </div>
@@ -213,10 +213,10 @@ export default function LobbyCreate() {
                   onChange={(e) => setFormData({ ...formData, time_limit_seconds: parseInt(e.target.value) })}
                   className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                 >
-                  <option value="900" className="bg-slate-800">15 minutes</option>
-                  <option value="1800" className="bg-slate-800">30 minutes</option>
-                  <option value="2700" className="bg-slate-800">45 minutes</option>
-                  <option value="3600" className="bg-slate-800">60 minutes</option>
+                  <option value="900" className="bg-theme-bg-tertiary">15 minutes</option>
+                  <option value="1800" className="bg-theme-bg-tertiary">30 minutes</option>
+                  <option value="2700" className="bg-theme-bg-tertiary">45 minutes</option>
+                  <option value="3600" className="bg-theme-bg-tertiary">60 minutes</option>
                 </select>
               </div>
             )}

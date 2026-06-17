@@ -4,15 +4,18 @@ export default function ProgressBar({ value, label, big = false }) {
   return (
     <div className="w-full">
       {label && (
-        <div className="flex justify-between text-[11px] text-slate-400 mb-1">
+        <div className="flex justify-between text-sm mb-1" style={{ color: 'var(--text-tertiary)' }}>
           <span>{label}</span>
           <span>{clamped.toFixed(0)}%</span>
         </div>
       )}
-      <div className={`w-full rounded-full bg-slate-800 overflow-hidden ${big ? "h-3" : "h-2"}`}>
+      <div className={`w-full rounded-full overflow-hidden ${big ? "h-3" : "h-2"}`} style={{ backgroundColor: 'var(--bg-tertiary)' }}>
         <div
-          className="h-full bg-gradient-to-r from-emerald-400 via-lime-400 to-emerald-500 transition-all"
-          style={{ width: `${clamped}%` }}
+          className="h-full transition-all"
+          style={{
+            width: `${clamped}%`,
+            background: 'linear-gradient(90deg, var(--accent-primary), var(--accent-strong))'
+          }}
         />
       </div>
     </div>

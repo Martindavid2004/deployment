@@ -144,7 +144,7 @@ export default function LobbyRoom() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[var(--bg-primary)] via-[var(--bg-tertiary)] to-[var(--bg-primary)] flex items-center justify-center">
         <div className="text-white text-2xl">Loading lobby...</div>
       </div>
     );
@@ -152,7 +152,7 @@ export default function LobbyRoom() {
 
   if (!lobby) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[var(--bg-primary)] via-[var(--bg-tertiary)] to-[var(--bg-primary)] flex items-center justify-center">
         <div className="text-white text-2xl">Lobby not found</div>
       </div>
     );
@@ -184,7 +184,7 @@ export default function LobbyRoom() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-8 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-[var(--bg-primary)] via-[var(--bg-tertiary)] to-[var(--bg-primary)] py-8 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl p-8 mb-6">
@@ -193,11 +193,11 @@ export default function LobbyRoom() {
               <h1 className="text-4xl font-bold text-white mb-2">{lobby.lobby_name}</h1>
               <div className="flex items-center gap-4 text-gray-300">
                 <span className="text-3xl">{gameModeIcons[lobby.game_mode] || <Gamepad2 size={32} />}</span>
-                <span className="text-lg">{gameModeNames[lobby.game_mode]}</span>
+                <span className="text-xl">{gameModeNames[lobby.game_mode]}</span>
               </div>
             </div>
             <div className="mt-4 md:mt-0">
-              <div className="text-gray-400 text-sm mb-1">Game ID</div>
+              <div className="text-gray-400 text-base mb-1">Game ID</div>
               <div className="flex items-center gap-2">
                 <div className="bg-purple-600/30 px-6 py-3 rounded-lg font-mono text-3xl font-bold text-white tracking-wider border-2 border-purple-500">
                   {gameId}
@@ -211,7 +211,7 @@ export default function LobbyRoom() {
                 </button>
               </div>
               {copySuccess && (
-                <div className="text-green-400 text-sm mt-1">Copied to clipboard!</div>
+                <div className="text-green-400 text-base mt-1">Copied to clipboard!</div>
               )}
             </div>
           </div>
@@ -219,19 +219,19 @@ export default function LobbyRoom() {
           {/* Game Info */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
             <div className="bg-white/5 rounded-lg p-4">
-              <div className="text-gray-400 text-sm mb-1">Host</div>
+              <div className="text-gray-400 text-base mb-1">Host</div>
               <div className="text-white font-semibold">{lobby.host_username}</div>
             </div>
             <div className="bg-white/5 rounded-lg p-4">
-              <div className="text-gray-400 text-sm mb-1">Players</div>
+              <div className="text-gray-400 text-base mb-1">Players</div>
               <div className="text-white font-semibold">{playerCount} / {maxPlayers}</div>
             </div>
             <div className="bg-white/5 rounded-lg p-4">
-              <div className="text-gray-400 text-sm mb-1">Time Limit</div>
+              <div className="text-gray-400 text-base mb-1">Time Limit</div>
               <div className="text-white font-semibold">{lobby.time_limit_seconds / 60} min</div>
             </div>
             <div className="bg-white/5 rounded-lg p-4">
-              <div className="text-gray-400 text-sm mb-1">Status</div>
+              <div className="text-gray-400 text-base mb-1">Status</div>
               <div className="text-yellow-400 font-semibold">
                 {lobby.status === "waiting" ? (
                   <span className="flex items-center gap-1"><Clock size={16} /> Waiting</span>
@@ -249,20 +249,20 @@ export default function LobbyRoom() {
                 <button
                   onClick={handleStartGame}
                   disabled={playerCount < 2}
-                  className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-5 px-8 rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl text-lg flex items-center justify-center gap-3"
+                  className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-5 px-8 rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl text-xl flex items-center justify-center gap-3"
                 >
                   <Gamepad2 size={24} />
                   {playerCount < 2 ? "Need at least 2 players to start" : "Start Game Now!"}
                 </button>
               ) : (
-                <div className="flex-1 bg-yellow-600/20 border-2 border-yellow-600 text-yellow-300 font-bold py-5 px-8 rounded-xl text-center text-lg flex items-center justify-center gap-3">
+                <div className="flex-1 bg-yellow-600/20 border-2 border-yellow-600 text-yellow-300 font-bold py-5 px-8 rounded-xl text-center text-xl flex items-center justify-center gap-3">
                   <Clock size={24} />
                   Waiting for host to start the game...
                 </div>
               )}
               <button
                 onClick={handleLeaveLobby}
-                className="sm:w-48 w-full bg-red-600 hover:bg-red-700 text-white font-bold py-5 px-8 rounded-xl transition-all shadow-xl text-lg flex items-center justify-center gap-2"
+                className="sm:w-48 w-full bg-red-600 hover:bg-red-700 text-white font-bold py-5 px-8 rounded-xl transition-all shadow-xl text-xl flex items-center justify-center gap-2"
               >
                 <span>✕</span> Leave Lobby
               </button>
@@ -303,7 +303,7 @@ export default function LobbyRoom() {
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="text-white font-semibold text-lg">
+                    <div className="text-white font-semibold text-xl">
                       {player.username}
                       {player.user_id === lobby.host_id && (
                         <span className="ml-2 text-yellow-400"><Crown size={18} /></span>
@@ -312,7 +312,7 @@ export default function LobbyRoom() {
                         <span className="ml-2 text-purple-400">(You)</span>
                       )}
                     </div>
-                    <div className="text-gray-400 text-sm">Player #{index + 1}</div>
+                    <div className="text-gray-400 text-base">Player #{index + 1}</div>
                   </div>
                   <CheckCircle2 className="text-green-400" size={24} />
                 </div>
@@ -328,7 +328,7 @@ export default function LobbyRoom() {
                 <div className="flex items-center justify-center h-full">
                   <div className="text-gray-500 text-center">
                     <User size={32} className="text-gray-500 mx-auto mb-2" />
-                    <div className="text-sm">Waiting for player...</div>
+                    <div className="text-base">Waiting for player...</div>
                   </div>
                 </div>
               </div>
