@@ -36,6 +36,7 @@ export default function Workspace({
   const [testResults, setTestResults] = useState(null);
   const [isExecuting, setIsExecuting] = useState(false);
   const [executionOutput, setExecutionOutput] = useState(null);
+  const [activeTab, setActiveTab] = useState("instructions"); // mobile only: 'instructions' or 'editor'
 
   const key = `${problemId}_${currentLanguage}`;
   const existingAttempt = attempts[key];
@@ -487,8 +488,32 @@ export default function Workspace({
           </div>
         </div>
 
+        {/* Mobile Tab Toggle Bar */}
+        <div className="flex lg:hidden border-b mt-6 mb-4" style={{ borderColor: 'var(--border-color)' }}>
+          <button
+            onClick={() => setActiveTab("instructions")}
+            className={`flex-1 py-2 text-center text-sm font-semibold border-b-2 transition-all ${
+              activeTab === "instructions"
+                ? "border-emerald-500 text-emerald-400"
+                : "border-transparent text-theme-text-tertiary"
+            }`}
+          >
+            Instructions & Reference
+          </button>
+          <button
+            onClick={() => setActiveTab("editor")}
+            className={`flex-1 py-2 text-center text-sm font-semibold border-b-2 transition-all ${
+              activeTab === "editor"
+                ? "border-emerald-500 text-emerald-400"
+                : "border-transparent text-theme-text-tertiary"
+            }`}
+          >
+            Code Editor & Output
+          </button>
+        </div>
+
         <div className="mt-6 grid lg:grid-cols-2 xl:grid-cols-[1fr,1.2fr] gap-6">
-          <div className="space-y-4">
+          <div className={`${activeTab === "editor" ? "block" : "hidden lg:block"} space-y-4`}>
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm font-semibold">Your Code</span>
               <div className="flex gap-2">
@@ -579,7 +604,7 @@ export default function Workspace({
             </div>
           </div>
 
-          <div className="space-y-4 h-[60vh] overflow-y-auto pr-2">
+          <div className={`${activeTab === "instructions" ? "block" : "hidden lg:block"} space-y-4 h-[60vh] overflow-y-auto pr-2`}>
             {/* R1: Show reference code and explanations */}
             {currentRound === 1 && (
               <>
@@ -704,9 +729,9 @@ export default function Workspace({
           </div>
         </div>
 
-        <div className="mt-4 flex justify-between items-center text-sm text-theme-text-tertiary">
+        <div className="mt-4 flex flex-col md:flex-row justify-between items-center gap-3 text-sm text-theme-text-tertiary text-center md:text-left">
           <span>{roundDescriptions[currentRound]}</span>
-          <div className="flex gap-2">
+          <div className="flex gap-2 w-full md:w-auto justify-center md:justify-end">
             {currentRound === 4 && (
               <button
                 onClick={handleRunTests}

@@ -814,7 +814,7 @@ export default function Dashboard({
           </div>
 
           {/* Grid Blocks */}
-          <div className="grid grid-flow-col grid-rows-7 gap-1.5 p-1 bg-[var(--bg-tertiary)] rounded-lg border justify-center max-w-full overflow-hidden" style={{ borderColor: 'var(--border-color)' }}>
+          <div className="grid grid-flow-col grid-rows-7 gap-1.5 p-1.5 bg-[var(--bg-tertiary)] rounded-lg border justify-start md:justify-center max-w-full overflow-x-auto" style={{ borderColor: 'var(--border-color)' }}>
             {heatmapDays.map((day) => (
               <div
                 key={day.id}

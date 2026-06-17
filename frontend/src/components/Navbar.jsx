@@ -1,10 +1,15 @@
+import { useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { Moon, Sun } from "lucide-react";
+import { Moon, Sun, Menu, X } from "lucide-react";
 import LanguageSelector from "./LanguageSelector";
 
 export default function Navbar({ user, onLogout, theme, toggleTheme, currentLanguage, setCurrentLanguage }) {
   const location = useLocation();
   const isLanding = location.pathname === "/";
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
+  const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
   return (
     <header 
@@ -133,13 +138,25 @@ export default function Navbar({ user, onLogout, theme, toggleTheme, currentLang
               </div>
               <button
                 onClick={onLogout}
-                className="text-sm px-3 py-1 rounded-full border transition-colors duration-200"
+                className="hidden md:block text-sm px-3 py-1 rounded-full border transition-colors duration-200"
                 style={{ 
                   borderColor: 'var(--border-light)',
                   color: 'var(--text-secondary)'
                 }}
               >
                 Sign out
+              </button>
+              
+              <button
+                onClick={toggleMobileMenu}
+                className="md:hidden h-8 w-8 flex items-center justify-center rounded-full border transition-all duration-200"
+                style={{ 
+                  borderColor: 'var(--border-light)',
+                  color: 'var(--text-secondary)'
+                }}
+                title="Toggle navigation menu"
+              >
+                {isMobileMenuOpen ? <X size={16} /> : <Menu size={16} />}
               </button>
             </>
           ) : (
@@ -154,6 +171,116 @@ export default function Navbar({ user, onLogout, theme, toggleTheme, currentLang
           )}
         </div>
       </div>
+
+      {/* Mobile navigation menu overlay */}
+      {user && isMobileMenuOpen && (
+        <div 
+          className="md:hidden border-t py-4 px-6 flex flex-col gap-4 transition-colors duration-300"
+          style={{ 
+            borderColor: 'var(--border-color)',
+            backgroundColor: 'var(--bg-primary)'
+          }}
+        >
+          <nav className="flex flex-col gap-2">
+            <NavLink
+              to="/dashboard"
+              onClick={closeMobileMenu}
+              className={({ isActive }) =>
+                `px-4 py-2 rounded-xl border text-sm font-semibold transition-colors duration-200 ${isActive
+                  ? "cc-pill"
+                  : "border-transparent"
+                }`}
+              style={({ isActive }) => !isActive ? { color: 'var(--text-secondary)' } : { color: 'var(--accent-primary)', borderColor: 'var(--accent-primary)' }}
+            >
+              Dashboard
+            </NavLink>
+            <NavLink
+              to="/problems"
+              onClick={closeMobileMenu}
+              className={({ isActive }) =>
+                `px-4 py-2 rounded-xl border text-sm font-semibold transition-colors duration-200 ${isActive
+                  ? "cc-pill"
+                  : "border-transparent"
+                }`}
+              style={({ isActive }) => !isActive ? { color: 'var(--text-secondary)' } : { color: 'var(--accent-primary)', borderColor: 'var(--accent-primary)' }}
+            >
+              Problems
+            </NavLink>
+            <NavLink
+              to="/profile"
+              onClick={closeMobileMenu}
+              className={({ isActive }) =>
+                `px-4 py-2 rounded-xl border text-sm font-semibold transition-colors duration-200 ${isActive
+                  ? "cc-pill"
+                  : "border-transparent"
+                }`}
+              style={({ isActive }) => !isActive ? { color: 'var(--text-secondary)' } : { color: 'var(--accent-primary)', borderColor: 'var(--accent-primary)' }}
+            >
+              Profile
+            </NavLink>
+            <NavLink
+              to="/competitive"
+              onClick={closeMobileMenu}
+              className={({ isActive }) =>
+                `px-4 py-2 rounded-xl border text-sm font-semibold transition-colors duration-200 ${isActive
+                  ? "cc-pill"
+                  : "border-transparent"
+                }`}
+              style={({ isActive }) => !isActive ? { color: 'var(--text-secondary)' } : { color: 'var(--accent-primary)', borderColor: 'var(--accent-primary)' }}
+            >
+              Competitive
+            </NavLink>
+            {user?.isAdmin && (
+              <NavLink
+                to="/admin"
+                onClick={closeMobileMenu}
+                className={({ isActive }) =>
+                  `px-4 py-2 rounded-xl border text-sm font-semibold transition-colors duration-200 ${isActive
+                    ? "cc-pill"
+                    : "border-transparent"
+                  }`}
+                style={({ isActive }) => !isActive ? { color: 'var(--text-secondary)' } : { color: 'var(--accent-primary)', borderColor: 'var(--accent-primary)' }}
+              >
+                Admin
+              </NavLink>
+            )}
+          </nav>
+
+          <div 
+            className="flex items-center gap-3 p-3 rounded-xl border bg-opacity-80 mt-2"
+            style={{ 
+              borderColor: 'var(--border-light)',
+              backgroundColor: 'var(--bg-secondary)'
+            }}
+          >
+            <div className="h-9 w-9 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-strong))' }}>
+              {user.name?.[0]?.toUpperCase() || "U"}
+            </div>
+            <div className="flex flex-col leading-tight flex-1">
+              <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                {user.name}
+              </span>
+              <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                Preferred Language: {user.preferredLanguage?.toUpperCase() || "PYTHON"}
+              </span>
+            </div>
+          </div>
+
+          <button
+            onClick={() => {
+              closeMobileMenu();
+              onLogout();
+            }}
+            className="w-full text-center text-sm py-2.5 rounded-xl border font-semibold hover:bg-[var(--bg-hover)] transition-colors duration-200"
+            style={{ 
+              borderColor: 'var(--border-light)',
+              color: 'var(--text-secondary)'
+            }}
+          >
+            Sign out
+          </button>
+        </div>
+      )}
     </header>
   );
 }
