@@ -28,9 +28,15 @@ async def register(user_in: UserCreate):
     if existing:
         raise HTTPException(status_code=400, detail="Username already exists")
 
+    email_lower = user_in.email.strip().lower()
+    existing_email = await db.users.find_one({ "email": email_lower })
+    if existing_email:
+        raise HTTPException(status_code=400, detail="Email already registered")
+
     is_admin = user_in.username.lower() == "admin"
     doc = {
         "username": user_in.username,
+        "email": email_lower,
         "hashed_password": hash_password(user_in.password),
         "preferred_language": user_in.preferred_language,
         "is_admin": is_admin,

@@ -231,7 +231,13 @@ export default function Profile({
               <h1 className="text-2xl font-extrabold mb-1 heading-font text-[var(--text-primary)]">
                 {user?.name || "Coder"}
               </h1>
-              
+
+              {user?.email && (
+                <div className="text-[11px] font-semibold font-mono tracking-wide mb-3 text-[var(--text-tertiary)] opacity-85">
+                  {user.email}
+                </div>
+              )}
+
               <span 
                 className="text-[10px] font-extrabold uppercase tracking-widest px-3 py-1 rounded-full mb-5 flex items-center gap-1.5"
                 style={{ backgroundColor: 'var(--bg-tertiary)', color: activeFaction.color, border: `1px solid color-mix(in srgb, ${activeFaction.color} 25%, transparent)` }}

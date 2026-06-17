@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { User, Lock, Terminal, Shield, ArrowRight, Activity, Terminal as Console } from "lucide-react";
+import { User, Mail, Lock, Terminal, Shield, ArrowRight, Activity, Terminal as Console } from "lucide-react";
 import { API_BASE } from "../utils/api";
 
 export default function Register({ onLogin }) {
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [preferredLanguage, setPreferredLanguage] = useState("python");
@@ -47,12 +48,17 @@ export default function Register({ onLogin }) {
 
     return () => clearInterval(logInterval);
   }, []);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!username.trim() || !password.trim() || !confirmPassword.trim()) {
+    if (!username.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
       setError("Please fill in all fields.");
+      return;
+    }
+
+    const emailRegex = /^\S+@\S+\.\S+$/;
+    if (!emailRegex.test(email.trim())) {
+      setError("Please enter a valid email address.");
       return;
     }
 
@@ -80,6 +86,7 @@ export default function Register({ onLogin }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           username: username.trim(),
+          email: email.trim(),
           password: password.trim(),
           preferred_language: preferredLanguage
         })
@@ -215,6 +222,24 @@ export default function Register({ onLogin }) {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     placeholder="e.g. wesley"
+                  />
+                </div>
+              </div>
+
+              {/* Email Input */}
+              <div className="flex flex-col gap-1.5 text-left">
+                <label className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>Email Address</label>
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-500">
+                    <Mail size={14} />
+                  </span>
+                  <input
+                    type="email"
+                    className="w-full rounded-xl border pl-10 pr-4 py-2 text-sm outline-none transition-all focus:border-[var(--accent-primary)]"
+                    style={{ borderColor: 'var(--input-border)' }}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="e.g. wesley@example.com"
                   />
                 </div>
               </div>

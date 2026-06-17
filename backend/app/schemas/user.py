@@ -1,11 +1,13 @@
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Optional
 
 class UserBase(BaseModel):
     username: str = Field(..., min_length=3, max_length=30)
+    email: Optional[str] = Field(None, min_length=3, max_length=100)
     preferred_language: str = "python"
 
 class UserCreate(UserBase):
+    email: str = Field(..., min_length=3, max_length=100, pattern=r"^\S+@\S+\.\S+$")
     password: str = Field(..., min_length=4)
 
 class UserLogin(BaseModel):

@@ -26,7 +26,7 @@ export default function Navbar({ user, onLogout, theme, toggleTheme, currentLang
           )}
         </div>
 
-        {!isLanding && (
+        {user && (
           <nav className="hidden md:flex items-center gap-4 text-sm">
             <NavLink
               to="/dashboard"

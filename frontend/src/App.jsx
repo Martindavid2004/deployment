@@ -155,6 +155,7 @@ export default function App() {
           setUser({
             id: userData.id,
             name: userData.username,
+            email: userData.email,
             isAdmin: userData.is_admin,
             preferredLanguage: userData.preferred_language || "python",
             level: userData.level || 1,
