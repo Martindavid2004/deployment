@@ -985,6 +985,8 @@ async def start_lobby(
     match_doc = {
         "game_id": game_id.upper(),
         "problem_id": lobby.get("problem_id"),
+        "problem_ids": lobby.get("problem_ids", []),
+        "total_problems": lobby.get("total_problems", 0),
         "game_mode": lobby["game_mode"],
         "buggy_code": lobby.get("buggy_code"),
         "host_id": lobby["host_id"],
@@ -2040,6 +2042,60 @@ async def leave_match(match_id: str, current_user: dict = Depends(get_current_us
             raise HTTPException(status_code=403, detail="Not a participant")
         
         await db.matches.update_one({"_id": match_oid}, {"$set": {f"players.{player_index}.completed": True}})
+        
+        # Check if all players completed
+        updated_match = await db.matches.find_one({"_id": match_oid})
+        all_completed = all(p.get("completed", False) for p in updated_match.get("players", []))
+        
+        if all_completed:
+            # Rank players by score (higher is better), then by time (faster is better)
+            players_with_rank = sorted(
+                updated_match["players"],
+                key=lambda p: (-p.get("score", 0), p.get("time_elapsed", float('inf')))
+            )
+            
+            # Assign ranks and update
+            for rank, player in enumerate(players_with_rank, 1):
+                await db.matches.update_one(
+                    {
+                        "_id": match_oid,
+                        "players.user_id": player["user_id"]
+                    },
+                    {"$set": {"players.$.rank": rank}}
+                )
+            
+            # Get top 3 winners
+            winners = [p["user_id"] for p in players_with_rank[:3]]
+            winner_id = winners[0] if winners else None
+            
+            # Mark match as completed
+            await db.matches.update_one(
+                {"_id": match_oid},
+                {
+                    "$set": {
+                        "status": "completed",
+                        "completed_at": datetime.utcnow(),
+                        "winner_id": winner_id,
+                        "winners": winners
+                    }
+                }
+            )
+            
+            # Update player stats (XP, rating for top 3)
+            for rank, player in enumerate(players_with_rank[:3], 1):
+                if player["user_id"] != "bot":  # Don't update bots
+                    xp_gain = 100 if rank == 1 else (50 if rank == 2 else 25)
+                    rating_gain = 30 if rank == 1 else (15 if rank == 2 else 5)
+                    
+                    await db.users.update_one(
+                        {"_id": ObjectId(player["user_id"])},
+                        {
+                            "$inc": {
+                                "xp": xp_gain,
+                                "rating": rating_gain
+                            }
+                        }
+                    )
     else:
         player1_id = match.get("player1", {}).get("user_id")
         player2_id = match.get("player2", {}).get("user_id")

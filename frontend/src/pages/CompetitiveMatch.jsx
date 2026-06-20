@@ -89,6 +89,7 @@ export default function CompetitiveMatch() {
   // For validation dialog
   const [showValidationDialog, setShowValidationDialog] = useState(false);
   const [validationError, setValidationError] = useState(null);
+  const [activeTab, setActiveTab] = useState("problem"); // "problem" or "editor" for mobile view
 
   useEffect(() => {
     fetchMatch();
@@ -103,7 +104,7 @@ export default function CompetitiveMatch() {
     };
   }, [matchId]);
 
-  // Poll for match completion (check every 2 seconds)
+  // Poll for match updates (every 2.5 seconds)
   useEffect(() => {
     if (matchCompleted || !matchId) return;
 
@@ -111,6 +112,7 @@ export default function CompetitiveMatch() {
       try {
         const token = localStorage.getItem("token");
         const currentUserId = localStorage.getItem("userId");
+        if (!token) return;
         
         const res = await fetch(`${API_BASE}/competitive/matches/${matchId}`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -120,20 +122,54 @@ export default function CompetitiveMatch() {
         
         const data = await res.json();
         
+        // Update local match state to show opponent progress in header/sidebar
+        setMatch(data);
+
         // Check if match has been completed
         if (data.status === "completed" && !matchCompleted) {
           console.log("[INFO] Match completed! Showing scoreboard for:", currentUserId);
           
           if (data.players && data.players.length >= 2) {
             // Multiplayer match
-            const allPlayers = data.players;
-            const rank = allPlayers.findIndex(p => p.user_id === currentUserId) + 1;
+            const sortedPlayers = [...data.players].sort((a, b) => {
+              return (b.score || 0) - (a.score || 0) || (a.time_elapsed || Infinity) - (b.time_elapsed || Infinity);
+            });
+            const rank = sortedPlayers.findIndex(p => p.user_id === currentUserId) + 1;
             
             setFinalResults({
               type: 'multiplayer',
               rank: rank > 0 ? rank : 1,
-              score: allPlayers.find(p => p.user_id === currentUserId)?.score || 0,
-              players: allPlayers,
+              score: sortedPlayers.find(p => p.user_id === currentUserId)?.score || 0,
+              winners: sortedPlayers.slice(0, 3).map(p => p.username),
+              players: sortedPlayers,
+              currentUserId
+            });
+          } else if (data.player1 && data.player2) {
+            // 1v1 match
+            const isWinner = data.winner_id === currentUserId;
+            
+            setFinalResults({
+              type: '1v1',
+              isWinner,
+              winnerId: data.winner_id,
+              winnerUsername: data.winner_username,
+              winnerTime: data.winner_time,
+              player1: {
+                userId: data.player1.user_id,
+                username: data.player1.username,
+                completed: data.player1.completed,
+                completionTime: data.player1.time_elapsed,
+                isWinner: data.winner_id === data.player1.user_id
+              },
+              player2: {
+                userId: data.player2.user_id,
+                username: data.player2.username,
+                completed: data.player2.completed,
+                completionTime: data.player2.time_elapsed,
+                isWinner: data.winner_id === data.player2.user_id
+              },
+              ratingChange: data.rating_change,
+              xpBonus: data.xp_bonus,
               currentUserId
             });
           }
@@ -149,7 +185,7 @@ export default function CompetitiveMatch() {
     };
     
     // Start polling
-    pollIntervalRef.current = setInterval(pollMatchStatus, 2000);
+    pollIntervalRef.current = setInterval(pollMatchStatus, 2500);
     return () => {
       if (pollIntervalRef.current) {
         clearInterval(pollIntervalRef.current);
@@ -220,91 +256,7 @@ export default function CompetitiveMatch() {
     }
   }, [timeElapsed, match, matchStartTime, matchCompleted]);
 
-  // Poll for match completion after player submits
-  useEffect(() => {
-    if (!match || matchCompleted) return;
-    
-    // Check if current player has submitted
-    const currentUserId = localStorage.getItem("userId");
-    const currentPlayer = match.players?.find(p => p.user_id === currentUserId);
-    
-    if (!currentPlayer?.completed) return; // Current player hasn't submitted yet
-    
-    // Start polling every 3 seconds to check if all players are done
-    const pollInterval = setInterval(async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const res = await fetch(`${API_BASE}/competitive/matches/${matchId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        
-        if (!res.ok) return;
-        
-        const data = await res.json();
-        
-        // Check if match is completed
-        if (data.status === "completed") {
-          clearInterval(pollInterval);
-          
-          // Show leaderboard
-          if (data.players && data.players.length >= 2) {
-            // Multiplayer (2 or more players)
-            const sortedPlayers = [...data.players].sort((a, b) => {
-              return (b.score || 0) - (a.score || 0) || (a.time_elapsed || Infinity) - (b.time_elapsed || Infinity);
-            });
-            
-            const rank = sortedPlayers.findIndex(p => p.user_id === currentUserId) + 1;
-            
-            setFinalResults({
-              type: 'multiplayer',
-              rank,
-              score: currentPlayer?.score || 0,
-              winners: sortedPlayers.slice(0, 3).map(p => p.username),
-              players: sortedPlayers,
-              currentUserId
-            });
-          } else if (data.player1 && data.player2) {
-            // 1v1
-            const isWinner = data.winner_id === currentUserId;
-            
-            setFinalResults({
-              type: '1v1',
-              isWinner,
-              winnerId: data.winner_id,
-              winnerUsername: data.winner_username,
-              player1: {
-                userId: data.player1.user_id,
-                username: data.player1.username,
-                isWinner: data.winner_id === data.player1.user_id,
-                completionTime: data.player1.time_elapsed,
-                completed: data.player1.completed
-              },
-              player2: {
-                userId: data.player2.user_id,
-                username: data.player2.username,
-                isWinner: data.winner_id === data.player2.user_id,
-                completionTime: data.player2.time_elapsed,
-                completed: data.player2.completed
-              },
-              ratingChange: data.rating_change,
-              xpBonus: data.xp_bonus,
-              currentUserId
-            });
-          }
-          
-          setMatchCompleted(true);
-          console.log("[INFO] Match completed - showing leaderboard");
-        } else {
-          // Update match data to show other players' progress
-          setMatch(data);
-        }
-      } catch (err) {
-        console.error("Error polling match status:", err);
-      }
-    }, 3000); // Poll every 3 seconds
-    
-    return () => clearInterval(pollInterval);
-  }, [match, matchCompleted, matchId]);
+  // Polling is unified in the single hook above
 
   const handleTimeExpired = async () => {
     // Stop the timer
@@ -1412,9 +1364,33 @@ export default function CompetitiveMatch() {
         </div>
       </div>
 
-      <div className="flex-1 flex overflow-hidden">
+      {/* Mobile Tab Selector */}
+      <div className={`flex md:hidden border-b ${isDark ? 'border-slate-700 bg-slate-900/60' : 'border-gray-300 bg-white/60'} p-2 gap-2`}>
+        <button
+          onClick={() => setActiveTab("problem")}
+          className={`flex-1 py-2 text-center text-sm font-semibold rounded-lg transition-all ${
+            activeTab === "problem"
+              ? "bg-purple-600/30 text-purple-400 border border-purple-500/30"
+              : `${isDark ? 'text-slate-400 hover:text-slate-200' : 'text-gray-500 hover:text-gray-800'}`
+          }`}
+        >
+          Problem Details
+        </button>
+        <button
+          onClick={() => setActiveTab("editor")}
+          className={`flex-1 py-2 text-center text-sm font-semibold rounded-lg transition-all ${
+            activeTab === "editor"
+              ? "bg-purple-600/30 text-purple-400 border border-purple-500/30"
+              : `${isDark ? 'text-slate-400 hover:text-slate-200' : 'text-gray-500 hover:text-gray-800'}`
+          }`}
+        >
+          Code Editor
+        </button>
+      </div>
+
+      <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
         {/* Left: Problem Description */}
-        <div className={`w-1/3 border-r ${theme.border.light} overflow-y-auto p-4 ${theme.bg.primary}`}>
+        <div className={`w-full md:w-1/3 border-b md:border-b-0 md:border-r ${theme.border.light} overflow-y-auto p-4 ${theme.bg.primary} ${activeTab === 'problem' ? 'flex flex-col' : 'hidden md:flex flex-col'}`}>
           <div className="mb-4">
             <h2 className={`text-base font-semibold mb-2 text-emerald-400`}>Problem</h2>
             <div className="mb-2">
@@ -1480,7 +1456,7 @@ export default function CompetitiveMatch() {
         </div>
 
         {/* Right: Code Editor & Output */}
-        <div className="flex-1 flex flex-col">
+        <div className={`flex-1 flex flex-col ${activeTab === 'editor' ? 'flex' : 'hidden md:flex'}`}>
           {/* Bug Hunt Mode Banner */}
           {gameMode === "bug_hunt" && (
             <div className="bg-red-500/10 border-b border-red-500/30 p-3">
@@ -2049,10 +2025,10 @@ export default function CompetitiveMatch() {
                             </div>
                             <div className={`flex items-center gap-3 mt-1 text-sm ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
                               <span>Score: {player.score || finalResults.score || 0}</span>
-                              {player.completion_time && (
+                              {player.time_elapsed !== undefined && player.time_elapsed !== null && player.time_elapsed > 0 && (
                                 <span className="flex items-center gap-1">
                                   <ClockIcon size={12} />
-                                  {player.completion_time.toFixed(1)}s
+                                  {player.time_elapsed.toFixed(1)}s
                                 </span>
                               )}
                             </div>
