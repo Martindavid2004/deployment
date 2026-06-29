@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import ProgressBar from "../components/ProgressBar";
 import AchievementsPanel from "../components/AchievementsPanel";
+import { API_BASE } from "../utils/api";
 
 export default function Dashboard({
   user,
@@ -39,6 +40,29 @@ export default function Dashboard({
 }) {
   const [timeLeft, setTimeLeft] = useState("00:00:00");
   const [showCodeDrawer, setShowCodeDrawer] = useState(false);
+  const [topUsers, setTopUsers] = useState([]);
+
+  // Fetch top users on mount
+  useEffect(() => {
+    const fetchTopUsers = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+        const res = await fetch(`${API_BASE}/users/top`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data)) {
+            setTopUsers(data);
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching top users:", err);
+      }
+    };
+    fetchTopUsers();
+  }, []);
 
   // Expanded Developer widgets states
   const [scratchpadCode, setScratchpadCode] = useState(
@@ -538,39 +562,42 @@ export default function Dashboard({
           </div>
 
           <div className="flex flex-col gap-2.5">
-            {allUsers.map((u, index) => (
-              <div 
-                key={index} 
-                className="flex items-center justify-between p-2 rounded-xl transition-all"
-                style={{
-                  backgroundColor: u.isCurrentUser ? 'var(--accent-soft)' : 'transparent',
-                  border: u.isCurrentUser ? '1px solid rgba(99, 102, 241, 0.2)' : '1px solid transparent'
-                }}
-              >
-                <div className="flex items-center gap-2.5">
-                  <span className={`w-5 text-center font-bold text-sm ${index === 0 ? "text-yellow-500" : index === 1 ? "text-slate-400" : index === 2 ? "text-amber-600" : "text-[var(--text-tertiary)]"}`}>
-                    #{index + 1}
-                  </span>
-                  <div 
-                    className="h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold text-white uppercase"
-                    style={{ background: u.isCurrentUser ? 'linear-gradient(135deg, var(--accent-primary), var(--accent-strong))' : 'var(--bg-tertiary)' }}
-                  >
-                    {u.name[0]}
+            {topUsers.map((u, index) => {
+              const isMe = u.username === user?.username;
+              return (
+                <div 
+                  key={index} 
+                  className="flex items-center justify-between p-2 rounded-xl transition-all"
+                  style={{
+                    backgroundColor: isMe ? 'var(--accent-soft)' : 'transparent',
+                    border: isMe ? '1px solid rgba(99, 102, 241, 0.2)' : '1px solid transparent'
+                  }}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className={`w-5 text-center font-bold text-sm ${index === 0 ? "text-yellow-500" : index === 1 ? "text-slate-400" : index === 2 ? "text-amber-600" : "text-[var(--text-tertiary)]"}`}>
+                      #{index + 1}
+                    </span>
+                    <div 
+                      className="h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold text-white uppercase"
+                      style={{ background: isMe ? 'linear-gradient(135deg, var(--accent-primary), var(--accent-strong))' : 'var(--bg-tertiary)' }}
+                    >
+                      {u.username?.[0]?.toUpperCase() || "?"}
+                    </div>
+                    <div>
+                      <div className={`text-xs font-bold ${isMe ? "text-[var(--accent-primary)]" : "text-[var(--text-primary)]"}`}>
+                        {u.username} {isMe && "(You)"}
+                      </div>
+                      <div className="text-[9px] uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>
+                        Level {u.level} • {u.level >= 10 ? "Archmage" : u.level >= 5 ? "Elite" : "Acolyte"}
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <div className={`text-xs font-bold ${u.isCurrentUser ? "text-[var(--accent-primary)]" : "text-[var(--text-primary)]"}`}>
-                      {u.name}
-                    </div>
-                    <div className="text-[9px] uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>
-                      Level {u.level} • {u.title}
-                    </div>
+                  <div className="text-right text-xs font-extrabold" style={{ color: 'var(--text-secondary)' }}>
+                    {u.xp} <span className="text-[9px] font-semibold text-gray-500">XP</span>
                   </div>
                 </div>
-                <div className="text-right text-xs font-extrabold" style={{ color: 'var(--text-secondary)' }}>
-                  {u.xp} <span className="text-[9px] font-semibold text-gray-500">XP</span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Arena Matchmaking quick-launch card */}

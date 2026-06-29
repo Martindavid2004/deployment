@@ -207,3 +207,18 @@ async def claim_quest_xp(claim: ClaimQuestXP, current_user = Depends(get_current
         "xp": new_global_xp,
         "level": new_global_level
     }
+
+@router.get("/top")
+async def get_top_users(current_user = Depends(get_current_user)):
+    db = get_database()
+    cursor = db.users.find({}).sort("xp", -1).limit(10)
+    top_users = []
+    async for u in cursor:
+        top_users.append({
+            "id": str(u["_id"]),
+            "username": u["username"],
+            "xp": u.get("xp", 0),
+            "level": u.get("level", 1),
+            "rating": u.get("rating", 1200)
+        })
+    return top_users
