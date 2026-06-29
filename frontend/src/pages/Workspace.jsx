@@ -414,38 +414,41 @@ export default function Workspace({
             </span>
           </p>
           <p className="text-sm text-theme-text-tertiary mt-1">
-            Topics: {problem.topics.join(", ")} •{" "}
-            <a
-              href={problem.videoUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="text-sky-400 underline"
-            >
-              Watch learning video ↗
-            </a>
+            Topics: {problem.topics.join(", ")}
           </p>
         </div>
         <div className="w-full md:w-64 space-y-2">
           <ProgressBar value={overallProgress} label="Overall progress" />
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-1.5 items-center">
             {[1, 2, 3, 4].map((r) => {
               const done = attempt?.roundCompleted?.[r];
+              const isLocked = r > 1 && !attempt?.roundCompleted?.[r - 1];
               return (
                 <button
                   key={r}
-                  onClick={() => setCurrentRound(r)}
-                  className={`px-2.5 py-1 rounded-full border text-sm ${currentRound === r
-                      ? "border-emerald-500 bg-emerald-500/20 text-emerald-200"
-                      : "border-theme-border bg-theme-bg-tertiary text-theme-text-secondary"
-                    } ${done ? "border-dashed" : ""}`}
+                  onClick={() => {
+                    if (!isLocked) setCurrentRound(r);
+                  }}
+                  disabled={isLocked}
+                  className={`px-2.5 py-1 rounded-full border text-sm transition-all ${
+                    isLocked 
+                      ? "border-theme-border bg-theme-bg-secondary text-theme-text-tertiary opacity-40 cursor-not-allowed"
+                      : currentRound === r
+                        ? "border-emerald-500 bg-emerald-500/20 text-emerald-200"
+                        : "border-theme-border bg-theme-bg-tertiary text-theme-text-secondary hover:border-slate-500"
+                  } ${done ? "border-dashed" : ""}`}
                 >
                   R{r}
                 </button>
               );
             })}
-          </div>
-          <div className="text-sm text-theme-text-tertiary">
-            Overall time: <span className="text-theme-text-primary">{totalSeconds.toFixed(1)}s</span>
+            <button
+              onClick={handleSubmitRound}
+              disabled={currentRound === 4 && !testResults?.all_passed}
+              className="ml-1 px-3 py-1 rounded-full bg-emerald-500 text-theme-bg-primary text-xs font-bold hover:bg-emerald-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            >
+              {currentRound === 4 ? "Submit" : "Complete Round"}
+            </button>
           </div>
         </div>
       </div>
@@ -741,26 +744,8 @@ export default function Workspace({
                 {isExecuting ? "Running..." : "Run All Tests"}
               </button>
             )}
-            <button
-              onClick={handleSubmitRound}
-              disabled={currentRound === 4 && !testResults?.all_passed}
-              className="px-4 py-1.5 rounded-full bg-emerald-500 text-theme-bg-primary text-sm font-semibold hover:bg-emerald-400 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {currentRound === 4 ? "Submit Final Answer" : "Complete Round"}
-            </button>
           </div>
         </div>
-      </div>
-
-      <div className="border border-theme-border rounded-2xl p-4">
-        <h2 className="text-base font-semibold mb-1">
-          Leaderboard — {problem.title}
-        </h2>
-        <p className="text-sm text-theme-text-tertiary mb-2">
-          Local-only scoreboard. A backend can later store this across all
-          students.
-        </p>
-        <LeaderboardTable entries={leaderboardEntries} />
       </div>
     </div>
   );

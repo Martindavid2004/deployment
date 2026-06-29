@@ -300,7 +300,7 @@ export default function Profile({
               {/* Faction selector card list */}
               <div className="flex flex-col gap-2 mb-5">
                 <label className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>Select Faction Avatar</label>
-                <div className="flex flex-col gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {FACTIONS.map((fac) => (
                     <button
                       key={fac.id}

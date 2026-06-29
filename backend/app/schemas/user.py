@@ -21,6 +21,13 @@ class UserInDB(UserBase):
     level: int = 1
     achievements: List[str] = []
     rating: int = 1200  # Competitive rating (ELO-style)
+    friends: List[str] = []
+    friend_requests: List[str] = []
+    match_invites: List[dict] = []
+    learning_xp: int = 0
+    competitive_xp: int = 0
+    learning_level: int = 1
+    competitive_level: int = 1
 
 class UserPublic(UserBase):
     id: str
@@ -29,3 +36,10 @@ class UserPublic(UserBase):
     level: int = 1
     achievements: List[str] = []
     rating: int = 1200  # Competitive rating (ELO-style)
+    friends: List[str] = []
+    friend_requests: List[str] = []
+    match_invites: List[dict] = []
+    learning_xp: int = 0
+    competitive_xp: int = 0
+    learning_level: int = 1
+    competitive_level: int = 1

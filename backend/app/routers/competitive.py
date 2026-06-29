@@ -342,6 +342,33 @@ def calculate_xp_bonus(time_elapsed: float, time_limit: int, used_hints: bool) -
     
     return base_xp + time_bonus + no_hints_bonus
 
+async def update_user_competitive_stats(db, user_id: str, rating_change: int, xp_gain: int):
+    """Helper to update competitive ELO rating, XP, and level details"""
+    from bson import ObjectId
+    user = await db.users.find_one({"_id": ObjectId(user_id)})
+    if not user:
+        return
+        
+    new_rating = max(100, user.get("rating", 1200) + rating_change)
+    new_comp_xp = user.get("competitive_xp", 0) + xp_gain
+    new_global_xp = user.get("xp", 0) + xp_gain
+    
+    new_comp_level = (new_comp_xp // 500) + 1
+    new_global_level = (new_global_xp // 500) + 1
+    
+    await db.users.update_one(
+        {"_id": ObjectId(user_id)},
+        {
+            "$set": {
+                "rating": new_rating,
+                "competitive_xp": new_comp_xp,
+                "xp": new_global_xp,
+                "competitive_level": new_comp_level,
+                "level": new_global_level
+            }
+        }
+    )
+
 async def simulate_bot_completion(match_id: str, problem_id: str, bot_skill: int = 1200):
     """Simulate bot completing the problem after a delay"""
     db = get_database()
@@ -417,15 +444,7 @@ async def simulate_bot_completion(match_id: str, problem_id: str, bot_skill: int
                 rating_change = calculate_rating_change(current_rating, bot_skill, player1.get("used_hints", False))
                 xp_bonus = calculate_xp_bonus(p1_time, updated_match.get("time_limit_seconds", 1800), player1.get("used_hints", False))
                 
-                await db.users.update_one(
-                    {"_id": ObjectId(player1["user_id"])},
-                    {
-                        "$inc": {
-                            "rating": rating_change,
-                            "xp": xp_bonus
-                        }
-                    }
-                )
+                await update_user_competitive_stats(db, player1["user_id"], rating_change, xp_bonus)
         else:
             # Bot won - decrease player rating
             player1_user = await db.users.find_one({"_id": ObjectId(player1["user_id"])})
@@ -433,14 +452,7 @@ async def simulate_bot_completion(match_id: str, problem_id: str, bot_skill: int
                 current_rating = player1_user.get("rating", 1200)
                 rating_change = calculate_rating_change(bot_skill, current_rating, False)
                 
-                await db.users.update_one(
-                    {"_id": ObjectId(player1["user_id"])},
-                    {
-                        "$inc": {
-                            "rating": -rating_change
-                        }
-                    }
-                )
+                await update_user_competitive_stats(db, player1["user_id"], -rating_change, 0)
 
 def generate_game_id() -> str:
     """Generate a unique 6-character game ID for lobby"""
@@ -1676,15 +1688,7 @@ async def submit_solution(
                     xp_gain = 100 if rank == 1 else (50 if rank == 2 else 25)
                     rating_gain = 30 if rank == 1 else (15 if rank == 2 else 5)
                     
-                    await db.users.update_one(
-                        {"_id": ObjectId(player["user_id"])},
-                        {
-                            "$inc": {
-                                "xp": xp_gain,
-                                "rating": rating_gain
-                            }
-                        }
-                    )
+                    await update_user_competitive_stats(db, player["user_id"], rating_gain, xp_gain)
             
             # Fetch the updated match with all player data
             final_match = await db.matches.find_one({"_id": match_oid})
@@ -1847,25 +1851,10 @@ async def submit_solution(
             
             # Update ratings and XP
             if winner_user:
-                await db.users.update_one(
-                    {"_id": ObjectId(winner["user_id"])},
-                    {
-                        "$inc": {
-                            "rating": rating_change,
-                            "xp": xp_bonus
-                        }
-                    }
-                )
+                await update_user_competitive_stats(db, winner["user_id"], rating_change, xp_bonus)
             
             if loser_user:
-                await db.users.update_one(
-                    {"_id": ObjectId(loser["user_id"])},
-                    {
-                        "$inc": {
-                            "rating": -rating_change
-                        }
-                    }
-                )
+                await update_user_competitive_stats(db, loser["user_id"], -rating_change, 0)
             
             # Update match as completed
             await db.matches.update_one(
@@ -2087,15 +2076,7 @@ async def leave_match(match_id: str, current_user: dict = Depends(get_current_us
                     xp_gain = 100 if rank == 1 else (50 if rank == 2 else 25)
                     rating_gain = 30 if rank == 1 else (15 if rank == 2 else 5)
                     
-                    await db.users.update_one(
-                        {"_id": ObjectId(player["user_id"])},
-                        {
-                            "$inc": {
-                                "xp": xp_gain,
-                                "rating": rating_gain
-                            }
-                        }
-                    )
+                    await update_user_competitive_stats(db, player["user_id"], rating_gain, xp_gain)
     else:
         player1_id = match.get("player1", {}).get("user_id")
         player2_id = match.get("player2", {}).get("user_id")
@@ -2374,26 +2355,53 @@ async def find_match(
 @router.get("/leaderboard")
 async def get_competitive_leaderboard(
     limit: int = 50,
+    filter_type: str = Query("global", alias="filter"),
     current_user = Depends(get_current_user)
 ):
     """Get competitive mode leaderboard based on rating"""
     db = get_database()
     
-    cursor = db.users.find({}).sort("rating", -1).limit(limit)
-    leaderboard = []
-    
-    rank = 1
-    async for user in cursor:
-        leaderboard.append({
-            "rank": rank,
-            "username": user["username"],
-            "rating": user.get("rating", 1200),
-            "xp": user.get("xp", 0),
-            "level": user.get("level", 1)
-        })
-        rank += 1
-    
-    return leaderboard
+    query = {}
+    if filter_type == "friends":
+        friend_ids = current_user.get("friends")
+        if not isinstance(friend_ids, list):
+            friend_ids = []
+        
+        # Convert string IDs to ObjectIds
+        obj_ids = []
+        if "_id" in current_user:
+            obj_ids.append(current_user["_id"])
+            
+        for fid in friend_ids:
+            if not fid:
+                continue
+            try:
+                obj_ids.append(ObjectId(fid))
+            except Exception as e:
+                logger.error(f"Error converting friend ID {fid} to ObjectId: {e}")
+                
+        query = {"_id": {"$in": obj_ids}}
+        
+    try:
+        cursor = db.users.find(query).sort("rating", -1).limit(limit)
+        leaderboard = []
+        
+        rank = 1
+        async for user in cursor:
+            leaderboard.append({
+                "id": str(user["_id"]),
+                "rank": rank,
+                "username": user["username"],
+                "rating": user.get("rating", 1200),
+                "xp": user.get("xp", 0),
+                "level": user.get("level", 1)
+            })
+            rank += 1
+        
+        return leaderboard
+    except Exception as e:
+        logger.error(f"Error fetching competitive leaderboard: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch leaderboard")
 
 @router.post("/generate-problem")
 async def generate_random_problem(
@@ -2600,15 +2608,7 @@ async def submit_quiz(
                 xp_gain = 100 if rank == 1 else (50 if rank == 2 else 25)
                 rating_gain = 30 if rank == 1 else (15 if rank == 2 else 5)
                 
-                await db.users.update_one(
-                    {"_id": ObjectId(player["user_id"])},
-                    {
-                        "$inc": {
-                            "xp": xp_gain,
-                            "rating": rating_gain
-                        }
-                    }
-                )
+                await update_user_competitive_stats(db, player["user_id"], rating_gain, xp_gain)
     
     return QuizSubmitResponse(
         score=score_data["score"],

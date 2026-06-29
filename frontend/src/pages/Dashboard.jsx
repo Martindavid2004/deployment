@@ -37,9 +37,6 @@ export default function Dashboard({
   currentLanguage,
   stats,
 }) {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedDifficulty, setSelectedDifficulty] = useState("All");
-  const [selectedStatus, setSelectedStatus] = useState("All");
   const [timeLeft, setTimeLeft] = useState("00:00:00");
   const [showCodeDrawer, setShowCodeDrawer] = useState(false);
 
@@ -86,29 +83,38 @@ export default function Dashboard({
 
   // Compute Resume Last Session Problem
   const getResumeProblem = () => {
-    // 1. Look for first problem that is in-progress (rounds done > 0, but finalCompleted is false)
-    const inProgressProblems = problems.filter((p) => {
-      const key = `${p.id}_${currentLanguage}`;
-      const att = attempts[key];
-      if (!att) return false;
-      const roundsDone = Object.values(att.roundCompleted || {}).filter(Boolean).length;
-      return roundsDone > 0 && !att.finalCompleted;
+    const list = Object.entries(attempts || {}).map(([k, att]) => {
+      const [problemIdStr, lang] = k.split("_");
+      const roundsCompleted = Object.values(att.roundCompleted || {}).filter(Boolean).length;
+      return {
+        id: Number(problemIdStr),
+        language: lang,
+        globalStartTime: att.globalStartTime || 0,
+        roundsCompleted,
+        finalCompleted: att.finalCompleted
+      };
     });
 
-    if (inProgressProblems.length > 0) {
-      return { problem: inProgressProblems[0], isInProgress: true };
+    // 1. Look for the most recently started in-progress problem
+    const inProgress = list
+      .filter((item) => item.roundsCompleted > 0 && !item.finalCompleted)
+      .sort((a, b) => b.globalStartTime - a.globalStartTime);
+
+    if (inProgress.length > 0) {
+      const found = problems.find((p) => p.id === inProgress[0].id);
+      if (found) return { problem: found, isInProgress: true };
     }
 
-    // 2. Otherwise recommend the first unattempted problem
-    const unattemptedProblems = problems.filter((p) => {
+    // 2. Otherwise recommend the first uncompleted problem from general list
+    const unstarted = problems.filter((p) => {
       const key = `${p.id}_${currentLanguage}`;
       const att = attempts[key];
       const roundsDone = att ? Object.values(att.roundCompleted || {}).filter(Boolean).length : 0;
       return !att || (!att.finalCompleted && roundsDone === 0);
     });
 
-    if (unattemptedProblems.length > 0) {
-      return { problem: unattemptedProblems[0], isInProgress: false };
+    if (unstarted.length > 0) {
+      return { problem: unstarted[0], isInProgress: false };
     }
 
     return { problem: problems[0], isInProgress: false };
@@ -117,46 +123,64 @@ export default function Dashboard({
   const { problem: resumeProblem, isInProgress: resumeIsInProgress } = getResumeProblem();
 
   // Dynamic Skill Vectors based on user accomplishments
-  const totalProblems = problems.length;
+  const totalProblems = problems.length || 1;
   const completedInLang = problems.filter((p) => {
     const key = `${p.id}_${currentLanguage}`;
     return attempts[key]?.finalCompleted;
   }).length;
 
+  const debugCompletedCount = Object.values(attempts || {}).filter((att) => att.roundCompleted?.[2]).length;
+  
+  const uniqueLangs = new Set();
+  Object.keys(attempts || {}).forEach((k) => {
+    const lang = k.split("_")[1];
+    if (lang) uniqueLangs.add(lang);
+  });
+  const langCount = uniqueLangs.size;
+  const polyglotVal = langCount >= 3 ? 100 : langCount === 2 ? 75 : langCount === 1 ? 40 : 0;
+
+  const finalCompletedCount = Object.values(attempts || {}).filter((att) => att.finalCompleted).length;
+
   const skills = [
     {
       name: "Algorithmic Logic",
-      val: Math.min(100, Math.floor((completedInLang / Math.max(1, totalProblems)) * 70) + 30),
+      val: totalProblems > 0 ? Math.min(100, Math.floor((completedInLang / totalProblems) * 100)) : 0,
       desc: "Problem formulation & execution"
     },
     {
       name: "Debugging Precision",
-      val: stats.fastSolve ? 95 : Math.min(100, Math.floor(stats.xp * 0.4) + 20),
+      val: debugCompletedCount > 0 ? Math.min(100, Math.floor((debugCompletedCount / totalProblems) * 80) + 20) : 0,
       desc: "Speed of spotting buggy logic"
     },
     {
       name: "Language Polyglot",
-      val: stats.multiLang ? 90 : 30,
+      val: polyglotVal,
       desc: "Cross-language versatility"
     },
     {
       name: "Efficiency Score",
-      val: Math.min(100, Math.floor(stats.xp * 0.3) + 40),
+      val: finalCompletedCount > 0 ? Math.min(100, Math.floor((finalCompletedCount / totalProblems) * 60) + 40) : 0,
       desc: "Clean & performant compilation"
     }
   ];
 
-  // Dynamic GitHub-style Coding contribution calendar seed
+  // Dynamic GitHub-style Coding contribution calendar based on actual user attempt activities
   const heatmapDays = [];
-  const nameSeed = (user?.name || "coder").length;
-  for (let i = 0; i < 84; i++) {
-    // Generate organic-looking levels (0: none, 1: light, 2: medium, 3: high)
-    let level = (i * 7 + nameSeed * 3) % 4;
-    if (i % 7 === 0 || i % 11 === 0 || i % 13 === 0) level = 0; // dynamic gaps
-    if (Object.keys(attempts || {}).length > 0 && i % 4 === 0) {
-      level = Math.min(3, level + 1);
+  const activityMap = {};
+
+  Object.values(attempts || {}).forEach((att) => {
+    if (att.globalStartTime) {
+      const dateStr = new Date(att.globalStartTime).toDateString();
+      activityMap[dateStr] = (activityMap[dateStr] || 0) + 1;
     }
-    heatmapDays.push({ id: i, level });
+  });
+
+  for (let i = 83; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const count = activityMap[d.toDateString()] || 0;
+    const level = count >= 3 ? 3 : count === 2 ? 2 : count === 1 ? 1 : 0;
+    heatmapDays.push({ id: 83 - i, level, date: d.toDateString(), count });
   }
 
   // Dynamic Leaderboard sorting
@@ -196,77 +220,8 @@ export default function Dashboard({
   };
 
 
-  // Dynamic Recent Activity Log generator
-  const getActivities = () => {
-    const act = [];
-    Object.entries(attempts || {}).forEach(([key, attempt]) => {
-      const [pId, lang] = key.split("_");
-      const prob = problems.find((p) => p.id === Number(pId));
-      if (!prob) return;
 
-      if (attempt.finalCompleted) {
-        act.push({
-          id: `solve-${pId}-${lang}`,
-          type: "solve",
-          title: "Challenge Solved",
-          desc: `Completed "${prob.title}" in ${lang.toUpperCase()}`,
-          xp: "+30 XP",
-          color: "var(--ok-soft)"
-        });
-      } else {
-        const rounds = Object.values(attempt.roundCompleted || {}).filter(Boolean).length;
-        if (rounds > 0) {
-          act.push({
-            id: `round-${pId}-${lang}`,
-            type: "attempt",
-            title: "Bug Defeated",
-            desc: `Round ${rounds} of "${prob.title}" in ${lang.toUpperCase()}`,
-            xp: `+${rounds * 5} XP`,
-            color: "var(--accent-primary)"
-          });
-        }
-      }
-    });
 
-    if (act.length === 0) {
-      act.push({
-        id: "init-profile",
-        type: "system",
-        title: "Profile Seeded",
-        desc: `Ready to code in ${currentLanguage.toUpperCase()}`,
-        xp: "+10 XP",
-        color: "var(--accent-primary)"
-      });
-    }
-
-    return act.slice(0, 3);
-  };
-  const activities = getActivities();
-
-  // Problem Filters
-  const filteredProblems = problems.filter((p) => {
-    // Search filter
-    const matchesSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (p.tags || []).some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
-
-    // Difficulty filter
-    const matchesDifficulty = selectedDifficulty === "All" || p.difficulty === selectedDifficulty;
-
-    // Status filter
-    const key = `${p.id}_${currentLanguage}`;
-    const att = attempts[key];
-    const completed = att?.finalCompleted;
-    const roundsDone = att ? Object.values(att.roundCompleted || {}).filter(Boolean).length : 0;
-    const matchesStatus =
-      selectedStatus === "All" ||
-      (selectedStatus === "Completed" && completed) ||
-      (selectedStatus === "In Progress" && !completed && roundsDone > 0) ||
-      (selectedStatus === "Not Started" && (!att || (!completed && roundsDone === 0)));
-
-    return matchesSearch && matchesDifficulty && matchesStatus;
-  });
-
-  const completionPercent = totalProblems ? (completedInLang / totalProblems) * 100 : 0;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full">
@@ -425,188 +380,52 @@ export default function Dashboard({
           </div>
         )}
 
-        {/* Dynamic & Expandable Problem Explorer list */}
-        <div className="p-6 cc-card flex flex-col gap-5">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <h2 className="text-xl font-extrabold heading-font">Problem Explorer</h2>
-              <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                Filter problems, study syntax structures, and compile codes.
-              </p>
-            </div>
-            
-            {/* Inline dynamic filters */}
-            <div className="flex flex-wrap gap-2">
-              <select
-                value={selectedDifficulty}
-                onChange={(e) => setSelectedDifficulty(e.target.value)}
-                className="px-3 py-1.5 text-xs rounded-full border outline-none font-semibold cursor-pointer transition-all hover:border-[var(--accent-primary)]"
-                style={{ borderColor: 'var(--border-light)', backgroundColor: 'var(--bg-secondary)' }}
-              >
-                <option value="All">All Difficulties</option>
-                <option value="Easy">Easy</option>
-                <option value="Medium">Medium</option>
-                <option value="Hard">Hard</option>
-              </select>
+        <AchievementsPanel stats={stats} />
 
-              <select
-                value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
-                className="px-3 py-1.5 text-xs rounded-full border outline-none font-semibold cursor-pointer transition-all hover:border-[var(--accent-primary)]"
-                style={{ borderColor: 'var(--border-light)', backgroundColor: 'var(--bg-secondary)' }}
-              >
-                <option value="All">All Progress</option>
-                <option value="Completed">Completed</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Not Started">Not Started</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Search Inputs */}
-          <div className="relative w-full">
-            <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none" style={{ color: 'var(--text-tertiary)' }}>
-              <Search size={16} />
+        {/* Custom Contribution/Coding Grid Heatmap */}
+        <div className="p-6 cc-card flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-bold uppercase tracking-wider heading-font flex items-center gap-1.5">
+              <Code2 size={14} className="text-[var(--ok-soft)]" /> Coding Activity Heatmap
+            </h2>
+            <span className="text-[9px] font-bold" style={{ color: 'var(--text-tertiary)' }}>
+              12 Weeks Streak
             </span>
-            <input
-              type="text"
-              placeholder="Search problem title or topic tag..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border outline-none transition-all focus:border-[var(--accent-primary)]"
-              style={{
-                borderColor: 'var(--border-light)',
-                backgroundColor: 'var(--bg-tertiary)',
-                color: 'var(--text-primary)'
-              }}
-            />
           </div>
 
-          {/* Sleek Row-by-Row Problem Catalog (Scrollable) */}
-          <div className="flex flex-col gap-2.5 max-h-[380px] overflow-y-auto pr-1.5">
-            {filteredProblems.length > 0 ? (
-              filteredProblems.map((p) => {
-                const key = `${p.id}_${currentLanguage}`;
-                const att = attempts[key];
-                const roundsDone = att
-                  ? Object.values(att.roundCompleted || {}).filter(Boolean).length
-                  : 0;
-                const completed = att?.finalCompleted;
+          {/* Grid Blocks */}
+          <div className="grid grid-flow-col grid-rows-7 gap-1.5 p-1.5 bg-[var(--bg-tertiary)] rounded-lg border justify-start md:justify-center max-w-full overflow-x-auto" style={{ borderColor: 'var(--border-color)' }}>
+            {heatmapDays.map((day) => (
+              <div
+                key={day.id}
+                className="h-2.5 w-2.5 rounded-[2px] transition-all hover:scale-125 cursor-help"
+                style={{
+                  backgroundColor:
+                    day.level === 0
+                      ? 'var(--bg-secondary)'
+                      : day.level === 1
+                      ? 'rgba(129, 140, 248, 0.25)'
+                      : day.level === 2
+                      ? 'rgba(99, 102, 241, 0.6)'
+                      : 'var(--accent-primary)',
+                  boxShadow: day.level === 3 ? '0 0 6px rgba(99, 102, 241, 0.4)' : 'none'
+                }}
+                title={`${day.date}: ${day.count} ${day.count === 1 ? 'activity' : 'activities'}`}
+              />
+            ))}
+          </div>
 
-                return (
-                  <Link
-                    key={p.id}
-                    to={`/workspace/${p.id}`}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl transition-all duration-200 border border-transparent hover:border-[var(--accent-primary)] hover:bg-[var(--bg-hover)] gap-4 group"
-                    style={{
-                      backgroundColor: 'color-mix(in srgb, var(--bg-secondary) 94%, var(--bg-tertiary))',
-                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)'
-                    }}
-                  >
-                    {/* Left: Checkmark Status Icon & Title / Tags */}
-                    <div className="flex items-center gap-3.5 flex-1 min-w-0">
-                      <div 
-                        className={`h-7 w-7 rounded-full flex items-center justify-center transition-all ${
-                          completed 
-                            ? "text-[var(--ok-soft)] bg-[rgba(16,185,129,0.1)]" 
-                            : roundsDone > 0 
-                            ? "text-[var(--accent-primary)] bg-[var(--accent-soft)] animate-pulse" 
-                            : "text-[var(--text-tertiary)] bg-[var(--bg-tertiary)] border border-[var(--border-color)]"
-                        }`}
-                      >
-                        {completed ? (
-                          <CheckCircle2 size={16} className="text-[var(--ok-soft)]" />
-                        ) : roundsDone > 0 ? (
-                          <Zap size={14} fill="currentColor" />
-                        ) : (
-                          <div className="h-2 w-2 rounded-full bg-[var(--border-light)]" />
-                        )}
-                      </div>
-                      <div className="min-w-0">
-                        <h4 className="font-extrabold text-sm text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors truncate">
-                          {p.title}
-                        </h4>
-                        <div className="flex flex-wrap gap-1.5 mt-1">
-                          {p.tags && p.tags.map((t, idx) => (
-                            <span key={idx} className="text-[9px] px-1.5 py-0.25 rounded font-mono" style={{ backgroundColor: 'var(--bg-secondary)', color: 'var(--text-tertiary)' }}>
-                              #{t}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Right Metadata */}
-                    <div className="flex items-center justify-between sm:justify-end gap-5 text-xs">
-                      
-                      {/* Difficulty Pill */}
-                      <span
-                        className="px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider text-center w-16"
-                        style={{
-                          backgroundColor:
-                            p.difficulty === "Easy"
-                              ? 'rgba(16, 185, 129, 0.12)'
-                              : p.difficulty === "Medium"
-                              ? 'rgba(245, 158, 11, 0.12)'
-                              : 'rgba(239, 68, 68, 0.12)',
-                          color:
-                            p.difficulty === "Easy"
-                              ? 'var(--ok-soft)'
-                              : p.difficulty === "Medium"
-                              ? 'var(--warn-soft)'
-                              : 'var(--danger-soft)'
-                        }}
-                      >
-                        {p.difficulty}
-                      </span>
-
-                      {/* Micro rounds dot tracker */}
-                      <div className="flex flex-col items-center sm:items-end gap-0.5 min-w-[90px]">
-                        <div className="flex gap-1">
-                          {[1, 2, 3, 4].map((r) => {
-                            const isDone = att?.roundCompleted?.[r];
-                            const isActive = !completed && (roundsDone + 1 === r);
-                            return (
-                              <div
-                                key={r}
-                                className={`h-2.5 w-2.5 rounded-full transition-all ${
-                                  isDone 
-                                    ? "bg-[var(--accent-primary)] shadow-[0_0_6px_var(--accent-primary)]" 
-                                    : isActive 
-                                    ? "bg-white border-2 border-[var(--accent-primary)] animate-pulse" 
-                                    : "bg-[var(--bg-secondary)] border border-[var(--border-light)]"
-                                }`}
-                                title={`Round ${r}`}
-                              />
-                            );
-                          })}
-                        </div>
-                        <span className="text-[9px] font-semibold text-[var(--text-tertiary)] uppercase tracking-wider">
-                          {completed ? "Completed" : `${roundsDone}/4 rounds`}
-                        </span>
-                      </div>
-
-                      {/* Action trigger button */}
-                      <button className="px-3 py-1.5 rounded-lg text-[9px] font-extrabold uppercase tracking-wider cc-btn-primary flex items-center gap-1 group-hover:scale-105 transition-transform">
-                        {completed ? "Review" : roundsDone > 0 ? "Resume" : "Solve"}
-                        <ArrowRight size={10} />
-                      </button>
-
-                    </div>
-                  </Link>
-                );
-              })
-            ) : (
-              <div className="py-12 text-center" style={{ color: 'var(--text-tertiary)' }}>
-                <BookOpen size={36} className="mx-auto mb-2 opacity-30 animate-bounce" style={{ animationDuration: '3s' }} />
-                <p className="text-sm font-semibold">No matching problems found.</p>
-                <p className="text-xs mt-1">Try relaxing your search query or selecting 'All' in the filters.</p>
-              </div>
-            )}
+          <div className="flex items-center justify-between text-[9px] mt-1" style={{ color: 'var(--text-tertiary)' }}>
+            <span>Less active</span>
+            <div className="flex gap-1 items-center">
+              <div className="h-2 w-2 rounded-[2px] bg-[var(--bg-secondary)]" />
+              <div className="h-2 w-2 rounded-[2px] bg-[rgba(129,140,248,0.25)]" />
+              <div className="h-2 w-2 rounded-[2px] bg-[rgba(99,102,241,0.6)]" />
+              <div className="h-2 w-2 rounded-[2px] bg-[var(--accent-primary)]" />
+            </div>
+            <span>More active</span>
           </div>
         </div>
-
-        <AchievementsPanel stats={stats} />
 
         {/* Persistent Developer Sticky Scratchpad */}
         <div className="p-6 cc-card flex flex-col gap-4">
@@ -668,45 +487,41 @@ export default function Dashboard({
         
         {/* Core Progression Circle Profile and XP */}
         <div className="p-6 cc-card flex flex-col items-center text-center bg-gradient-to-b from-[var(--bg-secondary)] to-[var(--bg-tertiary)]">
-          <div className="relative h-24 w-24 mb-4 flex items-center justify-center">
+          <div className="relative h-20 w-20 mb-3 flex items-center justify-center">
             {/* Pulsing glow behind avatar */}
             <div className="absolute inset-0 rounded-full blur bg-[var(--accent-soft)] animate-pulse" />
             <div 
-              className="h-20 w-20 rounded-full relative z-10 flex items-center justify-center text-3xl font-extrabold text-white" 
+              className="h-16 w-16 rounded-full relative z-10 flex items-center justify-center text-2xl font-extrabold text-white" 
               style={{ background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-strong))' }}
             >
               {user?.name?.[0]?.toUpperCase() || "U"}
             </div>
-            <div className="absolute bottom-0 right-0 h-7 w-7 rounded-full bg-[var(--bg-secondary)] border border-[var(--accent-primary)] flex items-center justify-center font-bold text-xs">
-              {stats.level}
-            </div>
           </div>
 
-          <h2 className="text-lg font-bold leading-tight mb-1" style={{ color: 'var(--text-primary)' }}>
+          <h2 className="text-base font-bold leading-tight mb-1" style={{ color: 'var(--text-primary)' }}>
             {user?.name || "Coder"}
           </h2>
           <div className="text-xs uppercase font-bold tracking-wider mb-4 flex items-center gap-1 justify-center text-[var(--accent-primary)]">
-            <Shield size={12} /> Rank Tier: {stats.level >= 10 ? "Archmage" : stats.level >= 5 ? "Elite" : "Acolyte"}
+            <Shield size={12} /> Rank Tier: {(user?.learning_level || stats.level) >= 10 ? "Archmage" : (user?.learning_level || stats.level) >= 5 ? "Elite" : "Acolyte"}
           </div>
 
-          {/* Level Progress */}
-          <div className="w-full text-left bg-[var(--bg-secondary)] p-3 rounded-xl border border-[var(--border-color)]">
-            <div className="flex justify-between text-xs font-bold mb-1.5">
-              <span style={{ color: 'var(--text-secondary)' }}>XP Level {stats.level} Progress</span>
-              <span className="text-[var(--accent-primary)]">{stats.xp} XP total</span>
+          <div className="w-full flex flex-col gap-4">
+            {/* Learning pathway stats */}
+            <div className="text-left bg-[rgba(255,255,255,0.01)] p-3 rounded-xl border border-dashed" style={{ borderColor: 'rgba(16, 185, 129, 0.2)' }}>
+              <div className="flex justify-between text-[11px] font-bold mb-1">
+                <span className="text-emerald-400">Learning Level {user?.learning_level || stats.level}</span>
+                <span className="text-theme-text-secondary">{(user?.learning_xp !== undefined ? user.learning_xp : stats.xp)} XP</span>
+              </div>
+              <ProgressBar value={(((user?.learning_xp !== undefined ? user.learning_xp : stats.xp) % 500) / 500) * 100} />
             </div>
-            <ProgressBar value={stats.levelProgress} big />
-          </div>
 
-          {/* Primary & Secondary mini stats */}
-          <div className="grid grid-cols-2 gap-2.5 w-full mt-3 text-left">
-            <div className="p-2.5 rounded-xl bg-[rgba(255,255,255,0.01)] border" style={{ borderColor: 'var(--border-color)' }}>
-              <div className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>Language</div>
-              <div className="text-sm font-extrabold" style={{ color: 'var(--accent-primary)' }}>{currentLanguage.toUpperCase()}</div>
-            </div>
-            <div className="p-2.5 rounded-xl bg-[rgba(255,255,255,0.01)] border" style={{ borderColor: 'var(--border-color)' }}>
-              <div className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>Solves Count</div>
-              <div className="text-sm font-extrabold" style={{ color: 'var(--accent-primary)' }}>{stats.totalSolved} Problems</div>
+            {/* Competitive pathway stats */}
+            <div className="text-left bg-[rgba(255,255,255,0.01)] p-3 rounded-xl border border-dashed" style={{ borderColor: 'rgba(139, 92, 246, 0.2)' }}>
+              <div className="flex justify-between text-[11px] font-bold mb-1">
+                <span className="text-purple-400">Arena Level {user?.competitive_level || 1} ({user?.rating || 1200} ELO)</span>
+                <span className="text-theme-text-secondary">{(user?.competitive_xp || 0)} XP</span>
+              </div>
+              <ProgressBar value={(((user?.competitive_xp || 0) % 500) / 500) * 100} />
             </div>
           </div>
         </div>
@@ -802,85 +617,6 @@ export default function Dashboard({
           </div>
         </div>
 
-        {/* Custom Contribution/Coding Grid Heatmap */}
-        <div className="p-6 cc-card flex flex-col gap-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-bold uppercase tracking-wider heading-font flex items-center gap-1.5">
-              <Code2 size={14} className="text-[var(--ok-soft)]" /> Coding Activity Heatmap
-            </h2>
-            <span className="text-[9px] font-bold" style={{ color: 'var(--text-tertiary)' }}>
-              12 Weeks Streak
-            </span>
-          </div>
-
-          {/* Grid Blocks */}
-          <div className="grid grid-flow-col grid-rows-7 gap-1.5 p-1.5 bg-[var(--bg-tertiary)] rounded-lg border justify-start md:justify-center max-w-full overflow-x-auto" style={{ borderColor: 'var(--border-color)' }}>
-            {heatmapDays.map((day) => (
-              <div
-                key={day.id}
-                className="h-2.5 w-2.5 rounded-[2px] transition-all hover:scale-125 cursor-help"
-                style={{
-                  backgroundColor:
-                    day.level === 0
-                      ? 'var(--bg-secondary)'
-                      : day.level === 1
-                      ? 'rgba(129, 140, 248, 0.25)'
-                      : day.level === 2
-                      ? 'rgba(99, 102, 241, 0.6)'
-                      : 'var(--accent-primary)',
-                  boxShadow: day.level === 3 ? '0 0 6px rgba(99, 102, 241, 0.4)' : 'none'
-                }}
-                title={
-                  day.level === 0
-                    ? "No activity"
-                    : day.level === 1
-                    ? "Moderate debugging session"
-                    : day.level === 2
-                    ? "Heavy compilation practice"
-                    : "Intense solve streak! +50XP"
-                }
-              />
-            ))}
-          </div>
-
-          <div className="flex items-center justify-between text-[9px] mt-1" style={{ color: 'var(--text-tertiary)' }}>
-            <span>Less active</span>
-            <div className="flex gap-1 items-center">
-              <div className="h-2 w-2 rounded-[2px] bg-[var(--bg-secondary)]" />
-              <div className="h-2 w-2 rounded-[2px] bg-[rgba(129,140,248,0.25)]" />
-              <div className="h-2 w-2 rounded-[2px] bg-[rgba(99,102,241,0.6)]" />
-              <div className="h-2 w-2 rounded-[2px] bg-[var(--accent-primary)]" />
-            </div>
-            <span>More active</span>
-          </div>
-        </div>
-
-        {/* Recent Activity stream panel */}
-        <div className="p-6 cc-card flex flex-col gap-3">
-          <h2 className="text-sm font-bold uppercase tracking-wider heading-font flex items-center gap-1.5 border-b pb-2" style={{ borderColor: 'var(--border-color)' }}>
-            <Award size={14} className="text-[var(--ok-soft)]" /> Activity Log
-          </h2>
-
-          <div className="flex flex-col gap-3.5">
-            {activities.map((act) => (
-              <div key={act.id} className="flex gap-3 text-xs items-start">
-                <div 
-                  className="h-2 w-2 rounded-full mt-1.5" 
-                  style={{ backgroundColor: act.color, boxShadow: `0 0 8px ${act.color}` }} 
-                />
-                <div className="flex-1">
-                  <div className="font-extrabold flex justify-between">
-                    <span>{act.title}</span>
-                    <span className="text-[10px]" style={{ color: act.color }}>{act.xp}</span>
-                  </div>
-                  <p className="text-[11px]" style={{ color: 'var(--text-tertiary)' }}>
-                    {act.desc}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
 
       </div>
 

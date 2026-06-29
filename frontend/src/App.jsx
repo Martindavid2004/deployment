@@ -5,7 +5,6 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
-import Profile from "./pages/Profile";
 import Problems from "./pages/Problems";
 import Workspace from "./pages/Workspace";
 import Competitive from "./pages/Competitive";
@@ -219,7 +218,7 @@ export default function App() {
   }
 
   return (
-    <BrowserRouter>
+    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <AppContent 
         user={user} 
         setUser={setUser}
@@ -266,6 +265,7 @@ function AppContent({
       {location.pathname !== "/" && !isGamePage && (
         <Navbar
           user={user}
+          setUser={setUser}
           onLogout={onLogout}
           theme={theme}
           toggleTheme={toggleTheme}
@@ -292,19 +292,6 @@ function AppContent({
                 user={user}
                 problems={problems}
                 attempts={attempts}
-                currentLanguage={currentLanguage}
-                stats={stats}
-              />
-            )}
-          />
-          <Route
-            path="/profile"
-            element={requireAuth(
-              <Profile
-                user={user}
-                setUser={setUser}
-                attempts={attempts}
-                problems={problems}
                 currentLanguage={currentLanguage}
                 stats={stats}
               />

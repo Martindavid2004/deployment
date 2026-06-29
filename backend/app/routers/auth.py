@@ -43,6 +43,14 @@ async def register(user_in: UserCreate):
         "xp": 0,
         "level": 1,
         "achievements": [],
+        "rating": 1200,
+        "friends": [],
+        "friend_requests": [],
+        "match_invites": [],
+        "learning_xp": 0,
+        "competitive_xp": 0,
+        "learning_level": 1,
+        "competitive_level": 1,
     }
     result = await db.users.insert_one(doc)
     doc["id"] = str(result.inserted_id)

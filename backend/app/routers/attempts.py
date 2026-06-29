@@ -22,8 +22,63 @@ async def upsert_attempt(
         "language": attempt_in.language,
     }
     doc = attempt_in.model_dump()
-
     existing = await db.attempts.find_one(key)
+    
+    # Calculate delta XP
+    delta_xp = 0
+    rounds_new = attempt_in.roundCompleted or {}
+    rounds_old = existing.get("roundCompleted") or {} if existing else {}
+    
+    # Each new round completed grants 25 XP
+    for r in ["1", "2", "3", "4"]:
+        if rounds_new.get(r) and not rounds_old.get(r):
+            delta_xp += 25
+            
+    # Final completion grants a difficulty-based bonus
+    if attempt_in.finalCompleted and (not existing or not existing.get("finalCompleted")):
+        difficulty = "easy"
+        try:
+            # Look up problem to get difficulty
+            # problem_id in attempts might be stored as string or int, try both
+            prob = await db.problems.find_one({"id": int(attempt_in.problem_id)})
+            if not prob:
+                prob = await db.problems.find_one({"_id": ObjectId(attempt_in.problem_id)})
+            if prob:
+                difficulty = str(prob.get("difficulty", "easy")).lower()
+        except Exception:
+            pass
+            
+        if difficulty == "easy":
+            delta_xp += 100
+        elif difficulty == "medium":
+            delta_xp += 200
+        elif difficulty == "hard":
+            delta_xp += 300
+        else:
+            delta_xp += 100
+            
+    if delta_xp > 0:
+        user_record = await db.users.find_one({"_id": current_user["_id"]})
+        if user_record:
+            new_learning_xp = user_record.get("learning_xp", 0) + delta_xp
+            new_global_xp = user_record.get("xp", 0) + delta_xp
+            
+            # 500 XP per level
+            new_learning_level = (new_learning_xp // 500) + 1
+            new_global_level = (new_global_xp // 500) + 1
+            
+            await db.users.update_one(
+                {"_id": current_user["_id"]},
+                {
+                    "$set": {
+                        "learning_xp": new_learning_xp,
+                        "xp": new_global_xp,
+                        "learning_level": new_learning_level,
+                        "level": new_global_level
+                    }
+                }
+            )
+
     if existing:
         await db.attempts.update_one(key, { "$set": doc })
         existing.update(doc)
