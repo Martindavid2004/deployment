@@ -91,6 +91,18 @@ export default function CompetitiveMatch() {
   const [validationError, setValidationError] = useState(null);
   const [activeTab, setActiveTab] = useState("problem"); // "problem" or "editor" for mobile view
 
+  // Toast notifications state and helper
+  const [toasts, setToasts] = useState([]);
+  const showToast = (message, type = "info") => {
+    const id = Date.now() + Math.random();
+    setToasts(prev => [...prev, { id, message, type }]);
+    
+    // Auto-remove after 4 seconds
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 4000);
+  };
+
   useEffect(() => {
     fetchMatch();
 
@@ -393,8 +405,8 @@ export default function CompetitiveMatch() {
 
     } catch (err) {
       console.error("Error fetching match:", err);
-      alert("Failed to load match: " + err.message);
-      navigate("/competitive");
+      showToast("Failed to load match: " + err.message, "error");
+      setTimeout(() => navigate("/competitive"), 1500);
     }
   };
 
@@ -428,10 +440,10 @@ export default function CompetitiveMatch() {
 
     if (gameMode === "bug_hunt") {
       // Load buggy code for Bug Hunt mode
-      const buggyFromMatch = matchData.buggy_code || "";
       const buggyFromProblem = problemData.buggyCode?.[language] || "";
+      const buggyFromMatch = matchData.buggy_code || "";
       const starterFallback = problemData.starterCode?.[language] || "";
-      const buggyCodeToUse = buggyFromMatch || buggyFromProblem || starterFallback;
+      const buggyCodeToUse = buggyFromProblem || buggyFromMatch || starterFallback;
 
       if (buggyCodeToUse) {
         setCode(sanitizeCode(buggyCodeToUse));
@@ -537,9 +549,11 @@ export default function CompetitiveMatch() {
       // Multi-problem race: Check if there's a next problem
         if (data.next_problem) {
           console.log("[INFO] Next problem detected! Auto-loading...");
-          // Player solved current problem, load next one immediately
-          setProblem(data.next_problem);
-          setCode(data.next_problem.starterCode?.[language] || "");
+          
+          // Let fetchMatch do the heavy lifting of fetching the latest match details,
+          // fetching the correct next problem, and loading the correct code / shuffled lines.
+          await fetchMatch();
+          
           setOutput(`[SUCCESS] Problem ${data.problems_solved}/${data.total_problems} solved! Loading next problem...\n\nTime: ${data.time_elapsed?.toFixed(2) || 0}s | Score: ${data.score || 0}`);
 
           // Update progress tracking if needed
@@ -892,7 +906,7 @@ export default function CompetitiveMatch() {
 
   const handleUseHint = async () => {
     if (usedHints) {
-      alert("You have already used a hint in this match");
+      showToast("You have already used a hint in this match", "error");
       return;
     }
 
@@ -906,7 +920,7 @@ export default function CompetitiveMatch() {
       });
 
       setUsedHints(true);
-      alert("Hint used! Note: This reduces your potential XP bonus.");
+      showToast("Hint used! Note: This reduces your potential XP bonus.", "success");
     } catch (err) {
       console.error("Error using hint:", err);
     }
@@ -928,15 +942,15 @@ export default function CompetitiveMatch() {
         // Clear the leave confirmation dialog
         setShowLeaveConfirm(false);
         // Navigate back to competitive page
-        alert("You have left the game and been marked as lost.");
-        navigate("/competitive");
+        showToast("You have left the game and been marked as lost.", "success");
+        setTimeout(() => navigate("/competitive"), 1500);
       } else {
         const error = await res.json();
-        alert("Error leaving game: " + (error.detail || "Failed to leave game"));
+        showToast("Error leaving game: " + (error.detail || "Failed to leave game"), "error");
       }
     } catch (err) {
       console.error("Error leaving game:", err);
-      alert("Failed to leave game. Please try again.");
+      showToast("Failed to leave game. Please try again.", "error");
     } finally {
       setIsLeavingGame(false);
     }
@@ -1015,7 +1029,7 @@ export default function CompetitiveMatch() {
 
       if (!res.ok) {
         const error = await res.json();
-        alert(`Failed to switch language: ${error.detail || "Unknown error"}`);
+        showToast(`Failed to switch language: ${error.detail || "Unknown error"}`, "error");
         return;
       }
 
@@ -1025,7 +1039,7 @@ export default function CompetitiveMatch() {
       setOutput(`[INFO] Switched to ${newLanguage.toUpperCase()}. Timer and progress preserved.`);
     } catch (err) {
       console.error("Error switching language:", err);
-      alert("Failed to switch language. Please try again.");
+      showToast("Failed to switch language. Please try again.", "error");
     }
   };
 
@@ -1868,6 +1882,55 @@ export default function CompetitiveMatch() {
         </div>
       )}
 
+      {/* Leave Game Confirmation Dialog */}
+      {showLeaveConfirm && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className={`${isDark ? 'bg-slate-900' : 'bg-white'} rounded-xl shadow-2xl max-w-md w-full border-2 ${isDark ? 'border-red-500/30' : 'border-red-300'}`}>
+            <div className="p-6">
+              {/* Header */}
+              <div className="flex items-center gap-3 mb-4">
+                <AlertTriangle size={32} className="text-red-500" />
+                <div>
+                  <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    Leave Game?
+                  </h2>
+                  <p className={`text-base ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
+                    Are you sure you want to leave?
+                  </p>
+                </div>
+              </div>
+
+              {/* Message */}
+              <div className={`text-base mb-6 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+                Leaving the game will mark you as <span className="text-red-500 font-bold">lost</span>. Your opponent(s) will be awarded the victory.
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowLeaveConfirm(false)}
+                  disabled={isLeavingGame}
+                  className={`flex-1 px-4 py-2.5 rounded-lg font-medium transition-colors ${
+                    isDark 
+                      ? 'bg-slate-800 hover:bg-slate-700 text-white' 
+                      : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
+                  }`}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleLeaveGame}
+                  disabled={isLeavingGame}
+                  className="flex-1 px-4 py-2.5 rounded-lg font-medium bg-red-600 hover:bg-red-700 text-white transition-colors flex items-center justify-center gap-2"
+                >
+                  {isLeavingGame ? "Leaving..." : "Leave Game"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Match Completion Leaderboard Overlay */}
       {matchCompleted && finalResults && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -2064,6 +2127,30 @@ export default function CompetitiveMatch() {
           </div>
         </div>
       )}
+
+      {/* Toast Notification Container */}
+      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full">
+        {toasts.map(t => (
+          <div
+            key={t.id}
+            className={`p-4 rounded-xl shadow-2xl border flex items-center justify-between gap-3 animate-in slide-in-from-bottom-5 duration-300 ${
+              t.type === "error"
+                ? "bg-red-500/20 text-red-200 border-red-500/30"
+                : t.type === "success"
+                ? "bg-emerald-500/20 text-emerald-200 border-emerald-500/30"
+                : "bg-slate-800 text-slate-100 border-slate-700"
+            }`}
+          >
+            <div className="text-sm font-medium flex-1">{t.message}</div>
+            <button
+              onClick={() => setToasts(prev => prev.filter(toast => toast.id !== t.id))}
+              className="text-slate-400 hover:text-slate-200"
+            >
+              <X size={14} />
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

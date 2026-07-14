@@ -369,6 +369,178 @@ async def update_user_competitive_stats(db, user_id: str, rating_change: int, xp
         }
     )
 
+async def complete_expired_match(db, match):
+    """Gracefully complete an active match that has timed out"""
+    match_id = match["_id"]
+    is_multiplayer = match.get("players") is not None
+    time_limit = match.get("time_limit_seconds", 900)
+    
+    print(f"⌛ Expiring match {match_id} (elapsed time exceeded time limit {time_limit}s)")
+    
+    # 1. Update players' completed status if they didn't complete
+    if is_multiplayer:
+        players = match.get("players", [])
+        updated_players = []
+        for p in players:
+            p_completed = p.get("completed", False)
+            if not p_completed:
+                # Force complete
+                p["completed"] = True
+                p["time_elapsed"] = float(time_limit)
+                p["score"] = p.get("score", 0) # Keep current score or 0
+            updated_players.append(p)
+            
+        # Rank players by score (higher is better), then by time (faster is better)
+        players_with_rank = sorted(
+            updated_players,
+            key=lambda p: (-p.get("score", 0), p.get("time_elapsed", float('inf')))
+        )
+        
+        # Assign ranks
+        for rank, p in enumerate(players_with_rank, 1):
+            p["rank"] = rank
+            
+        # Get top 3 winners
+        winners = [p["user_id"] for p in players_with_rank[:3]]
+        winner_id = winners[0] if winners else None
+        
+        # Update match
+        await db.matches.update_one(
+            {"_id": match_id},
+            {
+                "$set": {
+                    "status": "completed",
+                    "completed_at": datetime.utcnow(),
+                    "winner_id": winner_id,
+                    "winners": winners,
+                    "players": players_with_rank
+                }
+            }
+        )
+        
+        # Update ratings/XP
+        for rank, p in enumerate(players_with_rank[:3], 1):
+            if p["user_id"] != "bot":
+                xp_gain = 100 if rank == 1 else (50 if rank == 2 else 25)
+                rating_gain = 30 if rank == 1 else (15 if rank == 2 else 5)
+                await update_user_competitive_stats(db, p["user_id"], rating_gain, xp_gain)
+                
+    else:
+        # Legacy 1v1 match
+        p1 = match.get("player1", {})
+        p2 = match.get("player2", {})
+        
+        if not p1.get("completed"):
+            p1["completed"] = True
+            p1["time_elapsed"] = float(time_limit)
+        if not p2.get("completed"):
+            p2["completed"] = True
+            p2["time_elapsed"] = float(time_limit)
+            
+        # Determine winner
+        p1_solved = p1.get("problems_solved", 0)
+        p2_solved = p2.get("problems_solved", 0)
+        p1_time = p1.get("time_elapsed", float('inf'))
+        p2_time = p2.get("time_elapsed", float('inf'))
+        
+        if p1_solved > p2_solved:
+            winner_key = "player1"
+            loser_key = "player2"
+        elif p2_solved > p1_solved:
+            winner_key = "player2"
+            loser_key = "player1"
+        else:
+            # Equal problems solved, compare time
+            if p1_time < p2_time:
+                winner_key = "player1"
+                loser_key = "player2"
+            elif p2_time < p1_time:
+                winner_key = "player2"
+                loser_key = "player1"
+            else:
+                # True tie!
+                winner_key = None
+                loser_key = None
+            
+        if winner_key:
+            winner = p1 if winner_key == "player1" else p2
+            loser = p2 if winner_key == "player1" else p1
+            
+            winner_id = winner.get("user_id")
+            loser_id = loser.get("user_id")
+            
+            # Calculate rating change and XP bonus
+            # Default skill ratings
+            winner_rating = 1200
+            loser_rating = 1200
+            
+            # Get ratings from DB if not bot
+            if winner_id != "bot":
+                winner_user = await db.users.find_one({"_id": ObjectId(winner_id)})
+                if winner_user:
+                    winner_rating = winner_user.get("rating", 1200)
+                    
+            if loser_id != "bot":
+                loser_user = await db.users.find_one({"_id": ObjectId(loser_id)})
+                if loser_user:
+                    loser_rating = loser_user.get("rating", 1200)
+            
+            # Use bot skill if bot
+            bot_skill = 1200
+            w_rating = bot_skill if winner_id == "bot" else winner_rating
+            l_rating = bot_skill if loser_id == "bot" else loser_rating
+            
+            rating_change = calculate_rating_change(w_rating, l_rating, winner.get("used_hints", False))
+            xp_bonus = calculate_xp_bonus(winner.get("time_elapsed", 0), time_limit, winner.get("used_hints", False))
+            
+            if winner_id != "bot":
+                await update_user_competitive_stats(db, winner_id, rating_change, xp_bonus)
+            if loser_id != "bot":
+                await update_user_competitive_stats(db, loser_id, -rating_change, 0)
+                
+            winner_id_to_save = winner_id
+        else:
+            winner_id_to_save = None
+            
+        await db.matches.update_one(
+            {"_id": match_id},
+            {
+                "$set": {
+                    "status": "completed",
+                    "winner_id": winner_id_to_save,
+                    "completed_at": datetime.utcnow(),
+                    "player1": p1,
+                    "player2": p2
+                }
+            }
+        )
+        
+    # Also update lobby to completed
+    game_id = match.get("game_id")
+    if game_id:
+        await db.lobbies.update_one(
+            {"game_id": game_id.upper()},
+            {"$set": {"status": "completed", "completed_at": datetime.utcnow()}}
+        )
+
+async def get_match_and_check_expiration(db, match_oid: ObjectId) -> dict:
+    """Helper to fetch a match and complete it if active and expired"""
+    match = await db.matches.find_one({"_id": match_oid})
+    if not match:
+        return None
+        
+    if match.get("status") == "active" and match.get("started_at"):
+        time_limit = match.get("time_limit_seconds", 900)
+        elapsed = (datetime.utcnow() - match["started_at"]).total_seconds()
+        
+        if elapsed >= time_limit:
+            # Match has expired! Force complete it
+            await complete_expired_match(db, match)
+            # Refetch match state after expiration updates
+            match = await db.matches.find_one({"_id": match_oid})
+            
+    return match
+
 async def simulate_bot_completion(match_id: str, problem_id: str, bot_skill: int = 1200):
     """Simulate bot completing the problem after a delay"""
     db = get_database()
@@ -1236,7 +1408,7 @@ async def get_match(
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid match id")
     
-    match = await db.matches.find_one({"_id": match_oid})
+    match = await get_match_and_check_expiration(db, match_oid)
     if not match:
         raise HTTPException(status_code=404, detail="Match not found")
     
@@ -1299,7 +1471,7 @@ async def submit_solution(
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid match id")
     
-    match = await db.matches.find_one({"_id": match_oid})
+    match = await get_match_and_check_expiration(db, match_oid)
     if not match:
         raise HTTPException(status_code=404, detail="Match not found")
     
@@ -1631,6 +1803,15 @@ async def submit_solution(
         
         if game_mode == "code_shuffle":
             update_data[f"players.{player_index}.arranged_code"] = arranged_code
+            # Shuffle next problem lines for code shuffle mode
+            if new_problem_index < total_problems and game_mode == "code_shuffle":
+                # Get next problem
+                next_problem_id = problem_ids[new_problem_index]
+                next_problem = await db.problems.find_one({"_id": ObjectId(next_problem_id)})
+                if next_problem:
+                    ref_code = next_problem.get("referenceCode", {}).get(submission.language or "python", "")
+                    if ref_code:
+                        update_data[f"players.{player_index}.shuffled_lines"] = shuffle_code_lines(ref_code)
         elif game_mode == "test_master":
             update_data[f"players.{player_index}.test_cases_created"] = submission.test_cases
             update_data[f"players.{player_index}.test_cases_score"] = score
@@ -1681,6 +1862,13 @@ async def submit_solution(
                     }
                 }
             )
+            
+            # Also update lobby status to completed
+            if updated_match.get("game_id"):
+                await db.lobbies.update_one(
+                    {"game_id": updated_match["game_id"].upper()},
+                    {"$set": {"status": "completed", "completed_at": datetime.utcnow()}}
+                )
             
             # Update player stats (XP, rating for top 3)
             for rank, player in enumerate(players_with_rank[:3], 1):
@@ -1802,6 +1990,15 @@ async def submit_solution(
         
         if game_mode == "code_shuffle":
             update_data[f"{player_key}.arranged_code"] = arranged_code
+            # Shuffle next problem lines for code shuffle mode
+            if new_problem_index < total_problems and game_mode == "code_shuffle":
+                # Get next problem
+                next_problem_id = problem_ids[new_problem_index]
+                next_problem = await db.problems.find_one({"_id": ObjectId(next_problem_id)})
+                if next_problem:
+                    ref_code = next_problem.get("referenceCode", {}).get(submission.language or "python", "")
+                    if ref_code:
+                        update_data[f"{player_key}.shuffled_lines"] = shuffle_code_lines(ref_code)
         elif game_mode == "test_master":
             update_data[f"{player_key}.test_cases_created"] = submission.test_cases
             update_data[f"{player_key}.test_cases_score"] = score
@@ -1867,6 +2064,13 @@ async def submit_solution(
                     }
                 }
             )
+            
+            # Also update lobby status to completed
+            if match.get("game_id"):
+                await db.lobbies.update_one(
+                    {"game_id": match["game_id"].upper()},
+                    {"$set": {"status": "completed", "completed_at": datetime.utcnow()}}
+                )
             
             return MatchResult(
                 match_id=match_id,
@@ -1969,7 +2173,7 @@ async def use_hint(
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid match id")
     
-    match = await db.matches.find_one({"_id": match_oid})
+    match = await get_match_and_check_expiration(db, match_oid)
     if not match:
         raise HTTPException(status_code=404, detail="Match not found")
     
@@ -2009,7 +2213,7 @@ async def leave_match(match_id: str, current_user: dict = Depends(get_current_us
     except:
         raise HTTPException(status_code=400, detail="Invalid match id")
     
-    match = await db.matches.find_one({"_id": match_oid})
+    match = await get_match_and_check_expiration(db, match_oid)
     if not match:
         raise HTTPException(status_code=404, detail="Match not found")
     
@@ -2070,6 +2274,13 @@ async def leave_match(match_id: str, current_user: dict = Depends(get_current_us
                 }
             )
             
+            # Also update lobby status to completed
+            if updated_match.get("game_id"):
+                await db.lobbies.update_one(
+                    {"game_id": updated_match["game_id"].upper()},
+                    {"$set": {"status": "completed", "completed_at": datetime.utcnow()}}
+                )
+            
             # Update player stats (XP, rating for top 3)
             for rank, player in enumerate(players_with_rank[:3], 1):
                 if player["user_id"] != "bot":  # Don't update bots
@@ -2096,6 +2307,13 @@ async def leave_match(match_id: str, current_user: dict = Depends(get_current_us
                 "completed_at": datetime.utcnow()
             }}
         )
+        
+        # Also update lobby status to completed
+        if match.get("game_id"):
+            await db.lobbies.update_one(
+                {"game_id": match["game_id"].upper()},
+                {"$set": {"status": "completed", "completed_at": datetime.utcnow()}}
+            )
     
     return {"message": "Left match successfully"}
 
@@ -2151,6 +2369,10 @@ async def find_match(
                             "time_elapsed": 0.0,
                             "used_hints": False,
                             "submission_time": None,
+                            "shuffled_lines": waiting_match.get("player1", {}).get("shuffled_lines"),
+                            "arranged_code": None,
+                            "test_cases_created": None,
+                            "test_cases_score": None,
                             # Multi-problem race fields
                             "current_problem_index": 0,
                             "problems_solved": 0,
@@ -2165,116 +2387,174 @@ async def find_match(
         return {"message": "Match found", "match_id": match_id, "action": "joined"}
     else:
         # Create new match and wait for opponent
-        # Select problem from pool instead of AI generation
-        try:
-            # Map game modes to competitive_mode
-            mode_mapping = {
-                "standard": "standard",
-                "bug_hunt": "bug_hunt",
-                "code_shuffle": "code_shuffle",
-                "test_master": "standard"
-            }
-            
-            competitive_mode = mode_mapping.get(game_mode, "standard")
-            print(f"🎲 Selecting random problem for {game_mode} mode (matchmaking)...")
-            
+        bug_hunt_questions = None
+        
+        if game_mode == "bug_hunt":
+            from app.services.question_loader import QuestionLoader
+            print(f"🐛 Matchmaking: Loading Bug Hunt questions from JSON...")
             try:
-                # Find all problems for this game mode
-                cursor = db.problems.find({
-                    "created_for_competitive": True,
-                    "competitive_mode": competitive_mode
-                })
+                question_loader = QuestionLoader(db=db)
+                if not question_loader._preloaded:
+                    await question_loader.preload_questions()
                 
-                problems = await cursor.to_list(length=None)
+                # Get all available questions
+                all_questions = []
+                for difficulty in ['easy', 'medium', 'hard']:
+                    questions = question_loader.questions_cache.get(difficulty, [])
+                    all_questions.extend(questions)
                 
-                if not problems:
-                    # Fallback to AI generation
-                    print(f"⚠️ No problems in pool, falling back to AI generation...")
-                    difficulty = random.choice(["easy", "medium", "hard"])
-                    problem_data = generate_competitive_problem(difficulty)
-                    
-                    difficulty_capitalized = difficulty.capitalize()
-                    problem_doc = {
-                        "title": problem_data["title"],
-                        "description": problem_data["description"],
-                        "difficulty": difficulty_capitalized,
-                        "testCases": problem_data["testCases"],
-                        "examples": problem_data.get("examples", []),
-                        "hint": problem_data.get("hint", ""),
-                        "starterCode": problem_data.get("starterCode", {}),
-                        "topics": ["competitive", "ai-generated"],
-                        "created_for_competitive": True,
-                        "videoUrl": "",
-                        "referenceCode": problem_data.get("referenceCode", {"python": "", "cpp": "", "java": ""}),
-                        "buggyCode": {},
-                        "explanations": {"approach": [], "complexity": []},
-                        "sampleTests": []
+                if not all_questions:
+                    raise HTTPException(
+                        status_code=500,
+                        detail="No Bug Hunt questions available. Please check data/bug_hunt_questions.json"
+                    )
+                
+                # Select up to 5 random questions
+                num_questions = min(5, len(all_questions))
+                selected_questions = random.sample(all_questions, num_questions)
+                
+                bug_hunt_questions = [
+                    {
+                        "id": q.id,
+                        "title": q.title,
+                        "description": q.description,
+                        "difficulty": q.difficulty,
+                        "time_limit": q.time_limit,
+                        "hints": q.hints,
+                        "languages": {
+                            lang: {
+                                "buggy_code": variant.buggy_code,
+                                "fixed_code": variant.fixed_code,
+                                "test_cases": [
+                                    {
+                                        "input": tc.input,
+                                        "expected": tc.expected,
+                                        "description": tc.description
+                                    }
+                                    for tc in variant.test_cases
+                                ]
+                            }
+                            for lang, variant in q.languages.items()
+                        }
                     }
-                    
-                    result = await db.problems.insert_one(problem_doc)
-                    selected_problem_ids = [str(result.inserted_id)]
-                    print(f"✅ Generated 1 problem: {problem_data['title']} (ID: {selected_problem_ids[0]})")
-                else:
-                    # Randomly select 5 problems from pool (or all available if <5)
-                    num_problems = min(5, len(problems))
-                    selected_problems = random.sample(problems, num_problems)
-                    selected_problem_ids = [str(p["_id"]) for p in selected_problems]
-                    print(f"✅ Selected {num_problems} problems for matchmaking:")
-                    for i, p in enumerate(selected_problems, 1):
-                        print(f"   {i}. {p['title']} ({p.get('difficulty', 'Unknown')})")
-                    
-                problem_id = selected_problem_ids[0]  # First problem ID for legacy compatibility
-            except Exception as gen_error:
-                print(f"❌ Error selecting problem: {str(gen_error)}")
+                    for q in selected_questions
+                ]
+                
+                problem_id = None
+                selected_problem_ids = []
+                buggy_code_content = None
+                
+            except HTTPException:
+                raise
+            except Exception as e:
+                print(f"❌ Error loading Bug Hunt questions for matchmaking: {e}")
                 raise HTTPException(
-                    status_code=500, 
-                    detail=f"Failed to select problem: {str(gen_error)}"
+                    status_code=500,
+                    detail=f"Failed to load Bug Hunt questions: {str(e)}"
                 )
-        except HTTPException:
-            raise
-        except Exception as e:
-            print(f"❌ Error in problem selection: {str(e)}")
-            raise HTTPException(status_code=500, detail=f"Problem selection error: {str(e)}")
+        else:
+            # Select problem from pool instead of AI generation
+            try:
+                # Map game modes to competitive_mode
+                mode_mapping = {
+                    "standard": "standard",
+                    "code_shuffle": "code_shuffle",
+                    "test_master": "standard"
+                }
+                
+                competitive_mode = mode_mapping.get(game_mode, "standard")
+                print(f"🎲 Selecting random problem for {game_mode} mode (matchmaking)...")
+                
+                try:
+                    # Find all problems for this game mode
+                    cursor = db.problems.find({
+                        "created_for_competitive": True,
+                        "competitive_mode": competitive_mode
+                    })
+                    
+                    problems = await cursor.to_list(length=None)
+                    
+                    if not problems:
+                        # Fallback to AI generation
+                        print(f"⚠️ No problems in pool, falling back to AI generation...")
+                        difficulty = random.choice(["easy", "medium", "hard"])
+                        problem_data = generate_competitive_problem(difficulty)
+                        
+                        difficulty_capitalized = difficulty.capitalize()
+                        problem_doc = {
+                            "title": problem_data["title"],
+                            "description": problem_data["description"],
+                            "difficulty": difficulty_capitalized,
+                            "testCases": problem_data["testCases"],
+                            "examples": problem_data.get("examples", []),
+                            "hint": problem_data.get("hint", ""),
+                            "starterCode": problem_data.get("starterCode", {}),
+                            "topics": ["competitive", "ai-generated"],
+                            "created_for_competitive": True,
+                            "videoUrl": "",
+                            "referenceCode": problem_data.get("referenceCode", {"python": "", "cpp": "", "java": ""}),
+                            "buggyCode": {},
+                            "explanations": {"approach": [], "complexity": []},
+                            "sampleTests": []
+                        }
+                        
+                        result = await db.problems.insert_one(problem_doc)
+                        selected_problem_ids = [str(result.inserted_id)]
+                        print(f"✅ Generated 1 problem: {problem_data['title']} (ID: {selected_problem_ids[0]})")
+                    else:
+                        # Randomly select 5 problems from pool (or all available if <5)
+                        num_problems = min(5, len(problems))
+                        selected_problems = random.sample(problems, num_problems)
+                        selected_problem_ids = [str(p["_id"]) for p in selected_problems]
+                        print(f"✅ Selected {num_problems} problems for matchmaking:")
+                        for i, p in enumerate(selected_problems, 1):
+                            print(f"   {i}. {p['title']} ({p.get('difficulty', 'Unknown')})")
+                        
+                    problem_id = selected_problem_ids[0]  # First problem ID for legacy compatibility
+                except Exception as gen_error:
+                    print(f"❌ Error selecting problem: {str(gen_error)}")
+                    raise HTTPException(
+                        status_code=500, 
+                        detail=f"Failed to select problem: {str(gen_error)}"
+                    )
+            except HTTPException:
+                raise
+            except Exception as e:
+                print(f"❌ Error in problem selection: {str(e)}")
+                raise HTTPException(status_code=500, detail=f"Problem selection error: {str(e)}")
         
         try:
             # Prepare game mode specific data
-            problem = await db.problems.find_one({"_id": ObjectId(problem_id)})
             shuffled_lines = None
             buggy_code_content = None
             
-            if game_mode == "code_shuffle" and problem:
-                reference_code = problem.get("referenceCode", {}).get("python", "")
-                print(f"🔀 Code Shuffle Mode:")
-                print(f"  - Problem ID: {problem_id}")
-                print(f"  - Problem title: {problem.get('title', 'N/A')}")
-                print(f"  - Problem has referenceCode: {bool(reference_code)}")
-                if reference_code:
-                    print(f"  - Reference code length: {len(reference_code)} chars")
-                    shuffled_lines = shuffle_code_lines(reference_code)
-                    print(f"  - Generated {len(shuffled_lines) if shuffled_lines else 0} shuffled lines")
-                else:
-                    print(f"  - ❌ No reference code found for problem!")
-                    # This shouldn't happen if our query is correct, but handle it gracefully
-                    raise HTTPException(
-                        status_code=400, 
-                        detail="Selected problem doesn't have reference code for Code Shuffle mode. Please try again or contact administrator."
-                    )
-            elif game_mode == "bug_hunt" and problem:
-                # Generate buggy code if not already in problem
-                existing_buggy = problem.get("buggyCode", {}).get("python", "")
-                if existing_buggy:
-                    buggy_code_content = existing_buggy
-                else:
+            if game_mode == "code_shuffle":
+                problem = await db.problems.find_one({"_id": ObjectId(problem_id)})
+                if problem:
                     reference_code = problem.get("referenceCode", {}).get("python", "")
+                    print(f"🔀 Code Shuffle Mode:")
+                    print(f"  - Problem ID: {problem_id}")
+                    print(f"  - Problem title: {problem.get('title', 'N/A')}")
+                    print(f"  - Problem has referenceCode: {bool(reference_code)}")
                     if reference_code:
-                        buggy_code_content = generate_buggy_code(reference_code, "python")
+                        print(f"  - Reference code length: {len(reference_code)} chars")
+                        shuffled_lines = shuffle_code_lines(reference_code)
+                        print(f"  - Generated {len(shuffled_lines) if shuffled_lines else 0} shuffled lines")
+                    else:
+                        print(f"  - ❌ No reference code found for problem!")
+                        # This shouldn't happen if our query is correct, but handle it gracefully
+                        raise HTTPException(
+                            status_code=400, 
+                            detail="Selected problem doesn't have reference code for Code Shuffle mode. Please try again or contact administrator."
+                        )
             
             match_doc = {
                 "problem_id": problem_id,  # Legacy field (first problem)
                 "problem_ids": selected_problem_ids,  # Array of all problems
-                "total_problems": len(selected_problem_ids),
+                "total_problems": len(selected_problem_ids) if selected_problem_ids else len(bug_hunt_questions) if bug_hunt_questions else 0,
                 "game_mode": game_mode,
                 "buggy_code": buggy_code_content,
+                "bug_hunt_questions": bug_hunt_questions,
                 "player1": {
                     "user_id": user_id,
                     "username": current_user["username"],
@@ -3038,7 +3318,7 @@ async def get_bug_hunt_question(
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid match id")
     
-    match = await db.matches.find_one({"_id": match_oid})
+    match = await get_match_and_check_expiration(db, match_oid)
     if not match:
         raise HTTPException(status_code=404, detail="Match not found")
     
@@ -3115,7 +3395,7 @@ async def switch_language(
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid match id")
     
-    match = await db.matches.find_one({"_id": match_oid})
+    match = await get_match_and_check_expiration(db, match_oid)
     if not match:
         raise HTTPException(status_code=404, detail="Match not found")
     
@@ -3178,8 +3458,23 @@ async def switch_language(
             test_cases=test_cases
         )
     
-    # Otherwise, use MongoDB problem (legacy)
-    problem_id = match.get("problem_id")
+    # Otherwise, use MongoDB problem
+    problem_ids = match.get("problem_ids", [])
+    current_problem_index = 0
+    if match.get("players"):
+        player = next((p for p in match["players"] if p.get("user_id") == user_id), None)
+        if player:
+            current_problem_index = player.get("current_problem_index", 0)
+    elif match.get("player1", {}).get("user_id") == user_id:
+        current_problem_index = match["player1"].get("current_problem_index", 0)
+    elif match.get("player2", {}).get("user_id") == user_id:
+        current_problem_index = match["player2"].get("current_problem_index", 0)
+        
+    if problem_ids and current_problem_index < len(problem_ids):
+        problem_id = problem_ids[current_problem_index]
+    else:
+        problem_id = match.get("problem_id")
+        
     if not problem_id:
         raise HTTPException(status_code=400, detail="No problem associated with this match")
     
