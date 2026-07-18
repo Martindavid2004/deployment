@@ -35,26 +35,99 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return;
-      const parsed = JSON.parse(raw);
-      if (parsed.user) setUser(parsed.user);
-      if (parsed.problems) setProblems(parsed.problems);
-      if (parsed.currentLanguage) setCurrentLanguage(parsed.currentLanguage);
-      // Don't load attempts from localStorage anymore - will load from API
-      if (parsed.theme) {
-        setTheme(parsed.theme);
-        if (parsed.theme === "light") {
-          document.documentElement.classList.add("light-theme");
+    const validateSession = async () => {
+      console.log("[AUTH] Starting session validation...");
+      
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+          console.log("[AUTH] No stored state found, showing login");
+          setIsLoading(false);
+          return;
         }
+        
+        const parsed = JSON.parse(raw);
+        
+        // Load theme first (doesn't require auth)
+        if (parsed.theme) {
+          setTheme(parsed.theme);
+          if (parsed.theme === "light") {
+            document.documentElement.classList.add("light-theme");
+          }
+        }
+        
+        // Load problems and language
+        if (parsed.problems) setProblems(parsed.problems);
+        if (parsed.currentLanguage) setCurrentLanguage(parsed.currentLanguage);
+        
+        // Validate user session if user data exists
+        if (parsed.user) {
+          const token = localStorage.getItem("token");
+          
+          if (!token) {
+            // No token, clear user session
+            console.log("[AUTH] No token found, clearing session");
+            setUser(null);
+            localStorage.removeItem("userId");
+            localStorage.removeItem("username");
+            setIsLoading(false); // Done loading
+          } else {
+            // Validate token by making API call
+            console.log("[AUTH] Token found, validating with API...");
+            try {
+              const response = await fetch(`${API_BASE}/users/me`, {
+                headers: {
+                  "Authorization": `Bearer ${token}`
+                }
+              });
+              
+              if (response.ok) {
+                const userData = await response.json();
+                console.log("[AUTH] Token valid, session restored for:", userData.username);
+                
+                // Update user data from API (most current data)
+                localStorage.setItem("userId", userData.id);
+                localStorage.setItem("username", userData.username);
+                
+                setUser({
+                  id: userData.id,
+                  name: userData.username,
+                  email: userData.email,
+                  isAdmin: userData.is_admin,
+                  preferredLanguage: userData.preferred_language || "python",
+                  level: userData.level || 1,
+                });
+                setIsLoading(false); // Done loading
+              } else {
+                // Token invalid (401) or other error
+                console.log("[AUTH] Token invalid (status:", response.status, "), clearing session");
+                setUser(null);
+                localStorage.removeItem("token");
+                localStorage.removeItem("userId");
+                localStorage.removeItem("username");
+                setIsLoading(false); // Done loading
+              }
+            } catch (err) {
+              console.error("[AUTH] Failed to validate token:", err);
+              // Network error or server down - keep user logged in locally
+              // They'll get 401 on next API call and can re-login then
+              console.log("[AUTH] Network error, keeping cached session");
+              setUser(parsed.user);
+              setIsLoading(false); // Done loading
+            }
+          }
+        } else {
+          // No user in stored state
+          console.log("[AUTH] No user in stored state");
+          setIsLoading(false); // Done loading
+        }
+      } catch (err) {
+        console.error("[AUTH] Failed to load state:", err);
+        setIsLoading(false); // Done loading even on error
       }
-    } catch (err) {
-      console.error("Failed to load state", err);
-    } finally {
-      // Always set loading to false, even if there's an error
-      setIsLoading(false);
-    }
+    };
+    
+    validateSession();
   }, []);
 
   // Load attempts from API when user is logged in
@@ -262,7 +335,7 @@ function AppContent({
 
   return (
     <div className="min-h-screen transition-colors duration-300" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
-      {location.pathname !== "/" && !isGamePage && (
+      {location.pathname !== "/" && !isGamePage && user && (
         <Navbar
           user={user}
           setUser={setUser}

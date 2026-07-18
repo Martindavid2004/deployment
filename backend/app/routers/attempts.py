@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from typing import List
+from bson import ObjectId
 
 from app.db.mongo import get_database
 from app.schemas.attempt import AttemptCreate, AttemptPublic

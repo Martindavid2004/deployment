@@ -1,8 +1,14 @@
 // API configuration that works with both local development and port forwarding
 const getApiBase = () => {
-  console.log('🚀 API_JS_VERSION: 3.2 (Render Production Backend)'); // Proof of update
+  console.log('🚀 API_JS_VERSION: 3.3 (Local Development Fix)');
 
-  // 1. Force environment variable check (highest priority for production)
+  // 1. Check for environment variable (highest priority)
+  if (import.meta.env.VITE_API_BASE_URL) {
+    console.log('📦 Using VITE_API_BASE_URL from environment:', import.meta.env.VITE_API_BASE_URL);
+    return import.meta.env.VITE_API_BASE_URL;
+  }
+  
+  // Legacy support for VITE_API_URL
   if (import.meta.env.VITE_API_URL) {
     console.log('📦 Using VITE_API_URL from environment:', import.meta.env.VITE_API_URL);
     return import.meta.env.VITE_API_URL;
@@ -52,3 +58,36 @@ const getApiBase = () => {
 export const API_BASE = getApiBase();
 
 console.log('🔗 API Base URL:', API_BASE);
+
+/**
+ * Helper function for authenticated API calls
+ * Automatically handles token and 401 errors
+ */
+export const authenticatedFetch = async (url, options = {}) => {
+  const token = localStorage.getItem("token");
+  
+  if (!token) {
+    throw new Error("No authentication token found");
+  }
+  
+  const headers = {
+    ...options.headers,
+    "Authorization": `Bearer ${token}`
+  };
+  
+  const response = await fetch(url, { ...options, headers });
+  
+  // Handle 401 Unauthorized - token expired or invalid
+  if (response.status === 401) {
+    console.log("[AUTH] 401 Unauthorized - clearing session");
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("username");
+    
+    // Redirect to login
+    window.location.href = "/login";
+    throw new Error("Session expired. Please login again.");
+  }
+  
+  return response;
+};

@@ -42,8 +42,8 @@ export default function LobbyRoom() {
     
     fetchLobby();
 
-    // Poll for updates every 2 seconds
-    const interval = setInterval(fetchLobby, 2000);
+    // Poll for updates every 1 second (reduced from 2s for faster updates)
+    const interval = setInterval(fetchLobby, 1000);
     return () => clearInterval(interval);
   }, [gameId]);
 
