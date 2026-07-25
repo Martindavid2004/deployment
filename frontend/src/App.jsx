@@ -57,6 +57,32 @@ export default function App() {
     }
   }, []);
 
+  // Validate stored JWT token on startup
+  useEffect(() => {
+    const validateToken = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      try {
+        const res = await fetch(`${API_BASE}/users/me`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const userData = await res.json();
+          localStorage.setItem("userId", userData.id);
+          localStorage.setItem("username", userData.username);
+        } else if (res.status === 401) {
+          console.warn("Stored JWT token is invalid or expired. Clearing token.");
+          localStorage.removeItem("token");
+          localStorage.removeItem("userId");
+          localStorage.removeItem("username");
+        }
+      } catch (err) {
+        console.error("Failed to validate token on startup:", err);
+      }
+    };
+    validateToken();
+  }, []);
+
   // Load attempts from API when user is logged in
   useEffect(() => {
     const fetchAttempts = async () => {
@@ -95,6 +121,10 @@ export default function App() {
             };
           });
           setAttempts(attemptsObj);
+        } else if (response.status === 401) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("userId");
+          localStorage.removeItem("username");
         }
       } catch (err) {
         console.error("Failed to load attempts from API", err);

@@ -1,6 +1,6 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-import { CheckCircle2, XCircle, Lightbulb, Bug, Keyboard, Play } from "lucide-react";
+import { CheckCircle2, XCircle, Lightbulb, Bug, Keyboard, Play, Trophy, ArrowRight, ListChecks } from "lucide-react";
 import MonacoEditorWrapper from "../components/MonacoEditorWrapper";
 import ProgressBar from "../components/ProgressBar";
 import LeaderboardTable from "../components/LeaderboardTable";
@@ -16,11 +16,19 @@ export default function Workspace({
 }) {
   const { id } = useParams();
   const problemId = Number(id);
+  const navigate = useNavigate();
 
   const problem = useMemo(
     () => problems.find((p) => p.id === problemId),
     [problems, problemId]
   );
+
+  const nextProblem = useMemo(() => {
+    const currentIndex = problems.findIndex((p) => p.id === problemId);
+    return currentIndex >= 0 && currentIndex < problems.length - 1
+      ? problems[currentIndex + 1]
+      : null;
+  }, [problems, problemId]);
 
   const [currentRound, setCurrentRound] = useState(1);
   const [roundState, setRoundState] = useState({
@@ -37,6 +45,7 @@ export default function Workspace({
   const [isExecuting, setIsExecuting] = useState(false);
   const [executionOutput, setExecutionOutput] = useState(null);
   const [activeTab, setActiveTab] = useState("instructions"); // mobile only: 'instructions' or 'editor'
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
 
   const key = `${problemId}_${currentLanguage}`;
   const existingAttempt = attempts[key];
@@ -239,12 +248,8 @@ export default function Workspace({
     const finalCompleted =
       currentRound === 4 ? Boolean(allRoundsDone) : prevAttempt.finalCompleted;
 
-    if (finalCompleted && !prevAttempt.finalCompleted) {
-      alert(
-        `Finished "${problem.title}" in ${total.toFixed(
-          1
-        )}s (${currentLanguage.toUpperCase()}).`
-      );
+    if (finalCompleted) {
+      setShowCompletionModal(true);
     }
 
     const updatedAttempt = {
@@ -285,6 +290,11 @@ export default function Workspace({
       });
 
       if (!userResponse.ok) {
+        if (userResponse.status === 401) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("userId");
+          localStorage.removeItem("username");
+        }
         console.error("Failed to fetch user info, status:", userResponse.status);
         alert("Warning: Could not authenticate. Progress not saved to database.");
         if (currentRound < 4) setCurrentRound((r) => r + 1);
@@ -443,11 +453,21 @@ export default function Workspace({
               );
             })}
             <button
-              onClick={handleSubmitRound}
-              disabled={currentRound === 4 && !testResults?.all_passed}
+              onClick={() => {
+                if (roundState[4]?.completed || existingAttempt?.finalCompleted) {
+                  setShowCompletionModal(true);
+                } else {
+                  handleSubmitRound();
+                }
+              }}
+              disabled={currentRound === 4 && !testResults?.all_passed && !roundState[4]?.completed && !existingAttempt?.finalCompleted}
               className="ml-1 px-3 py-1 rounded-full bg-emerald-500 text-theme-bg-primary text-xs font-bold hover:bg-emerald-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
-              {currentRound === 4 ? "Submit" : "Complete Round"}
+              {currentRound === 4
+                ? roundState[4]?.completed || existingAttempt?.finalCompleted
+                  ? "View Results 🎉"
+                  : "Submit"
+                : "Complete Round"}
             </button>
           </div>
         </div>
@@ -747,6 +767,70 @@ export default function Workspace({
           </div>
         </div>
       </div>
+
+      {showCompletionModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="bg-theme-bg-secondary border border-emerald-500/30 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-6">
+            <div className="text-center space-y-2">
+              <div className="inline-flex p-3 rounded-full bg-emerald-500/10 text-emerald-400 mb-2">
+                <Trophy size={40} />
+              </div>
+              <h2 className="text-2xl font-bold text-theme-text-primary">Problem Completed! 🎉</h2>
+              <p className="text-sm text-theme-text-tertiary">
+                Great job! You successfully completed all 4 rounds of <span className="font-semibold text-emerald-400">{problem.title}</span> in {currentLanguage.toUpperCase()}.
+              </p>
+            </div>
+
+            <div className="bg-theme-bg-tertiary border border-theme-border rounded-xl p-4 space-y-3">
+              <div className="flex justify-between items-center pb-2 border-b border-theme-border">
+                <span className="text-sm font-medium text-theme-text-tertiary">Total Time</span>
+                <span className="text-lg font-bold text-emerald-400">
+                  {(
+                    existingAttempt?.totalTimeSeconds ||
+                    Object.values(roundState).reduce((a, b) => a + (b.time || 0), 0)
+                  ).toFixed(1)}s
+                </span>
+              </div>
+              <div className="space-y-2 text-sm">
+                {[1, 2, 3, 4].map((r) => (
+                  <div key={r} className="flex justify-between items-center">
+                    <span className="text-theme-text-secondary">Round {r} ({roundTitleMap[r]})</span>
+                    <span className="font-mono text-theme-text-primary">
+                      {roundState[r]?.time ? `${roundState[r].time.toFixed(1)}s` : "Done"}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-2 pt-2">
+              <button
+                onClick={() => navigate("/problems")}
+                className="flex-1 py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-theme-bg-primary font-bold text-sm transition-all flex items-center justify-center gap-2"
+              >
+                <ListChecks size={16} /> Problems
+              </button>
+              {nextProblem && (
+                <button
+                  onClick={() => {
+                    setShowCompletionModal(false);
+                    navigate(`/workspace/${nextProblem.id}`);
+                  }}
+                  className="flex-1 py-2.5 px-4 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-sm transition-all flex items-center justify-center gap-2"
+                >
+                  Next <ArrowRight size={16} />
+                </button>
+              )}
+              <button
+                onClick={() => setShowCompletionModal(false)}
+                className="py-2.5 px-4 rounded-xl border border-theme-border bg-theme-bg-tertiary hover:bg-theme-bg-secondary text-theme-text-primary font-semibold text-sm transition-all"
+              >
+                Review Code
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

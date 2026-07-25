@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Zap, Bug, Target, Crown, User, CheckCircle2, Copy, Clock, Gamepad2, Megaphone, Shuffle } from "lucide-react";
+import { Zap, Bug, Target, Crown, User, CheckCircle2, Copy, Clock, Gamepad2, Megaphone, Shuffle, UserPlus, X } from "lucide-react";
 import { API_BASE } from "../utils/api";
 
 export default function LobbyRoom() {
@@ -11,6 +11,9 @@ export default function LobbyRoom() {
   const [currentUserId, setCurrentUserId] = useState(null);
   const [currentUsername, setCurrentUsername] = useState(null);
   const [copySuccess, setCopySuccess] = useState(false);
+  const [friends, setFriends] = useState([]);
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [invitedFriends, setInvitedFriends] = useState({});
 
   useEffect(() => {
     const userId = localStorage.getItem("userId");
@@ -25,13 +28,23 @@ export default function LobbyRoom() {
         fetch(`${API_BASE}/users/me`, {
           headers: { "Authorization": `Bearer ${token}` }
         })
-        .then(res => res.json())
+        .then(res => {
+          if (res.status === 401) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("userId");
+            localStorage.removeItem("username");
+            return null;
+          }
+          return res.ok ? res.json() : null;
+        })
         .then(data => {
-          console.log("[SUCCESS] Fetched user data:", data);
-          localStorage.setItem("userId", data.id);
-          localStorage.setItem("username", data.username);
-          setCurrentUserId(data.id);
-          setCurrentUsername(data.username);
+          if (data) {
+            console.log("[SUCCESS] Fetched user data:", data);
+            localStorage.setItem("userId", data.id);
+            localStorage.setItem("username", data.username);
+            setCurrentUserId(data.id);
+            setCurrentUsername(data.username);
+          }
         })
         .catch(err => console.error("[ERROR] Failed to fetch user:", err));
       }
@@ -133,6 +146,44 @@ export default function LobbyRoom() {
     } catch (err) {
       console.error("Error leaving lobby:", err);
       navigate("/competitive");
+    }
+  };
+
+  const fetchFriends = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      const res = await fetch(`${API_BASE}/users/friends`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) setFriends(data);
+      }
+    } catch (err) {
+      console.error("Error fetching friends:", err);
+    }
+  };
+
+  const handleInviteFriend = async (friendUsername) => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_BASE}/users/invites/send/${friendUsername}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ game_id: gameId })
+      });
+      if (res.ok) {
+        setInvitedFriends(prev => ({ ...prev, [friendUsername]: true }));
+      } else {
+        const error = await res.json();
+        alert(`Failed to invite: ${error.detail || "Error"}`);
+      }
+    } catch (err) {
+      console.error("Error inviting friend:", err);
     }
   };
 
@@ -291,7 +342,18 @@ export default function LobbyRoom() {
 
         {/* Players List */}
         <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl p-8">
-          <h2 className="text-2xl font-bold text-white mb-6">Players in Lobby</h2>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-white">Players in Lobby</h2>
+            <button
+              onClick={() => {
+                fetchFriends();
+                setShowInviteModal(true);
+              }}
+              className="bg-purple-600 hover:bg-purple-500 text-white font-bold py-2.5 px-5 rounded-xl transition-all shadow-lg flex items-center gap-2 text-sm"
+            >
+              <UserPlus size={18} /> Invite Friends
+            </button>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {lobby.players.map((player, index) => (
               <div
@@ -335,6 +397,66 @@ export default function LobbyRoom() {
             ))}
           </div>
         </div>
+
+        {/* Invite Friends Modal */}
+        {showInviteModal && (
+          <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl w-full max-w-md p-6 relative">
+              <div className="flex justify-between items-center border-b border-slate-800 pb-4 mb-4">
+                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                  <UserPlus size={20} className="text-purple-400" /> Invite Friends to Lobby
+                </h3>
+                <button
+                  onClick={() => setShowInviteModal(false)}
+                  className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="space-y-3 max-h-80 overflow-y-auto pr-1">
+                {friends.length === 0 ? (
+                  <div className="text-center text-slate-400 py-8 text-sm">
+                    No friends found to invite. Add friends from the Competitive Arena!
+                  </div>
+                ) : (
+                  friends.map((friend) => {
+                    const isAlreadyInLobby = lobby.players.some(p => p.username === friend.username);
+                    const isInvited = invitedFriends[friend.username];
+
+                    return (
+                      <div
+                        key={friend.id}
+                        className="flex items-center justify-between p-3.5 rounded-xl bg-slate-800/60 border border-slate-700/60"
+                      >
+                        <div>
+                          <div className="font-bold text-white text-base">{friend.username}</div>
+                          <div className="text-xs text-purple-400 font-mono">{friend.rating || 1200} ELO</div>
+                        </div>
+                        {isAlreadyInLobby ? (
+                          <span className="text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-3 py-1.5 rounded-lg">
+                            In Lobby
+                          </span>
+                        ) : isInvited ? (
+                          <span className="text-xs font-semibold text-purple-300 bg-purple-500/20 border border-purple-500/30 px-3 py-1.5 rounded-lg">
+                            Invite Sent!
+                          </span>
+                        ) : (
+                          <button
+                            onClick={() => handleInviteFriend(friend.username)}
+                            className="bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs px-4 py-2 rounded-lg transition-colors shadow-sm"
+                          >
+                            Invite
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Instructions */}
         <div className="mt-6 bg-blue-500/10 backdrop-blur-md rounded-xl p-6 border-2 border-blue-500/30">

@@ -100,6 +100,8 @@ class QueueManager:
                 
                 # Add callback to log if task fails
                 def task_done_callback(task):
+                    if task.cancelled():
+                        return
                     try:
                         task.result()
                     except Exception as e:

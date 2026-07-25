@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 from bson import ObjectId
 
+from datetime import datetime, timezone
 from app.security.auth import get_current_user
 from app.db.mongo import get_database
 from app.schemas.user import UserPublic
@@ -67,6 +68,34 @@ async def send_friend_request(username: str, current_user = Depends(get_current_
     
     return {"message": "Friend request sent"}
 
+@router.get("/friends/requests/pending")
+async def get_pending_friend_requests(current_user = Depends(get_current_user)):
+    db = get_database()
+    request_ids = current_user.get("friend_requests", [])
+    
+    if not request_ids:
+        return []
+        
+    obj_ids = []
+    for rid in request_ids:
+        try:
+            obj_ids.append(ObjectId(rid))
+        except:
+            pass
+            
+    cursor = db.users.find({"_id": {"$in": obj_ids}})
+    requests = []
+    
+    async for user in cursor:
+        requests.append({
+            "id": str(user["_id"]),
+            "username": user["username"],
+            "rating": user.get("rating", 1200),
+            "level": user.get("level", 1)
+        })
+        
+    return requests
+
 @router.post("/friends/accept/{username}")
 async def accept_friend_request(username: str, current_user = Depends(get_current_user)):
     db = get_database()
@@ -94,11 +123,65 @@ async def accept_friend_request(username: str, current_user = Depends(get_curren
     await db.users.update_one(
         {"_id": target_user["_id"]},
         {
-            "$addToSet": {"friends": current_id_str}
+            "$addToSet": {"friends": current_id_str},
+            "$push": {
+                "notifications": {
+                    "type": "friend_response",
+                    "sender_username": current_user["username"],
+                    "action": "accepted",
+                    "timestamp": datetime.now(timezone.utc).isoformat()
+                }
+            }
         }
     )
     
     return {"message": "Friend request accepted"}
+
+@router.post("/friends/reject/{username}")
+async def reject_friend_request(username: str, current_user = Depends(get_current_user)):
+    db = get_database()
+    
+    target_user = await db.users.find_one({"username": username})
+    if not target_user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    target_id_str = str(target_user["_id"])
+    
+    # Remove from current user's friend requests
+    await db.users.update_one(
+        {"_id": current_user["_id"]},
+        {"$pull": {"friend_requests": target_id_str}}
+    )
+    
+    # Send notification back to the sender
+    await db.users.update_one(
+        {"_id": target_user["_id"]},
+        {
+            "$push": {
+                "notifications": {
+                    "type": "friend_response",
+                    "sender_username": current_user["username"],
+                    "action": "rejected",
+                    "timestamp": datetime.now(timezone.utc).isoformat()
+                }
+            }
+        }
+    )
+    
+    return {"message": "Friend request rejected"}
+
+@router.get("/notifications")
+async def get_user_notifications(current_user = Depends(get_current_user)):
+    return current_user.get("notifications", [])
+
+@router.post("/notifications/clear")
+async def clear_user_notifications(current_user = Depends(get_current_user)):
+    db = get_database()
+    await db.users.update_one(
+        {"_id": current_user["_id"]},
+        {"$set": {"notifications": []}}
+    )
+    return {"message": "Notifications cleared"}
 
 @router.get("/friends")
 async def get_friends(current_user = Depends(get_current_user)):
