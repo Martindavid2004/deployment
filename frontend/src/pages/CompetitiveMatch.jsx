@@ -297,18 +297,11 @@ export default function CompetitiveMatch() {
       }
 
       const data = await res.json();
-      console.log("Match data:", data);
-      console.log("[INFO] Match Status:", data.status);
-      console.log("[INFO] Player1 completed:", data.player1?.completed);
-      console.log("[INFO] Player2 completed:", data.player2?.completed);
-      console.log("[INFO] Winner ID:", data.winner_id);
-      console.log("[INFO] Time limit:", data.time_limit_seconds);
       setMatch(data);
       
       // Set match start time for accurate timer calculation (survives page refresh)
       if (data.started_at) {
         setMatchStartTime(data.started_at);
-        console.log("[INFO] Match started at:", data.started_at);
       }
 
       // 2. Determine Correct Problem ID (Multi-problem support)
@@ -394,7 +387,6 @@ export default function CompetitiveMatch() {
           return; // Stop loading
         }
 
-        console.log("[SUCCESS] Problem loaded:", problemData.title);
         setProblem(problemData);
 
         // Load Code / Game Mode Specifics
@@ -436,7 +428,6 @@ export default function CompetitiveMatch() {
 
   const loadGameModeContent = (matchData, problemData, currentUserId) => {
     const gameMode = matchData.game_mode || "standard";
-    console.log("[INFO] Game Mode:", gameMode);
 
     if (gameMode === "bug_hunt") {
       // Load buggy code for Bug Hunt mode

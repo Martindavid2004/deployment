@@ -349,8 +349,8 @@ export default function Workspace({
     : 0;
   const overallProgress = (roundsCompletedCount / 4) * 100;
 
-  const currentRoundData = roundState[currentRound];
-  const currentRoundStart = roundStartTimes[currentRound];
+  const currentRoundData = roundState?.[currentRound] || { code: "", completed: false, time: 0 };
+  const currentRoundStart = roundStartTimes?.[currentRound];
   let liveRoundTime = currentRoundData.time || 0;
   if (!currentRoundData.completed && currentRoundStart) {
     liveRoundTime = (now - currentRoundStart) / 1000;
@@ -358,10 +358,11 @@ export default function Workspace({
 
   let overallTime = 0;
   for (let r = 1; r <= 4; r++) {
-    if (r === currentRound && !roundState[r].completed && roundStartTimes[r]) {
+    const rData = roundState?.[r];
+    if (r === currentRound && !rData?.completed && roundStartTimes?.[r]) {
       overallTime += (now - roundStartTimes[r]) / 1000;
     } else {
-      overallTime += roundState[r].time || 0;
+      overallTime += rData?.time || 0;
     }
   }
 
