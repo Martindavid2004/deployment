@@ -270,7 +270,7 @@ export default function Dashboard({
               <Sparkles size={14} /> Recommended Next Step
             </div>
             <h1 className="text-3xl font-extrabold mb-2 heading-font tracking-tight">
-              Greetings, <span className="bg-gradient-to-r from-[var(--accent-primary)] to-[#c084fc] bg-clip-text text-transparent">{user?.name || "coder"}</span>!
+              Greetings, <span className="bg-gradient-to-r from-[var(--accent-primary)] to-[#7fae51] bg-clip-text text-transparent">{user?.name || "coder"}</span>!
             </h1>
             <p className="text-sm max-w-xl mb-6 leading-relaxed" style={{ color: 'var(--text-tertiary)' }}>
               Spot compilation issues, refactor round by round, build streaks, and master the system in Python, C++, and Java.

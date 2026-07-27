@@ -579,7 +579,7 @@ export default function Competitive({ attempts, problems, stats }) {
   // ELO Tier Badge generator
   const getEloTier = (elo) => {
     if (elo < 1200) return { name: "Bronze Challenger", color: "#9ca3af", glow: "rgba(156,163,175,0.2)" };
-    if (elo < 1400) return { name: "Code Knight", color: "#3b82f6", glow: "rgba(59,130,246,0.35)" };
+    if (elo < 1400) return { name: "Code Knight", color: "#6a9641", glow: "rgba(106,150,65,0.35)" };
     if (elo < 1600) return { name: "Logic Lord", color: "#a855f7", glow: "rgba(168,85,247,0.35)" };
     return { name: "Grandmaster", color: "#fbbf24", glow: "rgba(251,191,36,0.5)" };
   };
@@ -850,7 +850,7 @@ export default function Competitive({ attempts, problems, stats }) {
                 }}
               >
                 {/* Physical LED Status Light */}
-                <div className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-blue-500 shadow-[0_0_8px_#3b82f6]" />
+                <div className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-blue-500 shadow-[0_0_8px_#6a9641]" />
 
                 <DoorOpen size={24} className="group-hover:scale-110 transition-transform text-blue-400" />
                 <div className="font-bold text-slate-100 text-sm tracking-wide">Join Lobby</div>
