@@ -14,7 +14,7 @@ from typing import Optional, Dict
 from datetime import datetime, timedelta
 import logging
 
-from app.services.piston_executor import PistonExecutor, ExecutionResult
+from app.services.judge0_executor import judge0_executor, ExecutionResult
 from app.services.circuit_breaker import CircuitBreaker, CircuitBreakerOpenException
 
 logger = logging.getLogger(__name__)
@@ -82,7 +82,7 @@ class QueueManager:
         self.failed_count = 0
         
         # Services
-        self.piston_executor = PistonExecutor()
+        self.executor = judge0_executor
         self.circuit_breaker = CircuitBreaker()
         
         # Background task
@@ -308,7 +308,7 @@ class QueueManager:
         
         while retry_count <= self.max_retries:
             try:
-                result = await self.piston_executor.execute_code(
+                result = await self.executor.execute_code(
                     code=request['code'],
                     language=request['language'],
                     stdin=request['stdin']
