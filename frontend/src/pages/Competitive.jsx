@@ -17,7 +17,10 @@ import {
   Activity, 
   RefreshCw,
   Plus,
-  Swords
+  Swords,
+  Bell,
+  UserCheck,
+  X
 } from "lucide-react";
 import ProgressBar from "../components/ProgressBar";
 import { API_BASE } from "../utils/api";
@@ -189,6 +192,9 @@ export default function Competitive({ attempts, problems, stats }) {
 
   const [leaderboardFilter, setLeaderboardFilter] = useState("global");
   const [invites, setInvites] = useState([]);
+  const [friendRequests, setFriendRequests] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+  const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
   const [selectedGameMode, setSelectedGameMode] = useState("standard");
   const [matchmakingProgress, setMatchmakingProgress] = useState("");
   const [feedItems, setFeedItems] = useState([
@@ -269,11 +275,106 @@ export default function Competitive({ attempts, problems, stats }) {
   useEffect(() => {
     fetchUserRating();
     fetchMatches();
+    fetchFriendRequests();
+    fetchNotifications();
   }, []);
 
   useEffect(() => {
     fetchLeaderboard(leaderboardFilter);
   }, [leaderboardFilter]);
+
+  // Friend requests and Notifications polling
+  useEffect(() => {
+    const pollFriendData = async () => {
+      fetchFriendRequests();
+      fetchNotifications();
+    };
+    pollFriendData();
+    const interval = setInterval(pollFriendData, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchFriendRequests = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      const res = await fetch(`${API_BASE}/users/friends/requests/pending`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) setFriendRequests(data);
+      }
+    } catch (err) {
+      console.error("Error fetching friend requests:", err);
+    }
+  };
+
+  const fetchNotifications = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      const res = await fetch(`${API_BASE}/users/notifications`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) setNotifications(data);
+      }
+    } catch (err) {
+      console.error("Error fetching notifications:", err);
+    }
+  };
+
+  const handleAcceptRequest = async (username) => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_BASE}/users/friends/accept/${username}`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        fetchFriendRequests();
+        fetchLeaderboard(leaderboardFilter);
+      } else {
+        const error = await res.json();
+        alert(`Failed to accept: ${error.detail || "Error"}`);
+      }
+    } catch (err) {
+      console.error("Error accepting request:", err);
+    }
+  };
+
+  const handleRejectRequest = async (username) => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_BASE}/users/friends/reject/${username}`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        fetchFriendRequests();
+      } else {
+        const error = await res.json();
+        alert(`Failed to reject: ${error.detail || "Error"}`);
+      }
+    } catch (err) {
+      console.error("Error rejecting request:", err);
+    }
+  };
+
+  const handleClearNotifications = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      await fetch(`${API_BASE}/users/notifications/clear`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setNotifications([]);
+    } catch (err) {
+      console.error("Error clearing notifications:", err);
+    }
+  };
 
   // Match invites polling
   useEffect(() => {
@@ -303,6 +404,10 @@ export default function Competitive({ attempts, problems, stats }) {
           } else {
             setInvites([]);
           }
+        } else if (res.status === 401) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("userId");
+          localStorage.removeItem("username");
         }
       } catch (err) {
         console.error("Error fetching invites:", err);
@@ -324,6 +429,10 @@ export default function Competitive({ attempts, problems, stats }) {
         const data = await res.json();
         setCurrentUser(data);
         setRating(data.rating || 1200);
+      } else if (res.status === 401) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("userId");
+        localStorage.removeItem("username");
       }
     } catch (err) {
       console.error("Error fetching user rating:", err);
@@ -482,7 +591,7 @@ export default function Competitive({ attempts, problems, stats }) {
   // ELO Tier Badge generator
   const getEloTier = (elo) => {
     if (elo < 1200) return { name: "Bronze Challenger", color: "#9ca3af", glow: "rgba(156,163,175,0.2)" };
-    if (elo < 1400) return { name: "Code Knight", color: "#3b82f6", glow: "rgba(59,130,246,0.35)" };
+    if (elo < 1400) return { name: "Code Knight", color: "#6a9641", glow: "rgba(106,150,65,0.35)" };
     if (elo < 1600) return { name: "Logic Lord", color: "#a855f7", glow: "rgba(168,85,247,0.35)" };
     return { name: "Grandmaster", color: "#fbbf24", glow: "rgba(251,191,36,0.5)" };
   };
@@ -504,10 +613,9 @@ export default function Competitive({ attempts, problems, stats }) {
           <div className="flex gap-2">
             <button 
               onClick={() => {
+                const gameId = invites[0].game_id;
                 handleClearInvites();
-                // We'd ideally join via a join route or use websocket,
-                // For now just alert that they should join Lobby ID
-                alert(`Proceeding to join lobby: ${invites[0].game_id}`);
+                navigate(`/lobby/${gameId}`);
               }}
               className="flex-1 bg-[var(--accent-primary)] text-white text-xs font-bold py-1.5 rounded"
             >
@@ -556,9 +664,122 @@ export default function Competitive({ attempts, problems, stats }) {
                 Join multiplayer lobbies, match instantly 1v1, or host coding matches with up to 15 players.
               </p>
             </div>
-            <div className="text-xs font-semibold px-3 py-1 bg-slate-850 text-emerald-400 border border-slate-700/50 rounded-full flex items-center gap-1.5 shadow-[inset_2px_2px_5px_rgba(0,0,0,0.3)]">
-              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping shadow-[0_0_8px_#34d399]" />
-              147 Online
+            <div className="flex items-center gap-3">
+              {/* Notification Icon Button with Badge */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowNotificationDropdown(!showNotificationDropdown)}
+                  className="p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700/80 transition-all flex items-center justify-center relative shadow-[inset_1px_1px_3px_rgba(255,255,255,0.05),2px_2px_6px_rgba(0,0,0,0.4)]"
+                  title="Friend Notifications"
+                >
+                  <Bell size={20} className={friendRequests.length > 0 || notifications.length > 0 ? "text-amber-400 animate-bounce" : "text-slate-400"} />
+                  {(friendRequests.length + notifications.length) > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white font-bold text-[10px] w-5 h-5 rounded-full flex items-center justify-center border-2 border-slate-900 animate-pulse">
+                      {friendRequests.length + notifications.length}
+                    </span>
+                  )}
+                </button>
+
+                {/* Notifications Dropdown Modal */}
+                {showNotificationDropdown && (
+                  <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-slate-900 border border-slate-700/90 rounded-2xl shadow-2xl z-50 p-4 animate-in fade-in slide-in-from-top-2 backdrop-blur-xl">
+                    <div className="flex justify-between items-center border-b border-slate-800 pb-3 mb-3">
+                      <h3 className="font-extrabold text-sm text-slate-100 flex items-center gap-2">
+                        <Bell size={16} className="text-emerald-400" /> Notifications & Requests
+                      </h3>
+                      <button
+                        onClick={() => setShowNotificationDropdown(false)}
+                        className="text-slate-400 hover:text-slate-200 p-1 rounded-lg hover:bg-slate-800"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+
+                    {/* Pending Friend Requests Section */}
+                    <div className="space-y-3 max-h-72 overflow-y-auto custom-scrollbar pr-1">
+                      {friendRequests.length > 0 && (
+                        <div>
+                          <div className="text-[10px] uppercase font-bold text-amber-400 tracking-wider mb-2 flex items-center gap-1">
+                            <UserCheck size={12} /> Pending Friend Requests ({friendRequests.length})
+                          </div>
+                          <div className="space-y-2">
+                            {friendRequests.map((req) => (
+                              <div
+                                key={req.id}
+                                className="flex items-center justify-between p-3 rounded-xl bg-slate-800/60 border border-slate-700/60"
+                              >
+                                <div>
+                                  <div className="text-xs font-bold text-slate-200">{req.username}</div>
+                                  <div className="text-[10px] text-emerald-400 font-mono">{req.rating || 1200} ELO</div>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                  <button
+                                    onClick={() => handleAcceptRequest(req.username)}
+                                    className="px-2.5 py-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-[11px] rounded-lg transition-colors shadow-sm"
+                                  >
+                                    Accept
+                                  </button>
+                                  <button
+                                    onClick={() => handleRejectRequest(req.username)}
+                                    className="px-2.5 py-1 bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold text-[11px] rounded-lg transition-colors"
+                                  >
+                                    Reject
+                                  </button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Action Response Notifications Section */}
+                      {notifications.length > 0 && (
+                        <div className={friendRequests.length > 0 ? "pt-2 border-t border-slate-800" : ""}>
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-[10px] uppercase font-bold text-blue-400 tracking-wider">
+                              Friend Action Activity
+                            </span>
+                            <button
+                              onClick={handleClearNotifications}
+                              className="text-[9px] text-slate-400 hover:text-slate-200 underline font-semibold"
+                            >
+                              Clear all
+                            </button>
+                          </div>
+                          <div className="space-y-2">
+                            {notifications.map((notif, i) => (
+                              <div
+                                key={i}
+                                className="p-2.5 rounded-xl bg-slate-800/40 border border-slate-700/40 text-xs flex items-center justify-between"
+                              >
+                                <span className="text-slate-300">
+                                  <span className="font-bold text-slate-100">{notif.sender_username}</span>{" "}
+                                  {notif.action === "accepted" ? (
+                                    <span className="text-emerald-400 font-semibold">accepted your friend request!</span>
+                                  ) : (
+                                    <span className="text-red-400 font-semibold">rejected your friend request.</span>
+                                  )}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {friendRequests.length === 0 && notifications.length === 0 && (
+                        <div className="text-center py-6 text-slate-400 text-xs">
+                          No pending requests or new notifications.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="text-xs font-semibold px-3 py-1 bg-slate-850 text-emerald-400 border border-slate-700/50 rounded-full flex items-center gap-1.5 shadow-[inset_2px_2px_5px_rgba(0,0,0,0.3)]">
+                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping shadow-[0_0_8px_#34d399]" />
+                147 Online
+              </div>
             </div>
           </div>
 
@@ -641,7 +862,7 @@ export default function Competitive({ attempts, problems, stats }) {
                 }}
               >
                 {/* Physical LED Status Light */}
-                <div className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-blue-500 shadow-[0_0_8px_#3b82f6]" />
+                <div className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-blue-500 shadow-[0_0_8px_#6a9641]" />
 
                 <DoorOpen size={24} className="group-hover:scale-110 transition-transform text-blue-400" />
                 <div className="font-bold text-slate-100 text-sm tracking-wide">Join Lobby</div>

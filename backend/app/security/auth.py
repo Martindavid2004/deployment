@@ -36,7 +36,10 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
 
 async def get_user_by_id(user_id: str):
     db = get_database()
-    user = await db.users.find_one({"_id": ObjectId(user_id)})
+    try:
+        user = await db.users.find_one({"_id": ObjectId(user_id)})
+    except Exception:
+        return None
     if not user:
         return None
     user["id"] = str(user["_id"])

@@ -8,8 +8,8 @@ const FACTIONS = [
     id: "sorcerer",
     name: "Syntax Sorcerer",
     desc: "Masters of language structure & compiler error remediation.",
-    color: "#818cf8",
-    gradient: "linear-gradient(135deg, #818cf8, #6366f1)"
+    color: "#6a9641",
+    gradient: "linear-gradient(135deg, #7fae51, #6a9641)"
   },
   {
     id: "berserker",

@@ -139,7 +139,7 @@ export default function Register({ onLogin }) {
             <span className="text-[10px] font-extrabold uppercase tracking-widest text-[var(--accent-primary)] bg-[var(--accent-soft)] px-3.5 py-1 rounded-full border border-[rgba(99,102,241,0.15)]">
               Registry operational
             </span>
-            <h1 className="text-4xl lg:text-5xl font-extrabold heading-font tracking-tight mt-3 bg-gradient-to-r from-[var(--accent-primary)] to-[#c084fc] bg-clip-text text-transparent">
+            <h1 className="text-4xl lg:text-5xl font-extrabold heading-font tracking-tight mt-3 bg-gradient-to-r from-[var(--accent-primary)] to-[#7fae51] bg-clip-text text-transparent">
               codoAI
             </h1>
             <p className="text-sm mt-2 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>

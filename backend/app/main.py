@@ -90,46 +90,11 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="codoAI Backend", version="1.0.0", lifespan=lifespan)
 
-# Custom middleware to handle dev tunnels CORS properly
-class DevTunnelCORSMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next):
-        # Get origin from request
-        origin = request.headers.get("origin", "*")
-        
-        # Handle preflight OPTIONS requests immediately
-        if request.method == "OPTIONS":
-            return JSONResponse(
-                content="OK",
-                status_code=200,
-                headers={
-                    "Access-Control-Allow-Origin": origin if origin else "*",
-                    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD",
-                    "Access-Control-Allow-Headers": "Content-Type, Authorization, Accept, Origin, User-Agent, DNT, Cache-Control, X-Mx-ReqToken, Keep-Alive, X-Requested-With, If-Modified-Since",
-                    "Access-Control-Allow-Credentials": "true",
-                    "Access-Control-Max-Age": "86400",
-                    "Vary": "Origin",
-                }
-            )
-        
-        # Process actual request
-        response = await call_next(request)
-        
-        # Force CORS headers on all responses
-        response.headers["Access-Control-Allow-Origin"] = origin if origin else "*"
-        response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD"
-        response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, Accept, Origin, User-Agent, DNT, Cache-Control, X-Mx-ReqToken, Keep-Alive, X-Requested-With, If-Modified-Since"
-        response.headers["Access-Control-Allow-Credentials"] = "true"
-        response.headers["Vary"] = "Origin"
-        
-        return response
-
-# Add custom CORS middleware first
-app.add_middleware(DevTunnelCORSMiddleware)
-
-# CORS configuration - Keep for additional compatibility
+# CORS configuration
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
+    allow_origin_regex=r"https?://.*",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
