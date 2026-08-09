@@ -118,6 +118,23 @@ class CodeExecutor:
         print(f"🔧 Executing code via Judge0: {language}")
         print(f"📝 Code preview: {code[:100]}...")
         
+        # Quick health check first to provide immediate feedback
+        try:
+            is_healthy = await self.executor.health_check()
+            if not is_healthy:
+                return {
+                    "success": False,
+                    "output": "",
+                    "error": "Code execution service is currently unavailable. Please try again later or contact support if the issue persists.",
+                    "execution_time": 0,
+                    "memory": 0,
+                    "status": "Service Unavailable",
+                    "status_id": -1
+                }
+        except Exception:
+            # If health check itself fails, continue to regular execution which will handle the error
+            pass
+        
         # Prepare code and stdin based on language
         prepared_code, stdin = await self._prepare_code(code, language, test_input)
         

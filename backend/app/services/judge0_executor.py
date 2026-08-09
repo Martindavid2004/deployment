@@ -2,9 +2,9 @@
 Judge0 API Executor Service
 
 This service handles code compilation and execution through Judge0 API.
-Supports multiple languages with proper error handling, base64 encoding, and timeout management.
+Supports multiple languages with proper error handling and timeout management.
 
-Judge0 API: http://localhost:2358
+Custom Judge0 API: http://localhost:8888
 """
 
 import httpx
@@ -46,19 +46,13 @@ class Judge0Executor:
         self.base_url = base_url or settings.judge0_base_url
         
         # Language ID mapping for Judge0
-        # Reference: https://github.com/judge0/judge0/blob/master/CHANGELOG.md
+        # Reference: Your local Judge0 instance at port 8888
         self.language_map = {
-            'python': 71,      # Python 3.8.1
-            'java': 62,        # Java (OpenJDK 13.0.1)
-            'cpp': 54,         # C++ (GCC 9.2.0)
-            'c': 50,           # C (GCC 9.2.0)
-            'javascript': 63,  # JavaScript (Node.js 12.14.0)
-            'typescript': 74,  # TypeScript (3.7.4)
-            'go': 60,          # Go (1.13.5)
-            'rust': 73,        # Rust (1.40.0)
-            'ruby': 72,        # Ruby (2.7.0)
-            'php': 68,         # PHP (7.4.1)
-            'csharp': 51,      # C# (Mono 6.6.0.161)
+            'c': 1,           # C (GCC)
+            'cpp': 2,         # C++ (G++)
+            'java': 3,        # Java (OpenJDK)
+            'python': 4,      # Python (3.x)
+            'javascript': 5,  # JavaScript (Node.js)
         }
     
     def _encode_base64(self, text: str) -> str:
@@ -112,42 +106,31 @@ class Judge0Executor:
                     status_description="Unsupported Language"
                 )
             
-            # Encode source code and stdin to base64
-            source_code_encoded = self._encode_base64(code)
-            stdin_encoded = self._encode_base64(stdin) if stdin else None
-            
-            # Prepare request payload
+            # Prepare request payload for custom Judge0 API (no base64 encoding)
             payload: Dict[str, Any] = {
                 "language_id": language_id,
-                "source_code": source_code_encoded,
+                "source_code": code,  # Plain text, not base64
+                "wait": wait
             }
             
-            if stdin_encoded:
-                payload["stdin"] = stdin_encoded
+            # Add stdin if provided
+            if stdin:
+                payload["stdin"] = stdin  # Plain text, not base64
             
-            # Set CPU time limit (Judge0 uses seconds)
-            payload["cpu_time_limit"] = timeout
-            
-            # Build URL with query parameters
-            params = {
-                "base64_encoded": "true",
-            }
-            
-            if wait:
-                params["wait"] = "true"
+            # No query parameters needed for custom API
+            params = {}
             
             print(f"DEBUG Judge0: Calling API for language={language} (id={language_id}), stdin='{stdin[:50]}...'")
             logger.info(f"Calling Judge0 API for language={language}, code_length={len(code)}, stdin_length={len(stdin)}")
             
-            # Configure timeout with buffer for API call
-            timeout_config = httpx.Timeout(timeout + 5.0)
+            # Configure timeout with buffer for API call - reduce for faster failure
+            timeout_config = httpx.Timeout(timeout + 3.0)  # Reduced from 5.0 to 3.0
             
             async with httpx.AsyncClient(timeout=timeout_config) as client:
                 # Submit code for execution
                 response = await client.post(
                     f"{self.base_url}/submissions",
-                    json=payload,
-                    params=params
+                    json=payload
                 )
                 
                 logger.info(f"Judge0 API response status: {response.status_code}")
@@ -206,12 +189,12 @@ class Judge0Executor:
                 success=False,
                 output="",
                 compile_error="",
-                runtime_error=f"Network error: {str(e)}",
+                runtime_error=f"Code execution service is currently unavailable. Please try again later.",
                 execution_time=0.0,
                 memory=0,
                 timed_out=False,
                 status_id=-1,
-                status_description="Network Error"
+                status_description="Service Unavailable"
             )
         
         except Exception as e:
@@ -252,8 +235,7 @@ class Judge0Executor:
                 await asyncio.sleep(poll_interval)
                 
                 response = await client.get(
-                    f"{self.base_url}/submissions/{token}",
-                    params={"base64_encoded": "true"}
+                    f"{self.base_url}/submissions/{token}"
                 )
                 
                 if response.status_code != 200:
@@ -298,21 +280,12 @@ class Judge0Executor:
         """
         Parse Judge0 API response into ExecutionResult
         
-        Judge0 Status IDs:
-        1: In Queue
-        2: Processing
+        Custom API Status IDs (based on API documentation):
         3: Accepted (success)
-        4: Wrong Answer
-        5: Time Limit Exceeded
+        4: Runtime Error
+        5: Time Limit Exceeded  
         6: Compilation Error
-        7: Runtime Error (SIGSEGV)
-        8: Runtime Error (SIGXFSZ)
-        9: Runtime Error (SIGFPE)
-        10: Runtime Error (SIGABRT)
-        11: Runtime Error (NZEC)
-        12: Runtime Error (Other)
         13: Internal Error
-        14: Exec Format Error
         
         Args:
             response: JSON response from Judge0 API
@@ -325,11 +298,11 @@ class Judge0Executor:
         status_id = status.get("id", -1)
         status_description = status.get("description", "Unknown")
         
-        # Decode base64 fields
-        stdout = self._decode_base64(response.get("stdout"))
-        stderr = self._decode_base64(response.get("stderr"))
-        compile_output = self._decode_base64(response.get("compile_output"))
-        message = self._decode_base64(response.get("message"))
+        # For custom API, output fields are plain text (no base64 decoding needed)
+        stdout = response.get("stdout", "")
+        stderr = response.get("stderr", "")
+        compile_output = response.get("compile_output", "")
+        message = response.get("message", "")
         
         # Extract execution metrics
         execution_time = float(response.get("time") or 0)
@@ -349,12 +322,10 @@ class Judge0Executor:
         elif status_id == 5:  # Time Limit Exceeded
             timed_out = True
             runtime_error = "Time limit exceeded"
-        elif status_id in (7, 8, 9, 10, 11, 12):  # Runtime errors
+        elif status_id == 4:  # Runtime Error
             runtime_error = message or stderr or f"Runtime error: {status_description}"
         elif status_id == 13:  # Internal Error
             runtime_error = message or "Internal Judge0 error"
-        elif status_id == 14:  # Exec Format Error
-            runtime_error = message or "Executable format error"
         elif not success and stderr:
             runtime_error = stderr
         
@@ -402,7 +373,7 @@ class Judge0Executor:
         """
         try:
             async with httpx.AsyncClient(timeout=5.0) as client:
-                response = await client.get(f"{self.base_url}/about")
+                response = await client.get(f"{self.base_url}/health")
                 return response.status_code == 200
         except Exception as e:
             logger.error(f"Judge0 health check failed: {e}")
