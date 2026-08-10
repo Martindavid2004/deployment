@@ -1,0 +1,56 @@
+# Production Override for CodoAI Platform
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up
+version: '3.8'
+
+services:
+  mongodb:
+    volumes:
+      # Use named volumes for production data persistence
+      - /opt/codoai/data/mongodb:/data/db
+      - /opt/codoai/data/mongodb-config:/data/configdb
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  codoai-judge:
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+          memory: 2G
+        reservations:
+          cpus: '1.0'
+          memory: 512M
+    volumes:
+      - /opt/codoai/temp/judge:/app/temp
+
+  backend:
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+    volumes:
+      - /opt/codoai/logs/backend:/app/logs
+      - /opt/codoai/data/backend:/app/data
+
+  frontend:
+    ports:
+      - "80:80"
+      - "443:443"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 64M

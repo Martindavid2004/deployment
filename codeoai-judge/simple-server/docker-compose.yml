@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  codoai:
+    build: .
+    ports:
+      - "8888:2358"  # Map external port 8888 to internal 2358
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
