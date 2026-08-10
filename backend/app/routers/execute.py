@@ -78,3 +78,46 @@ async def validate_syntax(
         "valid": result.get("success", False) or result.get("error", "") == "",
         "error": result.get("error", "")
     }
+
+@router.get("/health")
+async def health_check():
+    """
+    Check if Judge0 API is accessible
+    """
+    from app.services.judge0_executor import judge0_executor
+    
+    is_healthy = await judge0_executor.health_check()
+    
+    if is_healthy:
+        return {
+            "status": "healthy",
+            "judge0_url": judge0_executor.base_url,
+            "message": "Judge0 API is accessible"
+        }
+    else:
+        raise HTTPException(
+            status_code=503,
+            detail=f"Judge0 API is not accessible at {judge0_executor.base_url}"
+        )
+
+@router.get("/languages")
+async def get_supported_languages():
+    """
+    Get list of supported languages from Judge0
+    """
+    from app.services.judge0_executor import judge0_executor
+    
+    languages = await judge0_executor.get_languages()
+    
+    if languages:
+        return {
+            "languages": languages,
+            "supported_by_platform": list(judge0_executor.language_map.keys())
+        }
+    else:
+        return {
+            "languages": [],
+            "supported_by_platform": list(judge0_executor.language_map.keys()),
+            "message": "Could not fetch languages from Judge0"
+        }
+

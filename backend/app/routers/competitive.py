@@ -1559,9 +1559,9 @@ async def submit_solution(
     
     if game_mode == "bug_hunt":
         # Bug Hunt: Player must fix the buggy code and make it pass all test cases
-        # Use Piston API for real compilation
-        from app.services.piston_executor import PistonExecutor
-        piston = PistonExecutor()
+        # Use Judge0 API for real compilation
+        from app.services.judge0_executor import judge0_executor
+        executor = judge0_executor
         
         # Get test cases from JSON question or MongoDB problem
         if current_question:
@@ -1578,7 +1578,7 @@ async def submit_solution(
         compilation_error = None
         
         for test_case in test_cases:
-            result = await piston.execute_code(
+            result = await executor.execute_code(
                 submission.code,
                 submission.language,
                 test_case.get("input", "")

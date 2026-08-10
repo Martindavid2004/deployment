@@ -1,0 +1,40 @@
+# Development Override for CodoAI Platform
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+version: '3.8'
+
+services:
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+      target: development  # If we add multi-stage build later
+    volumes:
+      # Mount source code for hot reload
+      - ./backend:/app
+      - /app/__pycache__  # Exclude Python cache
+    environment:
+      - DEBUG=true
+      - RELOAD=true
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev  # Development Dockerfile
+    ports:
+      - "3000:3000"  # Vite dev server port
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules  # Exclude node_modules from mount
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8000
+      - VITE_WS_URL=ws://localhost:8000
+    command: ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+
+  codoai-judge:
+    volumes:
+      - ./codeoai-judge/simple-server:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    command: ["npm", "run", "dev"]  # If nodemon is available

@@ -62,6 +62,7 @@ export default function CompetitiveMatch() {
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [matchStartTime, setMatchStartTime] = useState(null); // Server timestamp
   const [usedHints, setUsedHints] = useState(false);
+  const [timeoutHandled, setTimeoutHandled] = useState(false); // Prevent timer loop
   const timerRef = useRef(null);
 
   // For Bug Hunt Piston execution
@@ -196,8 +197,9 @@ export default function CompetitiveMatch() {
       }
     };
     
-    // Start polling
-    pollIntervalRef.current = setInterval(pollMatchStatus, 2500);
+    // Start polling (faster near end of match)
+    const pollInterval = 1500; // Reduced from 2500ms for faster updates
+    pollIntervalRef.current = setInterval(pollMatchStatus, pollInterval);
     return () => {
       if (pollIntervalRef.current) {
         clearInterval(pollIntervalRef.current);
@@ -261,24 +263,84 @@ export default function CompetitiveMatch() {
     const timeRemaining = Math.max(0, timeLimit - timeElapsed);
 
     // Only trigger timeout if timer reached 0 and has been running
-    if (timeRemaining === 0 && timeElapsed >= timeLimit) {
+    // Guard against multiple calls with timeoutHandled flag
+    if (timeRemaining === 0 && timeElapsed >= timeLimit && !timeoutHandled) {
       console.log("[TIMEOUT] Game time expired - auto-submitting current code...");
       console.log(`   Time limit: ${timeLimit}s, Elapsed: ${timeElapsed}s`);
+      setTimeoutHandled(true); // Prevent multiple auto-submits
       handleTimeExpired();
     }
-  }, [timeElapsed, match, matchStartTime, matchCompleted]);
+    
+    // Safety fallback: If timer has been at 0 for more than 10 seconds and match still not complete
+    if (timeRemaining === 0 && timeElapsed > timeLimit + 10 && !matchCompleted && !timeoutHandled) {
+      console.log("[TIMEOUT] SAFETY FALLBACK - Forcing match end after 10 seconds at 00:00");
+      setTimeoutHandled(true);
+      setMatchCompleted(true);
+      setOutput("[TIMEOUT] Time expired! Match force-ended due to timeout.");
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    }
+  }, [timeElapsed, match, matchStartTime, matchCompleted, timeoutHandled]);
 
   // Polling is unified in the single hook above
 
   const handleTimeExpired = async () => {
+    console.log("[TIMEOUT] Match time expired!");
+    
     // Stop the timer
     if (timerRef.current) {
       clearInterval(timerRef.current);
     }
 
-    // Auto-submit current code with force_submit=true
-    console.log("[TIMEOUT] Auto-submitting code...");
-    await handleSubmit(true);
+    try {
+      // Force-submit current code (even if incomplete/wrong)
+      console.log("[TIMEOUT] Auto-submitting code with force_submit=true...");
+      const token = localStorage.getItem("token");
+      
+      const submissionBody = {
+        match_id: matchId,
+        code: code || "// Time expired - no solution",
+        language,
+        force_submit: true,  // Force accept even if wrong
+        timeout: true  // Flag to indicate this was a timeout
+      };
+      
+      const res = await fetch(`${API_BASE}/competitive/matches/${matchId}/submit`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(submissionBody),
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        console.log("[TIMEOUT] Submit response:", data);
+        
+        // Force match completion regardless of response
+        if (data.winner_id || data.winners || data.all_problems_complete) {
+          // Normal completion
+          await fetchMatch(); // Refresh to get final state
+        } else {
+          // Backend didn't mark as complete, force it locally
+          console.log("[TIMEOUT] Forcing local match completion");
+          setMatchCompleted(true);
+          setOutput("[TIMEOUT] Time expired! Match ended.");
+        }
+      } else {
+        // Submit failed, but still end the match locally
+        console.error("[TIMEOUT] Submit failed, but ending match anyway");
+        setMatchCompleted(true);
+        setOutput("[TIMEOUT] Time expired! Match ended (submission failed).");
+      }
+    } catch (err) {
+      console.error("[TIMEOUT] Error during timeout handling:", err);
+      // Still end the match locally
+      setMatchCompleted(true);
+      setOutput("[TIMEOUT] Time expired! Match ended.");
+    }
   };
 
   const fetchMatch = async () => {
@@ -528,6 +590,12 @@ export default function CompetitiveMatch() {
 
       const data = await res.json();
       console.log("[INFO] Submission response received", data); // Debug log
+      console.log("[DEBUG] Response keys:", Object.keys(data));
+      console.log("[DEBUG] Has next_problem?", !!data.next_problem);
+      console.log("[DEBUG] Has all_problems_complete?", data.all_problems_complete);
+      console.log("[DEBUG] Has winner_id?", !!data.winner_id);
+      console.log("[DEBUG] Has winners?", !!data.winners);
+      console.log("[DEBUG] Current game_mode:", match.game_mode);
 
       // Check for validation failure (Bug Hunt mode)
       if (data.validation_failed && !forceSubmit) {

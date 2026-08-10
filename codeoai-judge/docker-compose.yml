@@ -1,0 +1,23 @@
+x-logging:
+  &default-logging
+  logging:
+    driver: json-file
+    options:
+      max-size: 100M
+
+services:
+  server:
+    build: .
+    ports:
+      - "2358:2358"
+    environment:
+      - RAILS_ENV=development
+      - DATABASE_URL=sqlite3:db/development.sqlite3
+    volumes:
+      - .:/api
+    <<: *default-logging
+    restart: unless-stopped
+    command: bundle exec rails server -b 0.0.0.0 -p 2358
+
+volumes:
+  data:

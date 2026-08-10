@@ -385,6 +385,18 @@ export default function Competitive({ attempts, problems, stats }) {
         const res = await fetch(`${API_BASE}/users/invites`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+        
+        // If 401 Unauthorized, token expired - stop polling and redirect
+        if (res.status === 401) {
+          console.log("[AUTH] Token expired while fetching invites, clearing session");
+          localStorage.removeItem("token");
+          localStorage.removeItem("userId");
+          localStorage.removeItem("username");
+          clearInterval(interval); // Stop polling
+          window.location.href = "/login";
+          return;
+        }
+        
         if (res.ok) {
           const data = await res.json();
           if (Array.isArray(data)) {

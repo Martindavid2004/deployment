@@ -16,6 +16,9 @@ class Settings(BaseModel):
     # Google API
     google_api_key: str = os.getenv("GOOGLE_API_KEY", "")
     
+    # Judge0 Configuration
+    judge0_base_url: str = os.getenv("JUDGE0_BASE_URL", "http://localhost:2358")
+    
     # AWS Configuration
     aws_region: str = os.getenv("AWS_REGION", "eu-north-1")
     aws_access_key_id: str = os.getenv("AWS_ACCESS_KEY_ID", "")
