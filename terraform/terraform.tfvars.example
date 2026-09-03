@@ -1,0 +1,22 @@
+# AWS Region (e.g. ap-south-1, eu-north-1, us-east-1)
+aws_region = "ap-south-1"
+
+# EC2 Instance Type (t3.medium recommended for 30+ users)
+instance_type = "t3.medium"
+
+# Name of your AWS Key Pair (.pem) in AWS Console (optional)
+key_name = ""
+
+# Git repository settings
+git_repo_url = "https://github.com/Martindavid2004/deployment.git"
+git_branch   = "Fix/compiler"
+
+# MongoDB Atlas Connection URI
+mongodb_uri = "mongodb+srv://proeduvate:Martin790430@cluster0.rtl8a.mongodb.net/codo-ai?retryWrites=true&w=majority"
+mongodb_db_name = "codo-ai"
+
+# JWT Secret
+jwt_secret = "your-custom-production-jwt-secret"
+
+# Google Gemini API Key (for AI features)
+google_api_key = "AIzaSyBytZzM9-V3DQn_Ipw8rGAm517DodTmSJY"
