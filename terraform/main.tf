@@ -125,12 +125,15 @@ resource "aws_instance" "codoai_server" {
               mkdir -p /opt/codoai/data/mongodb /opt/codoai/data/mongodb-config /opt/codoai/temp/judge /opt/codoai/logs/backend /opt/codoai/data/backend
               chmod -R 777 /opt/codoai
 
-              # 5. Clone CodoAI deployment repository
+              # 5. Clone CodoAI repository
               cd /home/ubuntu
               git clone -b ${var.git_branch} ${var.git_repo_url} CodoAi
               chown -R ubuntu:ubuntu /home/ubuntu/CodoAi
 
-              cd /home/ubuntu/CodoAi/deployment
+              cd /home/ubuntu/CodoAi
+              if [ -d "deployment" ]; then
+                cd deployment
+              fi
 
               # 6. Generate production .env file
               cat <<EOT > .env
