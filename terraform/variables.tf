@@ -25,7 +25,7 @@ variable "git_repo_url" {
 variable "git_branch" {
   description = "Git branch to check out"
   type        = string
-  default     = "Fix/compiler"
+  default     = "my-local-code"
 }
 
 variable "key_name" {

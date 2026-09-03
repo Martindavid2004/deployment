@@ -9,7 +9,7 @@ key_name = ""
 
 # Git repository settings
 git_repo_url = "https://github.com/Martindavid2004/deployment.git"
-git_branch   = "Fix/compiler"
+git_branch   = "my-local-code"
 
 # MongoDB Atlas Connection URI
 mongodb_uri = "mongodb+srv://proeduvate:Martin790430@cluster0.rtl8a.mongodb.net/codo-ai?retryWrites=true&w=majority"
