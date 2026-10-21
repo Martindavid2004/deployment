@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useState, useMemo } from "react";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Sparkles, ArrowRight, Zap } from "lucide-react";
 import ProgressBar from "../components/ProgressBar";
 
 export default function Problems({ problems, attempts, currentLanguage }) {
@@ -124,6 +124,34 @@ export default function Problems({ problems, attempts, currentLanguage }) {
 
   return (
     <div>
+      {/* Intuition Loop Feature Highlight Banner */}
+      <div className="mb-8 p-6 rounded-3xl bg-gradient-to-r from-emerald-950/60 via-slate-900 to-indigo-950/60 border border-emerald-500/40 shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div className="flex items-start gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-slate-950 shrink-0 shadow-lg shadow-emerald-500/20">
+            <Sparkles className="w-6 h-6" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded-full">
+                NEW LEARNING PARADIGM
+              </span>
+              <span className="text-xs text-slate-400">Intuition First, Code Second</span>
+            </div>
+            <h2 className="text-lg font-bold text-white mt-1">The 4-D Intuition Loop</h2>
+            <p className="text-xs text-slate-300 mt-1 max-w-xl">
+              Tired of staring at blank editors? Try our new interactive mode: <strong>Play</strong> with visual sandboxes, <strong>Break</strong> naive algorithms with chaos stress tests, <strong>Build</strong> scaffolded logic, and <strong>Defend</strong> trade-offs in the AI Arena!
+            </p>
+          </div>
+        </div>
+
+        <Link
+          to="/intuition"
+          className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-bold px-6 py-3 rounded-2xl shadow-xl shadow-emerald-500/20 text-sm transition-all transform hover:scale-105 active:scale-95 shrink-0"
+        >
+          Launch Intuition Mode <ArrowRight className="w-4 h-4" />
+        </Link>
+      </div>
+
       <h1 className="text-xl font-semibold mb-2">All problems</h1>
       <p className="text-sm mb-4" style={{ color: 'var(--text-tertiary)' }}>
         Practice step by step in {currentLanguage.toUpperCase()}.

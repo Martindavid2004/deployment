@@ -8,7 +8,7 @@ const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 
 const app = express();
-const PORT = 2358; // Keep internal port as 2358
+const PORT = process.env.PORT || 8888; // Default 8888 to match backend JUDGE0_BASE_URL
 
 app.use(cors());
 app.use(express.json({ limit: '5mb' }));

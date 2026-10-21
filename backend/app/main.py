@@ -18,7 +18,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.core.config import get_settings
 from app.db.mongo import connect_to_mongo, close_mongo_connection
-from app.routers import auth, users, problems, attempts, leaderboard, execute, competitive
+from app.routers import auth, users, problems, attempts, leaderboard, execute, competitive, intuition, algorithms
 
 settings = get_settings()
 
@@ -139,6 +139,8 @@ app.include_router(attempts.router)
 app.include_router(leaderboard.router)
 app.include_router(execute.router)
 app.include_router(competitive.router)
+app.include_router(intuition.router)
+app.include_router(algorithms.router)
 
 # Root endpoint
 @app.get("/")

@@ -23,6 +23,7 @@ COPY . .
 # Create temp directory
 RUN mkdir -p temp
 
+ENV PORT=2358
 EXPOSE 2358
 
 CMD ["npm", "start"]

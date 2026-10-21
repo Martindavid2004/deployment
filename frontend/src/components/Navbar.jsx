@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { Moon, Sun, Menu, X, Save, Edit3 } from "lucide-react";
+import { Moon, Sun, Menu, X, Save, Edit3, Sparkles } from "lucide-react";
 import LanguageSelector from "./LanguageSelector";
 
 const FACTIONS = [
@@ -82,6 +82,30 @@ export default function Navbar({ user, setUser, onLogout, theme, toggleTheme, cu
               style={({ isActive }) => !isActive ? { color: 'var(--text-secondary)' } : { color: 'var(--accent-primary)', borderColor: 'var(--accent-primary)' }}
             >
               Problems
+            </NavLink>
+            <NavLink
+              to="/algorithms"
+              className={({ isActive }) =>
+                `px-3 py-1 rounded-full border transition-colors duration-200 flex items-center gap-1.5 ${isActive
+                  ? "cc-pill"
+                  : "border-purple-500/40 text-purple-300 bg-purple-500/10 hover:bg-purple-500/20"
+                }`}
+              style={({ isActive }) => isActive ? { color: 'var(--accent-primary)', borderColor: 'var(--accent-primary)' } : {}}
+            >
+              <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+              Algorithm Hub
+            </NavLink>
+            <NavLink
+              to="/intuition"
+              className={({ isActive }) =>
+                `px-3 py-1 rounded-full border transition-colors duration-200 flex items-center gap-1.5 ${isActive
+                  ? "cc-pill"
+                  : "border-emerald-500/40 text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20"
+                }`}
+              style={({ isActive }) => isActive ? { color: 'var(--accent-primary)', borderColor: 'var(--accent-primary)' } : {}}
+            >
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              Intuition Loop
             </NavLink>
             <NavLink
               to="/competitive"
@@ -335,6 +359,32 @@ export default function Navbar({ user, setUser, onLogout, theme, toggleTheme, cu
               style={({ isActive }) => !isActive ? { color: 'var(--text-secondary)' } : { color: 'var(--accent-primary)', borderColor: 'var(--accent-primary)' }}
             >
               Problems
+            </NavLink>
+            <NavLink
+              to="/algorithms"
+              onClick={closeMobileMenu}
+              className={({ isActive }) =>
+                `px-4 py-2 rounded-xl border text-sm font-semibold transition-colors duration-200 flex items-center gap-2 ${isActive
+                  ? "cc-pill"
+                  : "border-purple-500/40 text-purple-300 bg-purple-500/10"
+                }`}
+              style={({ isActive }) => isActive ? { color: 'var(--accent-primary)', borderColor: 'var(--accent-primary)' } : {}}
+            >
+              <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+              Algorithm Hub & System Design
+            </NavLink>
+            <NavLink
+              to="/intuition"
+              onClick={closeMobileMenu}
+              className={({ isActive }) =>
+                `px-4 py-2 rounded-xl border text-sm font-semibold transition-colors duration-200 flex items-center gap-2 ${isActive
+                  ? "cc-pill"
+                  : "border-emerald-500/40 text-emerald-400 bg-emerald-500/10"
+                }`}
+              style={({ isActive }) => isActive ? { color: 'var(--accent-primary)', borderColor: 'var(--accent-primary)' } : {}}
+            >
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              Intuition Loop (Play ➔ Defend)
             </NavLink>
             <NavLink
               to="/competitive"

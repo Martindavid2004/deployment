@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import ProgressBar from "../components/ProgressBar";
 import AchievementsPanel from "../components/AchievementsPanel";
+import AlgorithmMasteryWidget from "../components/AlgorithmMasteryWidget";
 import { API_BASE } from "../utils/api";
 
 export default function Dashboard({
@@ -308,6 +309,9 @@ export default function Dashboard({
             )}
           </div>
         </div>
+
+        {/* Applied Algorithm Machinery & System Design Widget */}
+        <AlgorithmMasteryWidget />
 
         {/* Dynamic Daily Challenge Box */}
         {dailyProblem && (

@@ -16,6 +16,7 @@ import QuizMatch from "./pages/QuizMatch";
 import QuizResults from "./pages/QuizResults";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
+import IntuitionMode from "./pages/IntuitionMode";
 
 import Navbar from "./components/Navbar";
 
@@ -422,6 +423,22 @@ function AppContent({
                 setCurrentLanguage={setCurrentLanguage}
               />
             )}
+          />
+          <Route
+            path="/intuition"
+            element={requireAuth(<IntuitionMode user={user} />)}
+          />
+          <Route
+            path="/intuition/:id"
+            element={requireAuth(<IntuitionMode user={user} />)}
+          />
+          <Route
+            path="/algorithms"
+            element={requireAuth(<IntuitionMode user={user} />)}
+          />
+          <Route
+            path="/algorithms/:id"
+            element={requireAuth(<IntuitionMode user={user} />)}
           />
           <Route
             path="/competitive"
