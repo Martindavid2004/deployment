@@ -1697,8 +1697,9 @@ export default function CompetitiveMatch() {
                       </div>
                       <div className="space-y-2">
                         <div>
-                          <label className={`text-sm block mb-1 ${isDark ? 'text-slate-400' : 'text-gray-700'}`}>Input</label>
+                          <label htmlFor={"test-input-" + idx} className={`text-sm block mb-1 ${isDark ? 'text-slate-400' : 'text-gray-700'}`}>Input</label>
                           <textarea
+                            id={`test-input-${idx}`}
                             value={tc.input}
                             onChange={(e) => updateTestCase(idx, "input", e.target.value)}
                             className={`w-full border rounded p-2 text-sm font-mono ${isDark ? 'bg-slate-950 border-slate-600 text-slate-300' : 'bg-white border-gray-400 text-gray-900'}`}
@@ -1707,8 +1708,9 @@ export default function CompetitiveMatch() {
                           />
                         </div>
                         <div>
-                          <label className={`text-sm block mb-1 ${isDark ? 'text-slate-400' : 'text-gray-700'}`}>Expected Output</label>
+                          <label htmlFor={"test-output-" + idx} className={`text-sm block mb-1 ${isDark ? 'text-slate-400' : 'text-gray-700'}`}>Expected Output</label>
                           <textarea
+                            id={`test-output-${idx}`}
                             value={tc.expected}
                             onChange={(e) => updateTestCase(idx, "expected", e.target.value)}
                             className={`w-full border rounded p-2 text-sm font-mono ${isDark ? 'bg-slate-950 border-slate-600 text-slate-300' : 'bg-white border-gray-400 text-gray-900'}`}

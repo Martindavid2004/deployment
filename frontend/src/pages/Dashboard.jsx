@@ -208,23 +208,8 @@ export default function Dashboard({
     heatmapDays.push({ id: 83 - i, level, date: d.toDateString(), count });
   }
 
-  // Dynamic Leaderboard sorting
-  const mockUsers = [
-    { name: "HexCoder", level: 12, xp: 1150, title: "Grandmaster" },
-    { name: "ByteQueen", level: 9, xp: 850, title: "Master" },
-    { name: "DevWizard", level: 6, xp: 520, title: "Acolyte" },
-    { name: "CodeMaster", level: 3, xp: 220, title: "Novice" },
-  ];
-  const allUsers = [
-    ...mockUsers,
-    {
-      name: `${user?.name || "You"} (You)`,
-      level: stats.level,
-      xp: stats.xp,
-      title: stats.level >= 10 ? "Archmage" : stats.level >= 5 ? "Elite" : "Acolyte",
-      isCurrentUser: true
-    }
-  ].sort((a, b) => b.xp - a.xp);
+  // Dynamic Leaderboard - data fetched from API below
+  // Removed mockUsers to restore trust (was hardcoded fake data)
 
 
   const handleScratchpadChange = (e) => {
@@ -495,6 +480,7 @@ export default function Dashboard({
             <textarea
               value={scratchpadCode}
               onChange={handleScratchpadChange}
+              aria-label="Scratchpad notes"
               placeholder={`// Write quick algorithms, drafts, or code notes here... \n// E.g., drafting sorting logic or helper templates.`}
               className="w-full h-40 p-4 font-mono text-xs rounded-xl border outline-none resize-y transition-all focus:border-[var(--accent-primary)] leading-relaxed"
               style={{

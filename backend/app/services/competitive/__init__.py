@@ -1,0 +1,1 @@
+"""Competitive-mode domain services."""

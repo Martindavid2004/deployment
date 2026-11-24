@@ -75,10 +75,11 @@ export default function LobbyJoin() {
 
           <form onSubmit={handleJoinLobby} className="space-y-6">
             <div>
-              <label className="block text-white font-semibold mb-2">
+              <label htmlFor="game_id" className="block text-white font-semibold mb-2">
                 Game ID
               </label>
               <input
+                id="game_id"
                 type="text"
                 value={gameId}
                 onChange={(e) => setGameId(e.target.value.toUpperCase())}

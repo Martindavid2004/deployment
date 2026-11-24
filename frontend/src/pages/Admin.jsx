@@ -53,8 +53,9 @@ export default function Admin({ problems, setProblems }) {
         </p>
         <form onSubmit={handleAdd} className="space-y-3">
           <div className="flex flex-col gap-1">
-            <label>Title</label>
+            <label htmlFor="admin_title">Title</label>
             <input
+              id="admin_title"
               className="rounded-lg border border-theme-border bg-theme-bg-tertiary px-2 py-1 text-sm"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -62,8 +63,9 @@ export default function Admin({ problems, setProblems }) {
             />
           </div>
           <div className="flex flex-col gap-1">
-            <label>Difficulty</label>
+            <label htmlFor="admin_difficulty">Difficulty</label>
             <select
+              id="admin_difficulty"
               className="rounded-lg border border-theme-border bg-theme-bg-tertiary px-2 py-1 text-sm"
               value={difficulty}
               onChange={(e) => setDifficulty(e.target.value)}
@@ -74,8 +76,9 @@ export default function Admin({ problems, setProblems }) {
             </select>
           </div>
           <div className="flex flex-col gap-1">
-            <label>Topics (comma separated)</label>
+            <label htmlFor="admin_topics">Topics (comma separated)</label>
             <input
+              id="admin_topics"
               className="rounded-lg border border-theme-border bg-theme-bg-tertiary px-2 py-1 text-sm"
               value={topics}
               onChange={(e) => setTopics(e.target.value)}
@@ -83,8 +86,9 @@ export default function Admin({ problems, setProblems }) {
             />
           </div>
           <div className="flex flex-col gap-1">
-            <label>Learning video URL</label>
+            <label htmlFor="admin_video_url">Learning video URL</label>
             <input
+              id="admin_video_url"
               className="rounded-lg border border-theme-border bg-theme-bg-tertiary px-2 py-1 text-sm"
               value={videoUrl}
               onChange={(e) => setVideoUrl(e.target.value)}

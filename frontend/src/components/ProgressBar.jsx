@@ -9,9 +9,18 @@ export default function ProgressBar({ value, label, big = false }) {
           <span>{clamped.toFixed(0)}%</span>
         </div>
       )}
-      <div className={`w-full rounded-full overflow-hidden ${big ? "h-3" : "h-2"}`} style={{ backgroundColor: 'var(--bg-tertiary)' }}>
+      <div
+        className={`w-full rounded-full overflow-hidden ${big ? "h-3" : "h-2"}`}
+        style={{ backgroundColor: 'var(--bg-tertiary)' }}
+        role="progressbar"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={Math.round(clamped)}
+        aria-label={label || "Progress"}
+      >
         <div
           className="h-full transition-all"
+          aria-hidden="true"
           style={{
             width: `${clamped}%`,
             background: 'linear-gradient(90deg, var(--accent-primary), var(--accent-strong))'

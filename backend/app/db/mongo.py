@@ -10,8 +10,6 @@ async def connect_to_mongo():
     global client, db
     try:
         print(f"🔄 Connecting to MongoDB...")
-        print(f"📍 URI: {settings.mongodb_uri[:50]}...")
-        print(f"📦 Database: {settings.mongodb_db_name}")
         
         client = AsyncIOMotorClient(settings.mongodb_uri)
         db = client[settings.mongodb_db_name]

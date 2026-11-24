@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
 import { useState, useMemo } from "react";
 import { CheckCircle2, Sparkles, ArrowRight, Zap } from "lucide-react";
-import ProgressBar from "../components/ProgressBar";
+import ProblemCard from "../components/ui/ProblemCard";
+import CompletedProblemCard from "../components/ui/CompletedProblemCard";
+import EmptyState from "../components/ui/EmptyState";
 
 export default function Problems({ problems, attempts, currentLanguage }) {
   const [selectedDifficulty, setSelectedDifficulty] = useState("All");
@@ -77,47 +79,13 @@ export default function Problems({ problems, attempts, currentLanguage }) {
       const completed = att?.finalCompleted;
 
       return (
-        <Link
+        <ProblemCard
           key={p.id}
-          to={`/workspace/${p.id}`}
-          className="block rounded-2xl px-5 py-5 transition-transform hover:-translate-y-1 hover:shadow-lg cc-card-muted flex flex-col h-full justify-between gap-4"
-        >
-          <div>
-            <div className="font-bold text-lg mb-2">
-              {p.title}
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <span
-                className="px-3 py-1 rounded-full text-xs font-bold"
-                style={{
-                  backgroundColor:
-                    p.difficulty === "Easy"
-                      ? 'var(--ok-soft)'
-                      : p.difficulty === "Medium"
-                      ? 'var(--warn-soft)'
-                      : 'var(--danger-soft)',
-                  color: 'var(--text-primary)'
-                }}
-              >
-                {p.difficulty}
-              </span>
-              {p.topics.map((t) => (
-                <span
-                  key={t}
-                  className="px-3 py-1 rounded-full text-xs font-bold cc-pill"
-                >
-                  {t}
-                </span>
-              ))}
-            </div>
-          </div>
-          <div>
-            <ProgressBar value={progress} />
-            <div className="text-xs font-semibold mt-2 text-right" style={{ color: 'var(--text-tertiary)' }}>
-              {completed ? <span className="flex items-center justify-end gap-1"><CheckCircle2 size={12} /> COMPLETED</span> : roundsDone > 0 ? "IN PROGRESS" : "NOT STARTED"}
-            </div>
-          </div>
-        </Link>
+          problem={p}
+          progress={progress}
+          roundsDone={roundsDone}
+          completed={completed}
+        />
       );
     });
   };
@@ -169,63 +137,13 @@ export default function Problems({ problems, attempts, currentLanguage }) {
             </span>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {completedProblems.map((p) => {
-              const att = attempts[p.key];
-              return (
-                <Link
-                  key={p.id}
-                  to={`/workspace/${p.id}`}
-                  className="block rounded-2xl p-5 transition-transform hover:-translate-y-1 hover:shadow-lg cc-card-muted flex flex-col justify-between h-full gap-4"
-                >
-                  <div>
-                    <div className="flex justify-between items-start mb-3">
-                      <div className="font-bold text-lg">
-                        {p.title}
-                      </div>
-                      <CheckCircle2 size={24} style={{ color: 'var(--accent-primary)' }} />
-                    </div>
-
-                    <div className="flex flex-wrap gap-2 mb-2">
-                      <span
-                        className="px-3 py-1 rounded-full text-xs font-bold"
-                        style={{
-                          backgroundColor:
-                            p.difficulty === "Easy"
-                              ? 'var(--ok-soft)'
-                              : p.difficulty === "Medium"
-                              ? 'var(--warn-soft)'
-                              : 'var(--danger-soft)',
-                          color: 'var(--text-primary)'
-                        }}
-                      >
-                        {p.difficulty}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2 text-sm pt-4 border-t" style={{ borderColor: 'var(--border-color)', color: 'var(--text-tertiary)' }}>
-                    <div className="flex justify-between items-center">
-                      <span className="uppercase text-xs font-semibold tracking-wider">Total Time</span>
-                      <span className="font-bold text-base" style={{ color: 'var(--text-primary)' }}>
-                        {p.totalTime.toFixed(1)}s
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="uppercase text-xs font-semibold tracking-wider">Rounds</span>
-                      <span className="font-bold text-base" style={{ color: 'var(--text-primary)' }}>
-                        {p.roundsCompleted}/4
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="uppercase text-xs font-semibold tracking-wider">Language</span>
-                      <span className="font-bold text-base uppercase" style={{ color: 'var(--accent-primary)' }}>
-                        {currentLanguage}
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
+            {completedProblems.map((p) => (
+              <CompletedProblemCard
+                key={p.id}
+                problem={p}
+                currentLanguage={currentLanguage}
+              />
+            ))}
           </div>
         </div>
       )}
@@ -237,6 +155,7 @@ export default function Problems({ problems, attempts, currentLanguage }) {
           <input
             type="text"
             placeholder="Search problems by title or topic..."
+            aria-label="Search problems by title or topic"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full px-3 py-2 text-sm rounded-lg border focus:outline-none"
@@ -247,11 +166,13 @@ export default function Problems({ problems, attempts, currentLanguage }) {
         {/* Filter Buttons */}
         <div className="flex flex-wrap gap-3 text-sm">
           {/* Difficulty Filter */}
-          <div className="flex gap-1.5">
+          <div className="flex gap-1.5" role="group" aria-label="Filter by difficulty">
             <span className="self-center" style={{ color: 'var(--text-tertiary)' }}>Difficulty:</span>
             {["All", "Easy", "Medium", "Hard"].map(diff => (
               <button
                 key={diff}
+                type="button"
+                aria-pressed={selectedDifficulty === diff}
                 onClick={() => setSelectedDifficulty(diff)}
                 className="px-3 py-1.5 rounded-lg border transition-colors"
                 style={{
@@ -266,11 +187,13 @@ export default function Problems({ problems, attempts, currentLanguage }) {
           </div>
 
           {/* Status Filter */}
-          <div className="flex gap-1.5">
+          <div className="flex gap-1.5" role="group" aria-label="Filter by status">
             <span className="self-center" style={{ color: 'var(--text-tertiary)' }}>Status:</span>
             {["All", "Completed", "In Progress"].map(status => (
               <button
                 key={status}
+                type="button"
+                aria-pressed={selectedStatus === status}
                 onClick={() => setSelectedStatus(status)}
                 className="px-3 py-1.5 rounded-lg border transition-colors"
                 style={{
@@ -320,25 +243,32 @@ export default function Problems({ problems, attempts, currentLanguage }) {
       </div>
 
       {/* Results Count */}
-      <div className="mb-4 text-sm" style={{ color: 'var(--text-tertiary)' }}>
+      <div
+        className="mb-4 text-sm"
+        style={{ color: 'var(--text-tertiary)' }}
+        aria-live="polite"
+      >
         Showing {filteredProblems.length} of {problems.length} problems
       </div>
 
       {/* Problems Sections */}
       {filteredProblems.length === 0 ? (
-        <div className="text-center py-12" style={{ color: 'var(--text-tertiary)' }}>
-          <p className="text-base">No problems found matching your filters.</p>
-          <button
-            onClick={() => {
-              setSelectedDifficulty("All");
-              setSelectedStatus("All");
-              setSearchQuery("");
-            }}
-            className="mt-3 text-sm cc-link"
-          >
-            Clear filters
-          </button>
-        </div>
+        <EmptyState
+          title="No problems found matching your filters."
+          action={
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedDifficulty("All");
+                setSelectedStatus("All");
+                setSearchQuery("");
+              }}
+              className="text-sm cc-link"
+            >
+              Clear filters
+            </button>
+          }
+        />
       ) : (
         <>
           {/* Easy Problems Section */}

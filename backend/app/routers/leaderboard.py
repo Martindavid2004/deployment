@@ -15,7 +15,10 @@ async def problem_leaderboard(problem_id: str, current_user = Depends(get_curren
     })
     entries = []
     async for doc in cursor:
-        user = await db.users.find_one({ "_id": ObjectId(doc["user_id"]) })
+        try:
+            user = await db.users.find_one({ "_id": ObjectId(doc["user_id"]) })
+        except Exception:
+            continue
         if not user:
             continue
         entries.append({

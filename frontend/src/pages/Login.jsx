@@ -186,13 +186,19 @@ export default function Login({ onLogin }) {
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Username Input */}
               <div className="flex flex-col gap-1.5 text-left">
-                <label className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>Username</label>
+                <label htmlFor="login-username" className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>Username</label>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-500">
+                  <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-500" aria-hidden="true">
                     <User size={14} />
                   </span>
                   <input
+                    id="login-username"
+                    name="username"
                     type="text"
+                    autoComplete="username"
+                    required
+                    aria-invalid={error ? "true" : "false"}
+                    aria-describedby={error ? "login-error" : undefined}
                     className="w-full rounded-xl border pl-10 pr-4 py-2.5 text-sm outline-none transition-all focus:border-[var(--accent-primary)]"
                     style={{ borderColor: 'var(--input-border)' }}
                     value={username}
@@ -204,13 +210,19 @@ export default function Login({ onLogin }) {
 
               {/* Password Input */}
               <div className="flex flex-col gap-1.5 text-left">
-                <label className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>Password</label>
+                <label htmlFor="login-password" className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>Password</label>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-500">
+                  <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-500" aria-hidden="true">
                     <Lock size={14} />
                   </span>
                   <input
+                    id="login-password"
+                    name="password"
                     type="password"
+                    autoComplete="current-password"
+                    required
+                    aria-invalid={error ? "true" : "false"}
+                    aria-describedby={error ? "login-error" : undefined}
                     className="w-full rounded-xl border pl-10 pr-4 py-2.5 text-sm outline-none transition-all focus:border-[var(--accent-primary)]"
                     style={{ borderColor: 'var(--input-border)' }}
                     value={password}
@@ -221,21 +233,25 @@ export default function Login({ onLogin }) {
               </div>
 
               {error && (
-                <div 
-                  className="text-xs p-2.5 rounded-xl border flex items-center gap-1.5 font-semibold text-[var(--danger-soft)]" 
+                <div
+                  id="login-error"
+                  role="alert"
+                  aria-live="assertive"
+                  className="text-xs p-2.5 rounded-xl border flex items-center gap-1.5 font-semibold text-[var(--danger-soft)]"
                   style={{ backgroundColor: 'rgba(239, 68, 68, 0.08)', borderColor: 'rgba(239, 68, 68, 0.2)' }}
                 >
-                  <Activity size={12} /> {error}
+                  <Activity size={12} aria-hidden="true" /> {error}
                 </div>
               )}
 
               <button
                 type="submit"
                 disabled={isLoading}
+                aria-busy={isLoading}
                 className="w-full py-2.5 text-sm font-bold flex items-center justify-center gap-1.5 cc-btn-primary disabled:opacity-50 disabled:cursor-not-allowed select-none"
               >
                 {isLoading ? "Validating handshake..." : (
-                  <>Sign In <ArrowRight size={14} /></>
+                  <>Sign In <ArrowRight size={14} aria-hidden="true" /></>
                 )}
               </button>
             </form>

@@ -230,23 +230,8 @@ export default function Competitive({ attempts, problems, stats }) {
 
   // Rotate Live Ticker Feed
   useEffect(() => {
-    const feeds = [
-      "🔥 ByteQueen defeated DevWizard in standard (+24 ELO)",
-      "🚀 HexCoder joined matchmaking queue",
-      "⚡ CodeMaster is on a 4-win streak in Bug Hunt!",
-      "👾 New lobby room #8821 created by CoderX",
-      "👑 Grandmaster DevWizard entered Code Shuffle arena",
-      "🏆 CoderPrime won a Standard match in C++ (+18 ELO)",
-      "🎯 User704 solved Bug Hunt in 45 seconds!",
-      "💥 Arena Match #1094 initialized (HexCoder vs ByteQueen)"
-    ];
-    const interval = setInterval(() => {
-      setFeedItems(prev => {
-        const nextFeed = feeds[Math.floor(Math.random() * feeds.length)];
-        return [nextFeed, prev[0], prev[1], prev[2]];
-      });
-    }, 4000);
-    return () => clearInterval(interval);
+    setFeedItems(["Connecting to matchmaking..."]);
+    return;
   }, []);
 
   // Matchmaking Scanner Subtitle Updates
@@ -778,7 +763,7 @@ export default function Competitive({ attempts, problems, stats }) {
 
               <div className="text-xs font-semibold px-3 py-1 bg-slate-850 text-emerald-400 border border-slate-700/50 rounded-full flex items-center gap-1.5 shadow-[inset_2px_2px_5px_rgba(0,0,0,0.3)]">
                 <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping shadow-[0_0_8px_#34d399]" />
-                147 Online
+                <span className="text-slate-400">Connecting...</span>
               </div>
             </div>
           </div>

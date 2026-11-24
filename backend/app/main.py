@@ -30,10 +30,19 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         print(f"Warning: MongoDB connection failed: {e}")
         print("Continuing without database connection...")
+
+    # Create query indexes (best-effort, never blocks startup).
+    try:
+        from app.db.mongo import get_database
+        from app.db.indexes import ensure_indexes
+
+        await ensure_indexes(get_database())
+    except Exception as e:
+        print(f"Warning: Could not ensure MongoDB indexes: {e}")
     
     # Initialize Bug Hunt Piston Upgrade services
     try:
-        from app.routers.competitive import get_queue_manager
+        from app.services.competitive.queue_access import get_queue_manager
         from app.services.question_loader import QuestionLoader
         from app.db.mongo import get_database
         from pathlib import Path
@@ -76,7 +85,7 @@ async def lifespan(app: FastAPI):
     # Shutdown
     try:
         # Stop queue manager
-        from app.routers.competitive import get_queue_manager
+        from app.services.competitive.queue_access import get_queue_manager
         queue_manager = get_queue_manager()
         await queue_manager.stop()
         print("✅ Queue Manager stopped")

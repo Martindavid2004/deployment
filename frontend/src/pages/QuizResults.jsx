@@ -193,6 +193,7 @@ export default function QuizResults() {
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex gap-4">
               {/* Filter by Result */}
+              <label className="text-gray-300 text-base">Filter by Result</label>
               <select
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value)}
@@ -204,6 +205,7 @@ export default function QuizResults() {
               </select>
 
               {/* Filter by Difficulty */}
+              <label className="text-gray-300 text-base">Filter by Difficulty</label>
               <select
                 value={filterDifficulty}
                 onChange={(e) => setFilterDifficulty(e.target.value)}

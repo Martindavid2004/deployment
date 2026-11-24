@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional, List, Dict
 from datetime import datetime
 
@@ -32,7 +32,7 @@ class LobbyCreate(BaseModel):
     """Create a new multiplayer lobby"""
     problem_id: Optional[str] = None  # Optional - will be auto-generated if not provided
     game_mode: str = "standard"  # standard, bug_hunt, code_shuffle, test_master, code_quiz
-    time_limit_seconds: int = 900  # 15 minutes default
+    time_limit_seconds: int = Field(default=900, ge=1, le=7200)  # 15 minutes default, 1-7200s
     max_players: int = 15  # Maximum 15 players
     lobby_name: Optional[str] = None  # Optional lobby name
     # Code Quiz specific fields
@@ -68,7 +68,7 @@ class MatchCreate(BaseModel):
     problem_id: str
     player1_id: str
     player2_id: str
-    time_limit_seconds: int = 900  # 15 minutes default
+    time_limit_seconds: int = Field(default=900, ge=1, le=7200)  # 15 minutes default, 1-7200s
     game_mode: str = "standard"  # standard, bug_hunt, code_shuffle, test_master
     
 class MatchBase(BaseModel):
@@ -110,7 +110,7 @@ class MatchSubmit(BaseModel):
     """Submit code for a match"""
     match_id: str
     code: str
-    language: str
+    language: str = Field(..., pattern=r"^(python|cpp|java)$")
     # For Bug Hunt mode
     bug_report: Optional[str] = None
     force_submit: Optional[bool] = False  # Force submit even if validation fails

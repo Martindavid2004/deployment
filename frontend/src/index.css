@@ -113,7 +113,6 @@ input:focus, textarea:focus, select:focus {
   box-shadow: 
     inset 1px 1px 3px var(--glass-shadow-inner),
     0 0 10px var(--accent-soft) !important;
-  outline: none !important;
 }
 
 /* Glass Cards & Panels */
@@ -270,5 +269,19 @@ a {
 }
 
 :focus-visible {
-  outline-color: var(--accent-primary);
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Respect users who prefer less motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

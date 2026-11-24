@@ -10,6 +10,61 @@ export default function ArenaModal({ isOpen, onClose, problemId, language, code,
 
   const recognitionRef = useRef(null);
   const baseTextRef = useRef("");
+  const panelRef = useRef(null);
+  const onCloseRef = useRef(onClose);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  // Focus management: move focus into the dialog, trap Tab, close on Escape,
+  // and restore focus to the trigger when the dialog unmounts.
+  useEffect(() => {
+    if (!isOpen) return undefined;
+
+    const previouslyFocused = document.activeElement;
+    const panel = panelRef.current;
+    if (panel) panel.focus();
+
+    const getFocusable = () =>
+      panel
+        ? Array.from(
+            panel.querySelectorAll(
+              'button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
+            )
+          ).filter((el) => el.offsetParent !== null)
+        : [];
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        event.stopPropagation();
+        onCloseRef.current?.();
+        return;
+      }
+      if (event.key !== "Tab") return;
+
+      const items = getFocusable();
+      if (items.length === 0) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown, true);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown, true);
+      if (previouslyFocused && typeof previouslyFocused.focus === "function") {
+        previouslyFocused.focus();
+      }
+    };
+  }, [isOpen]);
 
   const questionContext = "Explain the time and space complexity of your solution. Why is this approach optimal compared to auxiliary memory hash maps or naive iterations?";
 
@@ -127,18 +182,26 @@ export default function ArenaModal({ isOpen, onClose, problemId, language, code,
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fadeIn">
-      <div className="bg-slate-900 border border-slate-700/80 w-full max-w-2xl rounded-3xl p-6 md:p-8 shadow-2xl relative">
+      <div
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="arena-modal-title"
+        tabIndex={-1}
+        className="bg-slate-900 border border-slate-700/80 w-full max-w-2xl rounded-3xl p-6 md:p-8 shadow-2xl relative outline-none"
+      >
         {/* Close button */}
         <button
           onClick={onClose}
+          aria-label="Close AI defense dialog"
           className="absolute top-5 right-5 text-slate-400 hover:text-white p-2 rounded-xl bg-slate-800/60 hover:bg-slate-800 transition-all"
         >
-          <X className="w-5 h-5" />
+          <X className="w-5 h-5" aria-hidden="true" />
         </button>
 
         {/* Modal Header */}
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-rose-500 flex items-center justify-center text-white shadow-lg shadow-amber-500/25">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-rose-500 flex items-center justify-center text-white shadow-lg shadow-amber-500/25" aria-hidden="true">
             <Bot className="w-7 h-7" />
           </div>
           <div>
@@ -147,14 +210,14 @@ export default function ArenaModal({ isOpen, onClose, problemId, language, code,
                 Stage 4: The AI Defense Arena
               </span>
             </div>
-            <h3 className="text-xl font-bold text-white mt-1">Senior Architect Alex</h3>
+            <h3 id="arena-modal-title" className="text-xl font-bold text-white mt-1">Senior Architect Alex</h3>
           </div>
         </div>
 
         {/* Dialogue Prompt */}
         <div className="p-4 bg-slate-950/80 rounded-2xl border border-slate-800 mb-6">
           <div className="text-xs uppercase font-mono text-slate-400 mb-1 flex items-center gap-1.5">
-            <Volume2 className="w-3.5 h-3.5 text-indigo-400" /> Architect Challenge
+            <Volume2 className="w-3.5 h-3.5 text-indigo-400" aria-hidden="true" /> Architect Challenge
           </div>
           <p className="text-sm font-medium text-slate-200">{questionContext}</p>
         </div>
@@ -206,6 +269,7 @@ export default function ArenaModal({ isOpen, onClose, problemId, language, code,
               <textarea
                 value={defenseText}
                 onChange={(e) => setDefenseText(e.target.value)}
+                aria-label="Your spoken or written defense of the solution"
                 placeholder="Explain your algorithmic trade-offs here (e.g., 'I used two pointers for O(N) time and O(1) in-place auxiliary memory without extra hash maps...')"
                 className="w-full h-32 bg-slate-950 border border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-2xl p-4 text-sm text-slate-200 placeholder-slate-600 outline-none resize-none"
               />
@@ -213,6 +277,8 @@ export default function ArenaModal({ isOpen, onClose, problemId, language, code,
               {/* Mic Speech-to-Text Button */}
               <button
                 onClick={toggleRecording}
+                aria-pressed={isRecording}
+                aria-label={isRecording ? "Stop recording your defense" : "Start recording your defense"}
                 className={`absolute bottom-3 right-3 p-2.5 rounded-xl border transition-all ${
                   isRecording
                     ? "bg-rose-600 border-rose-500 text-white animate-pulse"
@@ -220,7 +286,7 @@ export default function ArenaModal({ isOpen, onClose, problemId, language, code,
                 }`}
                 title="Speak your answer"
               >
-                {isRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                {isRecording ? <MicOff className="w-4 h-4" aria-hidden="true" /> : <Mic className="w-4 h-4" aria-hidden="true" />}
               </button>
             </div>
 
@@ -232,15 +298,16 @@ export default function ArenaModal({ isOpen, onClose, problemId, language, code,
               <button
                 onClick={handleDefenseSubmit}
                 disabled={!defenseText.trim() || isEvaluating}
+                aria-busy={isEvaluating}
                 className="flex items-center gap-2 bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 disabled:opacity-50 text-white font-bold px-6 py-2.5 rounded-xl shadow-lg shadow-indigo-600/30 transition-all transform active:scale-95 text-sm"
               >
                 {isEvaluating ? (
                   <span className="flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 animate-spin" /> Evaluating Defense...
+                    <Sparkles className="w-4 h-4 animate-spin" aria-hidden="true" /> Evaluating Defense...
                   </span>
                 ) : (
                   <span className="flex items-center gap-2">
-                    <Send className="w-4 h-4" /> Submit Defense
+                    <Send className="w-4 h-4" aria-hidden="true" /> Submit Defense
                   </span>
                 )}
               </button>

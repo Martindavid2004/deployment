@@ -247,15 +247,16 @@ export default function IntuitionMode({ user }) {
               )}
             </button>
 
-            <select
-              value={problemId}
-              onChange={(e) => {
-                setProblemId(e.target.value);
-                setActiveStage(1);
-                navigate(`/intuition/${e.target.value}`);
-              }}
-              className="bg-slate-950 border border-slate-700 text-slate-200 text-xs font-semibold rounded-xl px-3 py-2 outline-none focus:border-indigo-500"
-            >
+            <label className="block text-sm text-slate-300 mb-2">Select Problem</label>
+              <select
+                value={problemId}
+                onChange={(e) => {
+                  setProblemId(e.target.value);
+                  setActiveStage(1);
+                  navigate(`/intuition/${e.target.value}`);
+                }}
+                className="bg-slate-950 border border-slate-700 text-slate-200 text-xs font-semibold rounded-xl px-3 py-2 outline-none focus:border-indigo-500"
+              >
               {problemList.map((p) => (
                 <option key={p.problem_id} value={p.problem_id}>
                   {p.title} ({p.difficulty})
@@ -408,6 +409,7 @@ export default function IntuitionMode({ user }) {
                     <select
                       value={language}
                       onChange={(e) => setLanguage(e.target.value)}
+                      aria-label="Language selection"
                       className="bg-slate-950 border border-slate-700 text-slate-200 text-xs font-semibold rounded-lg px-3 py-1.5 outline-none"
                     >
                       <option value="python">Python 3</option>

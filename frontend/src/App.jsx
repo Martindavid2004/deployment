@@ -1,24 +1,28 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
+import ErrorBoundary from "./components/ui/ErrorBoundary";
 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
 import Problems from "./pages/Problems";
-import Workspace from "./pages/Workspace";
-import Competitive from "./pages/Competitive";
-import CompetitiveMatch from "./pages/CompetitiveMatch";
+import NotFound from "./pages/NotFound";
 import LobbyCreate from "./pages/LobbyCreate";
 import LobbyJoin from "./pages/LobbyJoin";
-import LobbyRoom from "./pages/LobbyRoom";
-import QuizMatch from "./pages/QuizMatch";
-import QuizResults from "./pages/QuizResults";
-import Admin from "./pages/Admin";
-import NotFound from "./pages/NotFound";
-import IntuitionMode from "./pages/IntuitionMode";
 
 import Navbar from "./components/Navbar";
+import PageLoader from "./components/ui/PageLoader";
+
+// Heavy authenticated routes are code-split so the initial bundle stays small.
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Workspace = lazy(() => import("./pages/Workspace"));
+const Competitive = lazy(() => import("./pages/Competitive"));
+const CompetitiveMatch = lazy(() => import("./pages/CompetitiveMatch"));
+const LobbyRoom = lazy(() => import("./pages/LobbyRoom"));
+const QuizMatch = lazy(() => import("./pages/QuizMatch"));
+const QuizResults = lazy(() => import("./pages/QuizResults"));
+const Admin = lazy(() => import("./pages/Admin"));
+const IntuitionMode = lazy(() => import("./pages/IntuitionMode"));
 
 import { initialProblems } from "./data/problems";
 import { computeUserStats } from "./utils/stats";
@@ -131,31 +135,7 @@ export default function App() {
     validateSession();
   }, []);
 
-  // Validate stored JWT token on startup
-  useEffect(() => {
-    const validateToken = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) return;
-      try {
-        const res = await fetch(`${API_BASE}/users/me`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (res.ok) {
-          const userData = await res.json();
-          localStorage.setItem("userId", userData.id);
-          localStorage.setItem("username", userData.username);
-        } else if (res.status === 401) {
-          console.warn("Stored JWT token is invalid or expired. Clearing token.");
-          localStorage.removeItem("token");
-          localStorage.removeItem("userId");
-          localStorage.removeItem("username");
-        }
-      } catch (err) {
-        console.error("Failed to validate token on startup:", err);
-      }
-    };
-    validateToken();
-  }, []);
+  
 
   // Load attempts from API when user is logged in
   useEffect(() => {
@@ -234,9 +214,7 @@ export default function App() {
   };
 
   const handleLogin = async (username) => {
-    const isAdmin = username.trim().toLowerCase() === "admin";
-
-    // Fetch user details from API to get user ID
+    // Fetch user details from API
     const token = localStorage.getItem("token");
     if (token) {
       try {
@@ -271,17 +249,17 @@ export default function App() {
       }
     }
 
-    // Fallback to basic user object if API fails
-    const fallbackUsername = username.trim();
-    localStorage.setItem("username", fallbackUsername);
+    // If no token, just store the username locally (will re-validate on next API call)
+    localStorage.setItem("username", username.trim());
     
+    // Don't grant admin privileges based on username — use API-derived is_admin
     setUser({
-      name: fallbackUsername,
-      isAdmin,
+      name: username.trim(),
+      isAdmin: false, // Always false without valid API token
       preferredLanguage: "python",
       level: 1,
     });
-    return true; // Success with fallback
+    return true;
   };
 
   const handleLogout = () => {
@@ -379,8 +357,10 @@ function AppContent({
       )}
 
       <div className={isGamePage ? "w-full h-screen" : "w-full 2xl:max-w-[1920px] mx-auto px-4 md:px-8 xl:px-12 py-6"}>
-        <Routes>
-          <Route path="/" element={<Home user={user} stats={stats} />} />
+        <ErrorBoundary>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="/" element={<Home user={user} stats={stats} />} />
           <Route
             path="/login"
             element={<Login onLogin={onLogin} />}
@@ -488,7 +468,9 @@ function AppContent({
           />
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </div>
+        </Suspense>
+      </ErrorBoundary>
     </div>
+  </div>
   );
 }

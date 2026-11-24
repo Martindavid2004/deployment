@@ -99,10 +99,11 @@ export default function LobbyCreate() {
 
             {/* Lobby Name */}
             <div>
-              <label className="block text-white font-semibold mb-2">
+              <label htmlFor="lobby_name" className="block text-white font-semibold mb-2">
                 Lobby Name (Optional)
               </label>
               <input
+                id="lobby_name"
                 type="text"
                 value={formData.lobby_name}
                 onChange={(e) => setFormData({ ...formData, lobby_name: e.target.value })}
@@ -141,10 +142,11 @@ export default function LobbyCreate() {
               <>
                 {/* Language Selection */}
                 <div>
-                  <label className="block text-white font-semibold mb-2">
+                  <label htmlFor="quiz_language" className="block text-white font-semibold mb-2">
                     Programming Language
                   </label>
                   <select
+                    id="quiz_language"
                     value={formData.quiz_language}
                     onChange={(e) => setFormData({ ...formData, quiz_language: e.target.value })}
                     className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
@@ -157,10 +159,11 @@ export default function LobbyCreate() {
 
                 {/* Question Count */}
                 <div>
-                  <label className="block text-white font-semibold mb-2">
+                  <label htmlFor="quiz_question_count" className="block text-white font-semibold mb-2">
                     Question Count
                   </label>
                   <select
+                    id="quiz_question_count"
                     value={formData.quiz_question_count}
                     onChange={(e) => {
                       const count = parseInt(e.target.value);
@@ -194,6 +197,7 @@ export default function LobbyCreate() {
                 max="15"
                 value={formData.max_players}
                 onChange={(e) => setFormData({ ...formData, max_players: parseInt(e.target.value) })}
+                aria-label="Maximum Players"
                 className="w-full h-2 bg-white/20 rounded-lg appearance-none cursor-pointer accent-purple-500"
               />
               <div className="flex justify-between text-base text-gray-400 mt-1">
@@ -205,10 +209,11 @@ export default function LobbyCreate() {
             {/* Time Limit - Only show for non-quiz modes */}
             {formData.game_mode !== "code_quiz" && (
               <div>
-                <label className="block text-white font-semibold mb-2">
+                <label htmlFor="time_limit_seconds" className="block text-white font-semibold mb-2">
                   Time Limit
                 </label>
                 <select
+                  id="time_limit_seconds"
                   value={formData.time_limit_seconds}
                   onChange={(e) => setFormData({ ...formData, time_limit_seconds: parseInt(e.target.value) })}
                   className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"

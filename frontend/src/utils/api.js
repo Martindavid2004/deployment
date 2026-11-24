@@ -58,36 +58,3 @@ const getApiBase = () => {
 export const API_BASE = getApiBase();
 
 console.log('🔗 API Base URL:', API_BASE);
-
-/**
- * Helper function for authenticated API calls
- * Automatically handles token and 401 errors
- */
-export const authenticatedFetch = async (url, options = {}) => {
-  const token = localStorage.getItem("token");
-  
-  if (!token) {
-    throw new Error("No authentication token found");
-  }
-  
-  const headers = {
-    ...options.headers,
-    "Authorization": `Bearer ${token}`
-  };
-  
-  const response = await fetch(url, { ...options, headers });
-  
-  // Handle 401 Unauthorized - token expired or invalid
-  if (response.status === 401) {
-    console.log("[AUTH] 401 Unauthorized - clearing session");
-    localStorage.removeItem("token");
-    localStorage.removeItem("userId");
-    localStorage.removeItem("username");
-    
-    // Redirect to login
-    window.location.href = "/login";
-    throw new Error("Session expired. Please login again.");
-  }
-  
-  return response;
-};

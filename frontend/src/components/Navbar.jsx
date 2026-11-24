@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { Moon, Sun, Menu, X, Save, Edit3, Sparkles } from "lucide-react";
 import LanguageSelector from "./LanguageSelector";
@@ -38,6 +38,17 @@ export default function Navbar({ user, setUser, onLogout, theme, toggleTheme, cu
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
+
+  // Escape closes the profile dialog and the mobile menu.
+  useEffect(() => {
+    const onKeyDown = (event) => {
+      if (event.key !== "Escape") return;
+      setShowProfileDropdown(false);
+      setIsMobileMenuOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
 
   return (
     <header 
@@ -152,8 +163,10 @@ export default function Navbar({ user, setUser, onLogout, theme, toggleTheme, cu
               color: 'var(--text-secondary)'
             }}
             title="Toggle theme"
+            aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+            aria-pressed={theme === "dark"}
           >
-            {theme === "dark" ? <Moon size={16} /> : <Sun size={16} />}
+            {theme === "dark" ? <Moon size={16} aria-hidden="true" /> : <Sun size={16} aria-hidden="true" />}
           </button>
 
           {user ? (
@@ -171,6 +184,9 @@ export default function Navbar({ user, setUser, onLogout, theme, toggleTheme, cu
                   backgroundColor: 'var(--bg-secondary)'
                 }}
                 title="Profile Settings"
+                aria-haspopup="dialog"
+                aria-expanded={showProfileDropdown}
+                aria-controls="profile-settings-dialog"
               >
                 <div className="h-7 w-7 rounded-full flex items-center justify-center text-sm font-bold text-white font-mono" style={{ background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-strong))' }}>
                   {user.name?.[0]?.toUpperCase() || "U"}
@@ -187,6 +203,9 @@ export default function Navbar({ user, setUser, onLogout, theme, toggleTheme, cu
 
               {showProfileDropdown && (
                 <div 
+                  id="profile-settings-dialog"
+                  role="dialog"
+                  aria-label="Edit profile settings"
                   className="absolute right-0 mt-3 w-[380px] p-5 rounded-2xl border backdrop-blur-md shadow-2xl z-50 flex flex-col gap-4 text-left"
                   style={{
                     backgroundColor: 'rgba(30, 41, 59, 0.95)',
@@ -199,15 +218,17 @@ export default function Navbar({ user, setUser, onLogout, theme, toggleTheme, cu
                     <button 
                       onClick={() => setShowProfileDropdown(false)} 
                       className="p-1 rounded-lg hover:bg-[var(--bg-hover)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors"
+                      aria-label="Close profile settings"
                     >
-                      <X size={14} />
+                      <X size={14} aria-hidden="true" />
                     </button>
                   </div>
 
                   {/* Username */}
                   <div className="flex flex-col gap-1">
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-tertiary)]">Username</label>
+                    <label htmlFor="profile-username" className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-tertiary)]">Username</label>
                     <input
+                      id="profile-username"
                       type="text"
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
@@ -223,8 +244,9 @@ export default function Navbar({ user, setUser, onLogout, theme, toggleTheme, cu
 
                   {/* Preferred Language */}
                   <div className="flex flex-col gap-1">
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-tertiary)]">Preferred Compiler</label>
+                    <label htmlFor="profile-language" className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-tertiary)]">Preferred Compiler</label>
                     <select
+                      id="profile-language"
                       value={editLanguage}
                       onChange={(e) => setEditLanguage(e.target.value)}
                       className="px-3 py-1.5 text-xs rounded-lg border outline-none font-semibold cursor-pointer transition-all focus:border-[var(--accent-primary)] text-[var(--text-primary)]"
@@ -309,8 +331,11 @@ export default function Navbar({ user, setUser, onLogout, theme, toggleTheme, cu
                   color: 'var(--text-secondary)'
                 }}
                 title="Toggle navigation menu"
+                aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+                aria-expanded={isMobileMenuOpen}
+                aria-controls="mobile-navigation"
               >
-                {isMobileMenuOpen ? <X size={16} /> : <Menu size={16} />}
+                {isMobileMenuOpen ? <X size={16} aria-hidden="true" /> : <Menu size={16} aria-hidden="true" />}
               </button>
             </div>
           ) : (
@@ -329,13 +354,14 @@ export default function Navbar({ user, setUser, onLogout, theme, toggleTheme, cu
       {/* Mobile navigation menu overlay */}
       {user && isMobileMenuOpen && (
         <div 
+          id="mobile-navigation"
           className="md:hidden border-t py-4 px-6 flex flex-col gap-4 transition-colors duration-300"
           style={{ 
             borderColor: 'var(--border-color)',
             backgroundColor: 'var(--bg-primary)'
           }}
         >
-          <nav className="flex flex-col gap-2">
+          <nav className="flex flex-col gap-2" aria-label="Mobile navigation">
             <NavLink
               to="/dashboard"
               onClick={closeMobileMenu}

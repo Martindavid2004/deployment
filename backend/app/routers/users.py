@@ -1,3 +1,5 @@
+import re
+import logging
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional
@@ -24,7 +26,7 @@ async def search_users(query: str, current_user = Depends(get_current_user)):
     # Search for users by username, excluding the current user
     # Limit to 10 results
     cursor = db.users.find({
-        "username": {"$regex": f".*{query}.*", "$options": "i"},
+        "username": {"$regex": f".*{re.escape(query)}.*", "$options": "i"},
         "_id": {"$ne": current_user["_id"]}
     }).limit(10)
     
@@ -80,8 +82,8 @@ async def get_pending_friend_requests(current_user = Depends(get_current_user)):
     for rid in request_ids:
         try:
             obj_ids.append(ObjectId(rid))
-        except:
-            pass
+        except Exception as e:
+            logger.warning(f"Invalid ObjectId in friend request: {rid} - {e}")
             
     cursor = db.users.find({"_id": {"$in": obj_ids}})
     requests = []
@@ -196,8 +198,8 @@ async def get_friends(current_user = Depends(get_current_user)):
     for fid in friend_ids:
         try:
             obj_ids.append(ObjectId(fid))
-        except:
-            pass
+        except Exception as e:
+            logger.warning(f"Invalid ObjectId in friend ID: {fid} - {e}")
             
     cursor = db.users.find({"_id": {"$in": obj_ids}})
     friends = []

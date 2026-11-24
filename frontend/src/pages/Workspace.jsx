@@ -498,8 +498,8 @@ export default function Workspace({
             </div>
             <ProgressBar value={roundProgress} label="Round progress" big />
             <div className="flex items-center justify-between text-sm text-theme-text-secondary">
-              <span>Language</span>
               <select
+                aria-label="Language"
                 className="bg-theme-bg-tertiary border border-theme-border rounded-full px-2 py-1 text-sm"
                 value={currentLanguage}
                 onChange={(e) => setCurrentLanguage(e.target.value)}

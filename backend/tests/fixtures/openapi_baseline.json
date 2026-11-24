@@ -1,0 +1,5440 @@
+{
+  "components": {
+    "schemas": {
+      "AlgorithmTrackResponse": {
+        "properties": {
+          "category": {
+            "enum": [
+              "arrays",
+              "trees",
+              "graphs",
+              "dynamic_programming",
+              "system_design"
+            ],
+            "title": "Category",
+            "type": "string"
+          },
+          "clue": {
+            "title": "Clue",
+            "type": "string"
+          },
+          "difficulty": {
+            "enum": [
+              "beginner",
+              "intermediate",
+              "advanced"
+            ],
+            "title": "Difficulty",
+            "type": "string"
+          },
+          "icon": {
+            "title": "Icon",
+            "type": "string"
+          },
+          "intuition_summary": {
+            "title": "Intuition Summary",
+            "type": "string"
+          },
+          "naive_disaster": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Naive Disaster"
+          },
+          "real_world_applications": {
+            "items": {
+              "$ref": "#/components/schemas/RealWorldApplication"
+            },
+            "title": "Real World Applications",
+            "type": "array"
+          },
+          "reference_code": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Reference Code",
+            "type": "object"
+          },
+          "sandbox_config": {
+            "additionalProperties": true,
+            "title": "Sandbox Config",
+            "type": "object"
+          },
+          "scenario_description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenario Description"
+          },
+          "scenario_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenario Title"
+          },
+          "space_complexity": {
+            "title": "Space Complexity",
+            "type": "string"
+          },
+          "test_cases": {
+            "items": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "title": "Test Cases",
+            "type": "array"
+          },
+          "time_complexity": {
+            "title": "Time Complexity",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "track_id": {
+            "title": "Track Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "track_id",
+          "title",
+          "category",
+          "difficulty",
+          "icon",
+          "time_complexity",
+          "space_complexity",
+          "clue",
+          "intuition_summary",
+          "real_world_applications",
+          "sandbox_config",
+          "reference_code",
+          "test_cases"
+        ],
+        "title": "AlgorithmTrackResponse",
+        "type": "object"
+      },
+      "AlgorithmTrackSummary": {
+        "properties": {
+          "category": {
+            "enum": [
+              "arrays",
+              "trees",
+              "graphs",
+              "dynamic_programming",
+              "system_design"
+            ],
+            "title": "Category",
+            "type": "string"
+          },
+          "clue": {
+            "title": "Clue",
+            "type": "string"
+          },
+          "difficulty": {
+            "enum": [
+              "beginner",
+              "intermediate",
+              "advanced"
+            ],
+            "title": "Difficulty",
+            "type": "string"
+          },
+          "icon": {
+            "title": "Icon",
+            "type": "string"
+          },
+          "intuition_summary": {
+            "title": "Intuition Summary",
+            "type": "string"
+          },
+          "naive_disaster": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Naive Disaster"
+          },
+          "real_world_applications": {
+            "items": {
+              "$ref": "#/components/schemas/RealWorldApplication"
+            },
+            "title": "Real World Applications",
+            "type": "array"
+          },
+          "scenario_description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenario Description"
+          },
+          "scenario_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenario Title"
+          },
+          "space_complexity": {
+            "title": "Space Complexity",
+            "type": "string"
+          },
+          "time_complexity": {
+            "title": "Time Complexity",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "track_id": {
+            "title": "Track Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "track_id",
+          "title",
+          "category",
+          "difficulty",
+          "icon",
+          "time_complexity",
+          "space_complexity",
+          "clue",
+          "intuition_summary",
+          "real_world_applications"
+        ],
+        "title": "AlgorithmTrackSummary",
+        "type": "object"
+      },
+      "ArenaEvaluateRequest": {
+        "properties": {
+          "language": {
+            "default": "python",
+            "title": "Language",
+            "type": "string"
+          },
+          "problem_id": {
+            "title": "Problem Id",
+            "type": "string"
+          },
+          "question_context": {
+            "title": "Question Context",
+            "type": "string"
+          },
+          "student_code": {
+            "title": "Student Code",
+            "type": "string"
+          },
+          "student_defense_response": {
+            "title": "Student Defense Response",
+            "type": "string"
+          }
+        },
+        "required": [
+          "problem_id",
+          "student_code",
+          "student_defense_response",
+          "question_context"
+        ],
+        "title": "ArenaEvaluateRequest",
+        "type": "object"
+      },
+      "ArenaEvaluateResponse": {
+        "properties": {
+          "critique": {
+            "title": "Critique",
+            "type": "string"
+          },
+          "earned_badge": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Earned Badge"
+          },
+          "passed_defense": {
+            "title": "Passed Defense",
+            "type": "boolean"
+          },
+          "score": {
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Score",
+            "type": "integer"
+          },
+          "senior_feedback": {
+            "title": "Senior Feedback",
+            "type": "string"
+          },
+          "space_complexity_accuracy": {
+            "title": "Space Complexity Accuracy",
+            "type": "string"
+          },
+          "time_complexity_accuracy": {
+            "title": "Time Complexity Accuracy",
+            "type": "string"
+          },
+          "xp_awarded": {
+            "title": "Xp Awarded",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "passed_defense",
+          "score",
+          "critique",
+          "time_complexity_accuracy",
+          "space_complexity_accuracy",
+          "xp_awarded",
+          "senior_feedback"
+        ],
+        "title": "ArenaEvaluateResponse",
+        "type": "object"
+      },
+      "AttemptCreate": {
+        "properties": {
+          "finalCompleted": {
+            "default": false,
+            "title": "Finalcompleted",
+            "type": "boolean"
+          },
+          "globalStartTime": {
+            "title": "Globalstarttime",
+            "type": "number"
+          },
+          "language": {
+            "title": "Language",
+            "type": "string"
+          },
+          "lastRound": {
+            "default": 1,
+            "title": "Lastround",
+            "type": "integer"
+          },
+          "problem_id": {
+            "title": "Problem Id",
+            "type": "string"
+          },
+          "roundCompleted": {
+            "additionalProperties": {
+              "type": "boolean"
+            },
+            "default": {},
+            "title": "Roundcompleted",
+            "type": "object"
+          },
+          "roundState": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Roundstate",
+            "type": "object"
+          },
+          "totalTimeSeconds": {
+            "default": 0.0,
+            "title": "Totaltimeseconds",
+            "type": "number"
+          },
+          "user_id": {
+            "title": "User Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "user_id",
+          "problem_id",
+          "language"
+        ],
+        "title": "AttemptCreate",
+        "type": "object"
+      },
+      "AttemptPublic": {
+        "properties": {
+          "finalCompleted": {
+            "default": false,
+            "title": "Finalcompleted",
+            "type": "boolean"
+          },
+          "globalStartTime": {
+            "title": "Globalstarttime",
+            "type": "number"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "language": {
+            "title": "Language",
+            "type": "string"
+          },
+          "lastRound": {
+            "default": 1,
+            "title": "Lastround",
+            "type": "integer"
+          },
+          "problem_id": {
+            "title": "Problem Id",
+            "type": "string"
+          },
+          "roundCompleted": {
+            "additionalProperties": {
+              "type": "boolean"
+            },
+            "default": {},
+            "title": "Roundcompleted",
+            "type": "object"
+          },
+          "roundState": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Roundstate",
+            "type": "object"
+          },
+          "totalTimeSeconds": {
+            "default": 0.0,
+            "title": "Totaltimeseconds",
+            "type": "number"
+          },
+          "user_id": {
+            "title": "User Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "user_id",
+          "problem_id",
+          "language",
+          "id"
+        ],
+        "title": "AttemptPublic",
+        "type": "object"
+      },
+      "BlindspotItem": {
+        "properties": {
+          "drill_recommendation": {
+            "title": "Drill Recommendation",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "occurrences": {
+            "title": "Occurrences",
+            "type": "integer"
+          },
+          "severity": {
+            "title": "Severity",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "severity",
+          "occurrences",
+          "drill_recommendation"
+        ],
+        "title": "BlindspotItem",
+        "type": "object"
+      },
+      "ChaosBenchmarkRequest": {
+        "properties": {
+          "algorithm_type": {
+            "default": "naive",
+            "title": "Algorithm Type",
+            "type": "string"
+          },
+          "distribution": {
+            "default": "random",
+            "title": "Distribution",
+            "type": "string"
+          },
+          "n_elements": {
+            "default": 1000,
+            "maximum": 100000.0,
+            "minimum": 10.0,
+            "title": "N Elements",
+            "type": "integer"
+          },
+          "problem_id": {
+            "title": "Problem Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "problem_id"
+        ],
+        "title": "ChaosBenchmarkRequest",
+        "type": "object"
+      },
+      "ChaosBenchmarkResponse": {
+        "properties": {
+          "algorithm_type": {
+            "title": "Algorithm Type",
+            "type": "string"
+          },
+          "complexity_label": {
+            "title": "Complexity Label",
+            "type": "string"
+          },
+          "distribution": {
+            "title": "Distribution",
+            "type": "string"
+          },
+          "insight_message": {
+            "title": "Insight Message",
+            "type": "string"
+          },
+          "n_elements": {
+            "title": "N Elements",
+            "type": "integer"
+          },
+          "simulated_operations": {
+            "title": "Simulated Operations",
+            "type": "integer"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "time_taken_ms": {
+            "title": "Time Taken Ms",
+            "type": "number"
+          }
+        },
+        "required": [
+          "n_elements",
+          "distribution",
+          "algorithm_type",
+          "time_taken_ms",
+          "simulated_operations",
+          "status",
+          "complexity_label",
+          "insight_message"
+        ],
+        "title": "ChaosBenchmarkResponse",
+        "type": "object"
+      },
+      "ClaimQuestXP": {
+        "properties": {
+          "xp": {
+            "title": "Xp",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "xp"
+        ],
+        "title": "ClaimQuestXP",
+        "type": "object"
+      },
+      "CodeExecutionResponse": {
+        "description": "Response after submitting code for execution",
+        "properties": {
+          "execution_id": {
+            "title": "Execution Id",
+            "type": "string"
+          },
+          "queue_position": {
+            "title": "Queue Position",
+            "type": "integer"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "execution_id",
+          "status",
+          "queue_position"
+        ],
+        "title": "CodeExecutionResponse",
+        "type": "object"
+      },
+      "CognitiveProfileResponse": {
+        "properties": {
+          "active_blindspots": {
+            "items": {
+              "$ref": "#/components/schemas/BlindspotItem"
+            },
+            "title": "Active Blindspots",
+            "type": "array"
+          },
+          "intuition_streak_days": {
+            "title": "Intuition Streak Days",
+            "type": "integer"
+          },
+          "level": {
+            "title": "Level",
+            "type": "integer"
+          },
+          "mastery_badges": {
+            "items": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "title": "Mastery Badges",
+            "type": "array"
+          },
+          "radar_scores": {
+            "$ref": "#/components/schemas/CognitiveVectorScores"
+          },
+          "total_xp": {
+            "title": "Total Xp",
+            "type": "integer"
+          },
+          "user_id": {
+            "title": "User Id",
+            "type": "string"
+          },
+          "username": {
+            "title": "Username",
+            "type": "string"
+          }
+        },
+        "required": [
+          "user_id",
+          "username",
+          "level",
+          "total_xp",
+          "radar_scores",
+          "active_blindspots",
+          "mastery_badges",
+          "intuition_streak_days"
+        ],
+        "title": "CognitiveProfileResponse",
+        "type": "object"
+      },
+      "CognitiveVectorScores": {
+        "properties": {
+          "articulation_score": {
+            "default": 65,
+            "title": "Articulation Score",
+            "type": "integer"
+          },
+          "edge_case_handling": {
+            "default": 70,
+            "title": "Edge Case Handling",
+            "type": "integer"
+          },
+          "space_optimization": {
+            "default": 70,
+            "title": "Space Optimization",
+            "type": "integer"
+          },
+          "syntax_translation": {
+            "default": 75,
+            "title": "Syntax Translation",
+            "type": "integer"
+          },
+          "time_optimization": {
+            "default": 70,
+            "title": "Time Optimization",
+            "type": "integer"
+          }
+        },
+        "title": "CognitiveVectorScores",
+        "type": "object"
+      },
+      "Example": {
+        "properties": {
+          "explanation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Explanation"
+          },
+          "input": {
+            "title": "Input",
+            "type": "string"
+          },
+          "output": {
+            "title": "Output",
+            "type": "string"
+          }
+        },
+        "required": [
+          "input",
+          "output"
+        ],
+        "title": "Example",
+        "type": "object"
+      },
+      "ExecutionResultResponse": {
+        "description": "Result of code execution",
+        "properties": {
+          "compile_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Compile Error"
+          },
+          "execution_id": {
+            "title": "Execution Id",
+            "type": "string"
+          },
+          "execution_time": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Execution Time"
+          },
+          "output": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Output"
+          },
+          "runtime_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Runtime Error"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "success": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Success"
+          },
+          "test_results": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Test Results"
+          },
+          "timed_out": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timed Out"
+          }
+        },
+        "required": [
+          "execution_id",
+          "status"
+        ],
+        "title": "ExecutionResultResponse",
+        "type": "object"
+      },
+      "GenerateAlgorithmRequest": {
+        "properties": {
+          "category": {
+            "description": "Target category",
+            "enum": [
+              "arrays",
+              "trees",
+              "graphs",
+              "dynamic_programming",
+              "system_design"
+            ],
+            "title": "Category",
+            "type": "string"
+          },
+          "difficulty": {
+            "default": "intermediate",
+            "description": "Target complexity level",
+            "enum": [
+              "beginner",
+              "intermediate",
+              "advanced"
+            ],
+            "title": "Difficulty",
+            "type": "string"
+          },
+          "scenario_prompt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional custom scenario or incident context",
+            "title": "Scenario Prompt"
+          },
+          "topic": {
+            "description": "Algorithm or system design concept name (e.g. 'LRU Cache', 'Dijkstra', 'DP Grid')",
+            "title": "Topic",
+            "type": "string"
+          }
+        },
+        "required": [
+          "topic",
+          "category"
+        ],
+        "title": "GenerateAlgorithmRequest",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "IntuitionProblemResponse": {
+        "properties": {
+          "category": {
+            "title": "Category",
+            "type": "string"
+          },
+          "chaos_config": {
+            "additionalProperties": true,
+            "title": "Chaos Config",
+            "type": "object"
+          },
+          "difficulty": {
+            "title": "Difficulty",
+            "type": "string"
+          },
+          "logic_cards": {
+            "items": {
+              "$ref": "#/components/schemas/LogicCard"
+            },
+            "title": "Logic Cards",
+            "type": "array"
+          },
+          "problem_id": {
+            "title": "Problem Id",
+            "type": "string"
+          },
+          "reference_code": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Reference Code",
+            "type": "object"
+          },
+          "sandbox_config": {
+            "$ref": "#/components/schemas/SandboxConfig"
+          },
+          "story_hook": {
+            "title": "Story Hook",
+            "type": "string"
+          },
+          "test_cases": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Test Cases",
+            "type": "array"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "problem_id",
+          "title",
+          "difficulty",
+          "category",
+          "story_hook",
+          "sandbox_config",
+          "chaos_config",
+          "logic_cards",
+          "reference_code",
+          "test_cases"
+        ],
+        "title": "IntuitionProblemResponse",
+        "type": "object"
+      },
+      "InviteRequest": {
+        "properties": {
+          "game_id": {
+            "title": "Game Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "game_id"
+        ],
+        "title": "InviteRequest",
+        "type": "object"
+      },
+      "LanguageSwitchRequest": {
+        "description": "Request to switch programming language",
+        "properties": {
+          "new_language": {
+            "title": "New Language",
+            "type": "string"
+          }
+        },
+        "required": [
+          "new_language"
+        ],
+        "title": "LanguageSwitchRequest",
+        "type": "object"
+      },
+      "LanguageSwitchResponse": {
+        "description": "Response after switching language",
+        "properties": {
+          "buggy_code": {
+            "title": "Buggy Code",
+            "type": "string"
+          },
+          "language": {
+            "title": "Language",
+            "type": "string"
+          },
+          "test_cases": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Test Cases",
+            "type": "array"
+          }
+        },
+        "required": [
+          "buggy_code",
+          "language",
+          "test_cases"
+        ],
+        "title": "LanguageSwitchResponse",
+        "type": "object"
+      },
+      "LobbyCreate": {
+        "description": "Create a new multiplayer lobby",
+        "properties": {
+          "game_mode": {
+            "default": "standard",
+            "title": "Game Mode",
+            "type": "string"
+          },
+          "lobby_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lobby Name"
+          },
+          "max_players": {
+            "default": 15,
+            "title": "Max Players",
+            "type": "integer"
+          },
+          "problem_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Problem Id"
+          },
+          "quiz_language": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quiz Language"
+          },
+          "quiz_question_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quiz Question Count"
+          },
+          "time_limit_seconds": {
+            "default": 900,
+            "title": "Time Limit Seconds",
+            "type": "integer"
+          }
+        },
+        "title": "LobbyCreate",
+        "type": "object"
+      },
+      "LobbyJoin": {
+        "description": "Join an existing lobby",
+        "properties": {
+          "game_id": {
+            "title": "Game Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "game_id"
+        ],
+        "title": "LobbyJoin",
+        "type": "object"
+      },
+      "LobbyPublic": {
+        "description": "Public lobby information",
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "game_id": {
+            "title": "Game Id",
+            "type": "string"
+          },
+          "game_mode": {
+            "title": "Game Mode",
+            "type": "string"
+          },
+          "host_id": {
+            "title": "Host Id",
+            "type": "string"
+          },
+          "host_username": {
+            "title": "Host Username",
+            "type": "string"
+          },
+          "lobby_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lobby Name"
+          },
+          "match_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Match Id"
+          },
+          "max_players": {
+            "title": "Max Players",
+            "type": "integer"
+          },
+          "players": {
+            "items": {
+              "$ref": "#/components/schemas/MatchPlayerState"
+            },
+            "title": "Players",
+            "type": "array"
+          },
+          "problem_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Problem Id"
+          },
+          "quiz_language": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quiz Language"
+          },
+          "quiz_question_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quiz Question Count"
+          },
+          "quiz_questions": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quiz Questions"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "time_limit_seconds": {
+            "title": "Time Limit Seconds",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "game_id",
+          "host_id",
+          "host_username",
+          "game_mode",
+          "time_limit_seconds",
+          "max_players",
+          "players",
+          "status",
+          "created_at"
+        ],
+        "title": "LobbyPublic",
+        "type": "object"
+      },
+      "LogicCard": {
+        "properties": {
+          "category": {
+            "title": "Category",
+            "type": "string"
+          },
+          "code_template": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "default": {},
+            "title": "Code Template",
+            "type": "object"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "category"
+        ],
+        "title": "LogicCard",
+        "type": "object"
+      },
+      "MatchCreate": {
+        "description": "Create a new competitive match (legacy 1v1)",
+        "properties": {
+          "game_mode": {
+            "default": "standard",
+            "title": "Game Mode",
+            "type": "string"
+          },
+          "player1_id": {
+            "title": "Player1 Id",
+            "type": "string"
+          },
+          "player2_id": {
+            "title": "Player2 Id",
+            "type": "string"
+          },
+          "problem_id": {
+            "title": "Problem Id",
+            "type": "string"
+          },
+          "time_limit_seconds": {
+            "default": 900,
+            "title": "Time Limit Seconds",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "problem_id",
+          "player1_id",
+          "player2_id"
+        ],
+        "title": "MatchCreate",
+        "type": "object"
+      },
+      "MatchPlayerState": {
+        "description": "State of a player in a competitive match",
+        "properties": {
+          "arranged_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Arranged Code"
+          },
+          "code": {
+            "default": "",
+            "title": "Code",
+            "type": "string"
+          },
+          "completed": {
+            "default": false,
+            "title": "Completed",
+            "type": "boolean"
+          },
+          "last_saved_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Saved At"
+          },
+          "quiz_answers": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "integer"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quiz Answers"
+          },
+          "quiz_correct_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quiz Correct Count"
+          },
+          "quiz_current_question": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quiz Current Question"
+          },
+          "quiz_score": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quiz Score"
+          },
+          "quiz_time_bonus": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quiz Time Bonus"
+          },
+          "quiz_time_taken": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quiz Time Taken"
+          },
+          "rank": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rank"
+          },
+          "score": {
+            "default": 0,
+            "title": "Score",
+            "type": "integer"
+          },
+          "shuffled_lines": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shuffled Lines"
+          },
+          "submission_time": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Submission Time"
+          },
+          "test_cases_created": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Test Cases Created"
+          },
+          "test_cases_score": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Test Cases Score"
+          },
+          "time_elapsed": {
+            "default": 0.0,
+            "title": "Time Elapsed",
+            "type": "number"
+          },
+          "used_hints": {
+            "default": false,
+            "title": "Used Hints",
+            "type": "boolean"
+          },
+          "user_id": {
+            "title": "User Id",
+            "type": "string"
+          },
+          "username": {
+            "title": "Username",
+            "type": "string"
+          }
+        },
+        "required": [
+          "user_id",
+          "username"
+        ],
+        "title": "MatchPlayerState",
+        "type": "object"
+      },
+      "MatchPublic": {
+        "properties": {
+          "buggy_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Buggy Code"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "game_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Game Id"
+          },
+          "game_mode": {
+            "default": "standard",
+            "title": "Game Mode",
+            "type": "string"
+          },
+          "host_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Host Id"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "max_players": {
+            "default": 2,
+            "title": "Max Players",
+            "type": "integer"
+          },
+          "player1": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MatchPlayerState"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "player2": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MatchPlayerState"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "players": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/MatchPlayerState"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Players"
+          },
+          "problem_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Problem Id"
+          },
+          "quiz_language": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quiz Language"
+          },
+          "quiz_question_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quiz Question Count"
+          },
+          "quiz_questions": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quiz Questions"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "status": {
+            "default": "waiting",
+            "title": "Status",
+            "type": "string"
+          },
+          "time_limit_seconds": {
+            "title": "Time Limit Seconds",
+            "type": "integer"
+          },
+          "winner_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Winner Id"
+          },
+          "winners": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Winners"
+          }
+        },
+        "required": [
+          "time_limit_seconds",
+          "created_at",
+          "id"
+        ],
+        "title": "MatchPublic",
+        "type": "object"
+      },
+      "MatchSubmit": {
+        "description": "Submit code for a match",
+        "properties": {
+          "arranged_lines": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Arranged Lines"
+          },
+          "bug_report": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bug Report"
+          },
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "force_submit": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": false,
+            "title": "Force Submit"
+          },
+          "language": {
+            "title": "Language",
+            "type": "string"
+          },
+          "match_id": {
+            "title": "Match Id",
+            "type": "string"
+          },
+          "quiz_answers": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "integer"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quiz Answers"
+          },
+          "quiz_current_question": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quiz Current Question"
+          },
+          "quiz_time_taken": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quiz Time Taken"
+          },
+          "test_cases": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Test Cases"
+          }
+        },
+        "required": [
+          "match_id",
+          "code",
+          "language"
+        ],
+        "title": "MatchSubmit",
+        "type": "object"
+      },
+      "MatchmakingRequest": {
+        "description": "Request body for matchmaking",
+        "properties": {
+          "game_mode": {
+            "default": "standard",
+            "title": "Game Mode",
+            "type": "string"
+          },
+          "problem_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Problem Id"
+          }
+        },
+        "title": "MatchmakingRequest",
+        "type": "object"
+      },
+      "PointerConfig": {
+        "properties": {
+          "color": {
+            "default": "#3B82F6",
+            "title": "Color",
+            "type": "string"
+          },
+          "initial_index": {
+            "default": 0,
+            "title": "Initial Index",
+            "type": "integer"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "PointerConfig",
+        "type": "object"
+      },
+      "ProblemCreate": {
+        "properties": {
+          "buggyCode": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "default": {},
+            "title": "Buggycode",
+            "type": "object"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "",
+            "title": "Description"
+          },
+          "difficulty": {
+            "pattern": "^(Easy|Medium|Hard)$",
+            "title": "Difficulty",
+            "type": "string"
+          },
+          "examples": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/Example"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": [],
+            "title": "Examples"
+          },
+          "explanations": {
+            "additionalProperties": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "title": "Explanations",
+            "type": "object"
+          },
+          "hint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "",
+            "title": "Hint"
+          },
+          "referenceCode": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Referencecode",
+            "type": "object"
+          },
+          "sampleTests": {
+            "items": {
+              "$ref": "#/components/schemas/SampleTest"
+            },
+            "title": "Sampletests",
+            "type": "array"
+          },
+          "starterCode": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": {},
+            "title": "Startercode"
+          },
+          "testCases": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/TestCase"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": [],
+            "title": "Testcases"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "topics": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Topics",
+            "type": "array"
+          },
+          "videoUrl": {
+            "title": "Videourl",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "difficulty",
+          "videoUrl",
+          "referenceCode",
+          "explanations",
+          "sampleTests"
+        ],
+        "title": "ProblemCreate",
+        "type": "object"
+      },
+      "ProblemPublic": {
+        "properties": {
+          "buggyCode": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "default": {},
+            "title": "Buggycode",
+            "type": "object"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "",
+            "title": "Description"
+          },
+          "difficulty": {
+            "pattern": "^(Easy|Medium|Hard)$",
+            "title": "Difficulty",
+            "type": "string"
+          },
+          "examples": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/Example"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": [],
+            "title": "Examples"
+          },
+          "explanations": {
+            "additionalProperties": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "title": "Explanations",
+            "type": "object"
+          },
+          "hint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "",
+            "title": "Hint"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "referenceCode": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Referencecode",
+            "type": "object"
+          },
+          "sampleTests": {
+            "items": {
+              "$ref": "#/components/schemas/SampleTest"
+            },
+            "title": "Sampletests",
+            "type": "array"
+          },
+          "starterCode": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": {},
+            "title": "Startercode"
+          },
+          "testCases": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/TestCase"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": [],
+            "title": "Testcases"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "topics": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Topics",
+            "type": "array"
+          },
+          "videoUrl": {
+            "title": "Videourl",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "difficulty",
+          "videoUrl",
+          "referenceCode",
+          "explanations",
+          "sampleTests",
+          "id"
+        ],
+        "title": "ProblemPublic",
+        "type": "object"
+      },
+      "QuizSubmitResponse": {
+        "description": "Response after submitting quiz",
+        "properties": {
+          "correct": {
+            "title": "Correct",
+            "type": "integer"
+          },
+          "leaderboard": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Leaderboard"
+          },
+          "players_finished": {
+            "title": "Players Finished",
+            "type": "integer"
+          },
+          "rank": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rank"
+          },
+          "score": {
+            "title": "Score",
+            "type": "integer"
+          },
+          "show_leaderboard": {
+            "title": "Show Leaderboard",
+            "type": "boolean"
+          },
+          "time_bonus": {
+            "title": "Time Bonus",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          },
+          "total_players": {
+            "title": "Total Players",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "score",
+          "correct",
+          "total",
+          "time_bonus",
+          "show_leaderboard",
+          "players_finished",
+          "total_players"
+        ],
+        "title": "QuizSubmitResponse",
+        "type": "object"
+      },
+      "RealWorldApplication": {
+        "properties": {
+          "architecture_context": {
+            "description": "Detailed technical explanation of how the algorithm is utilized in production",
+            "title": "Architecture Context",
+            "type": "string"
+          },
+          "company_or_system": {
+            "description": "e.g. 'Netflix', 'Google Maps', 'Redis', 'Git'",
+            "title": "Company Or System",
+            "type": "string"
+          },
+          "performance_gain": {
+            "description": "Metrics or complexity benefits achieved (e.g., O(1) cache lookup, 99th percentile latency reduction)",
+            "title": "Performance Gain",
+            "type": "string"
+          }
+        },
+        "required": [
+          "company_or_system",
+          "architecture_context",
+          "performance_gain"
+        ],
+        "title": "RealWorldApplication",
+        "type": "object"
+      },
+      "SampleTest": {
+        "properties": {
+          "expected": {
+            "title": "Expected",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "input": {
+            "title": "Input",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "input",
+          "expected"
+        ],
+        "title": "SampleTest",
+        "type": "object"
+      },
+      "SandboxConfig": {
+        "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "goal_rule": {
+            "title": "Goal Rule",
+            "type": "string"
+          },
+          "hints_on_drag": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "default": {},
+            "title": "Hints On Drag",
+            "type": "object"
+          },
+          "initial_data": {
+            "items": {},
+            "title": "Initial Data",
+            "type": "array"
+          },
+          "pointers": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/PointerConfig"
+            },
+            "title": "Pointers",
+            "type": "array"
+          },
+          "target": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "title",
+          "description",
+          "initial_data",
+          "goal_rule"
+        ],
+        "title": "SandboxConfig",
+        "type": "object"
+      },
+      "SocraticHintRequest": {
+        "properties": {
+          "execution_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Execution Error"
+          },
+          "failed_test_case": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failed Test Case"
+          },
+          "language": {
+            "default": "python",
+            "title": "Language",
+            "type": "string"
+          },
+          "problem_id": {
+            "title": "Problem Id",
+            "type": "string"
+          },
+          "student_code": {
+            "title": "Student Code",
+            "type": "string"
+          },
+          "tier": {
+            "default": 1,
+            "maximum": 4.0,
+            "minimum": 1.0,
+            "title": "Tier",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "problem_id",
+          "student_code"
+        ],
+        "title": "SocraticHintRequest",
+        "type": "object"
+      },
+      "SocraticHintResponse": {
+        "properties": {
+          "encouragement": {
+            "title": "Encouragement",
+            "type": "string"
+          },
+          "guided_question": {
+            "title": "Guided Question",
+            "type": "string"
+          },
+          "line_number_hint": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Line Number Hint"
+          },
+          "suggested_counter_input": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Suggested Counter Input"
+          },
+          "target_concept": {
+            "title": "Target Concept",
+            "type": "string"
+          },
+          "tier": {
+            "title": "Tier",
+            "type": "integer"
+          },
+          "tier_name": {
+            "title": "Tier Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tier",
+          "tier_name",
+          "guided_question",
+          "target_concept",
+          "encouragement"
+        ],
+        "title": "SocraticHintResponse",
+        "type": "object"
+      },
+      "TestCase": {
+        "properties": {
+          "expected": {
+            "title": "Expected",
+            "type": "string"
+          },
+          "input": {
+            "title": "Input",
+            "type": "string"
+          }
+        },
+        "required": [
+          "input",
+          "expected"
+        ],
+        "title": "TestCase",
+        "type": "object"
+      },
+      "TestCaseExecutionRequest": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "language": {
+            "title": "Language",
+            "type": "string"
+          },
+          "test_cases": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Test Cases",
+            "type": "array"
+          }
+        },
+        "required": [
+          "code",
+          "language",
+          "test_cases"
+        ],
+        "title": "TestCaseExecutionRequest",
+        "type": "object"
+      },
+      "Token": {
+        "properties": {
+          "access_token": {
+            "title": "Access Token",
+            "type": "string"
+          },
+          "token_type": {
+            "default": "bearer",
+            "title": "Token Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "access_token"
+        ],
+        "title": "Token",
+        "type": "object"
+      },
+      "UserCreate": {
+        "properties": {
+          "email": {
+            "maxLength": 100,
+            "minLength": 3,
+            "pattern": "^\\S+@\\S+\\.\\S+$",
+            "title": "Email",
+            "type": "string"
+          },
+          "password": {
+            "minLength": 4,
+            "title": "Password",
+            "type": "string"
+          },
+          "preferred_language": {
+            "default": "python",
+            "title": "Preferred Language",
+            "type": "string"
+          },
+          "username": {
+            "maxLength": 30,
+            "minLength": 3,
+            "title": "Username",
+            "type": "string"
+          }
+        },
+        "required": [
+          "username",
+          "email",
+          "password"
+        ],
+        "title": "UserCreate",
+        "type": "object"
+      },
+      "UserLogin": {
+        "properties": {
+          "password": {
+            "title": "Password",
+            "type": "string"
+          },
+          "username": {
+            "title": "Username",
+            "type": "string"
+          }
+        },
+        "required": [
+          "username",
+          "password"
+        ],
+        "title": "UserLogin",
+        "type": "object"
+      },
+      "UserPublic": {
+        "properties": {
+          "achievements": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Achievements",
+            "type": "array"
+          },
+          "competitive_level": {
+            "default": 1,
+            "title": "Competitive Level",
+            "type": "integer"
+          },
+          "competitive_xp": {
+            "default": 0,
+            "title": "Competitive Xp",
+            "type": "integer"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "minLength": 3,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email"
+          },
+          "friend_requests": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Friend Requests",
+            "type": "array"
+          },
+          "friends": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Friends",
+            "type": "array"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "is_admin": {
+            "default": false,
+            "title": "Is Admin",
+            "type": "boolean"
+          },
+          "learning_level": {
+            "default": 1,
+            "title": "Learning Level",
+            "type": "integer"
+          },
+          "learning_xp": {
+            "default": 0,
+            "title": "Learning Xp",
+            "type": "integer"
+          },
+          "level": {
+            "default": 1,
+            "title": "Level",
+            "type": "integer"
+          },
+          "match_invites": {
+            "default": [],
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Match Invites",
+            "type": "array"
+          },
+          "preferred_language": {
+            "default": "python",
+            "title": "Preferred Language",
+            "type": "string"
+          },
+          "rating": {
+            "default": 1200,
+            "title": "Rating",
+            "type": "integer"
+          },
+          "username": {
+            "maxLength": 30,
+            "minLength": 3,
+            "title": "Username",
+            "type": "string"
+          },
+          "xp": {
+            "default": 0,
+            "title": "Xp",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "username",
+          "id"
+        ],
+        "title": "UserPublic",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "app__routers__execute__CodeExecutionRequest": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "language": {
+            "title": "Language",
+            "type": "string"
+          },
+          "test_input": {
+            "default": "",
+            "title": "Test Input",
+            "type": "string"
+          },
+          "timeout": {
+            "default": 10,
+            "title": "Timeout",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "code",
+          "language"
+        ],
+        "title": "CodeExecutionRequest",
+        "type": "object"
+      },
+      "app__schemas__competitive__CodeExecutionRequest": {
+        "description": "Request to execute code through Piston API",
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "language": {
+            "title": "Language",
+            "type": "string"
+          },
+          "stdin": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "",
+            "title": "Stdin"
+          },
+          "test_case_index": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Test Case Index"
+          }
+        },
+        "required": [
+          "code",
+          "language"
+        ],
+        "title": "CodeExecutionRequest",
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "OAuth2PasswordBearer": {
+        "flows": {
+          "password": {
+            "scopes": {},
+            "tokenUrl": "/auth/login"
+          }
+        },
+        "type": "oauth2"
+      }
+    }
+  },
+  "info": {
+    "title": "codoAI Backend",
+    "version": "1.0.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Root"
+      }
+    },
+    "/algorithms/generate": {
+      "post": {
+        "description": "Generate a custom algorithm track and interactive sandbox using the AI harness.",
+        "operationId": "generate_custom_algorithm_algorithms_generate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateAlgorithmRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlgorithmTrackResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Generate Custom Algorithm",
+        "tags": [
+          "Algorithm Mastery & System Design"
+        ]
+      }
+    },
+    "/algorithms/tracks": {
+      "get": {
+        "description": "Get all categorized algorithm and system design tracks with real-world applications.",
+        "operationId": "get_all_tracks_algorithms_tracks_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AlgorithmTrackSummary"
+                  },
+                  "title": "Response Get All Tracks Algorithms Tracks Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get All Tracks",
+        "tags": [
+          "Algorithm Mastery & System Design"
+        ]
+      }
+    },
+    "/algorithms/tracks/{track_id}": {
+      "get": {
+        "description": "Fetch complete interactive visual sandbox config, code templates, and production case studies.",
+        "operationId": "get_track_algorithms_tracks__track_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "track_id",
+            "required": true,
+            "schema": {
+              "title": "Track Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlgorithmTrackResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Track",
+        "tags": [
+          "Algorithm Mastery & System Design"
+        ]
+      }
+    },
+    "/attempts/": {
+      "post": {
+        "operationId": "upsert_attempt_attempts__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AttemptCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttemptPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Upsert Attempt",
+        "tags": [
+          "attempts"
+        ]
+      }
+    },
+    "/attempts/me": {
+      "get": {
+        "operationId": "list_my_attempts_attempts_me_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AttemptPublic"
+                  },
+                  "title": "Response List My Attempts Attempts Me Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "List My Attempts",
+        "tags": [
+          "attempts"
+        ]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "login_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLogin"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Token"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Login",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "operationId": "register_auth_register_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Register",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/competitive/bug-hunt/questions/{difficulty}": {
+      "get": {
+        "description": "Get random bug hunt question by difficulty\n\nReturns a question with all language variants (Python, Java, C++).",
+        "operationId": "get_bug_hunt_question_competitive_bug_hunt_questions__difficulty__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "difficulty",
+            "required": true,
+            "schema": {
+              "title": "Difficulty",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Get Bug Hunt Question",
+        "tags": [
+          "competitive"
+        ]
+      }
+    },
+    "/competitive/generate-problem": {
+      "post": {
+        "description": "Generate a random problem for competitive mode (requires admin)",
+        "operationId": "generate_random_problem_competitive_generate_problem_post",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "difficulty",
+            "required": false,
+            "schema": {
+              "default": "easy",
+              "title": "Difficulty",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Generate Random Problem",
+        "tags": [
+          "competitive"
+        ]
+      }
+    },
+    "/competitive/leaderboard": {
+      "get": {
+        "description": "Get competitive mode leaderboard based on rating",
+        "operationId": "get_competitive_leaderboard_competitive_leaderboard_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "filter",
+            "required": false,
+            "schema": {
+              "default": "global",
+              "title": "Filter",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Get Competitive Leaderboard",
+        "tags": [
+          "competitive"
+        ]
+      }
+    },
+    "/competitive/lobby/create": {
+      "post": {
+        "description": "Create a new multiplayer lobby that others can join - selects random problem from pool",
+        "operationId": "create_lobby_competitive_lobby_create_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LobbyCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LobbyPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Create Lobby",
+        "tags": [
+          "competitive"
+        ]
+      }
+    },
+    "/competitive/lobby/join": {
+      "post": {
+        "description": "Join an existing lobby using game ID",
+        "operationId": "join_lobby_competitive_lobby_join_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LobbyJoin"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Join Lobby",
+        "tags": [
+          "competitive"
+        ]
+      }
+    },
+    "/competitive/lobby/list": {
+      "get": {
+        "description": "List available lobbies",
+        "operationId": "list_lobbies_competitive_lobby_list_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "game_mode",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Game Mode"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "waiting",
+              "title": "Status"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/LobbyPublic"
+                  },
+                  "title": "Response List Lobbies Competitive Lobby List Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "List Lobbies",
+        "tags": [
+          "competitive"
+        ]
+      }
+    },
+    "/competitive/lobby/{game_id}": {
+      "get": {
+        "description": "Get details of a specific lobby by game ID",
+        "operationId": "get_lobby_competitive_lobby__game_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "game_id",
+            "required": true,
+            "schema": {
+              "title": "Game Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LobbyPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Get Lobby",
+        "tags": [
+          "competitive"
+        ]
+      }
+    },
+    "/competitive/lobby/{game_id}/leave": {
+      "post": {
+        "description": "Leave a lobby",
+        "operationId": "leave_lobby_competitive_lobby__game_id__leave_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "game_id",
+            "required": true,
+            "schema": {
+              "title": "Game Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Leave Lobby",
+        "tags": [
+          "competitive"
+        ]
+      }
+    },
+    "/competitive/lobby/{game_id}/start": {
+      "post": {
+        "description": "Start a lobby game (only host can start)",
+        "operationId": "start_lobby_competitive_lobby__game_id__start_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "game_id",
+            "required": true,
+            "schema": {
+              "title": "Game Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Start Lobby",
+        "tags": [
+          "competitive"
+        ]
+      }
+    },
+    "/competitive/matches": {
+      "get": {
+        "description": "List competitive matches (optionally filter by status)",
+        "operationId": "list_matches_competitive_matches_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/MatchPublic"
+                  },
+                  "title": "Response List Matches Competitive Matches Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "List Matches",
+        "tags": [
+          "competitive"
+        ]
+      },
+      "post": {
+        "description": "Create a new competitive match",
+        "operationId": "create_match_competitive_matches_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MatchCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MatchPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Create Match",
+        "tags": [
+          "competitive"
+        ]
+      }
+    },
+    "/competitive/matches/{match_id}": {
+      "get": {
+        "description": "Get details of a specific match (supports both 1v1 and multiplayer)",
+        "operationId": "get_match_competitive_matches__match_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "match_id",
+            "required": true,
+            "schema": {
+              "title": "Match Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MatchPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Get Match",
+        "tags": [
+          "competitive"
+        ]
+      }
+    },
+    "/competitive/matches/{match_id}/bug-hunt-question": {
+      "get": {
+        "description": "Get the current Bug Hunt question for a match\n\nReturns the question data with buggy code for all languages.",
+        "operationId": "get_bug_hunt_question_competitive_matches__match_id__bug_hunt_question_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "match_id",
+            "required": true,
+            "schema": {
+              "title": "Match Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Get Bug Hunt Question",
+        "tags": [
+          "competitive"
+        ]
+      }
+    },
+    "/competitive/matches/{match_id}/execute": {
+      "post": {
+        "description": "Submit code for execution through Piston API (returns immediately with execution_id)\n\nThis endpoint queues the code execution and returns immediately with an execution_id\nthat can be used to poll for results.",
+        "operationId": "execute_code_competitive_matches__match_id__execute_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "match_id",
+            "required": true,
+            "schema": {
+              "title": "Match Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/app__schemas__competitive__CodeExecutionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeExecutionResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Execute Code",
+        "tags": [
+          "competitive"
+        ]
+      }
+    },
+    "/competitive/matches/{match_id}/execution/{execution_id}": {
+      "get": {
+        "description": "Poll for execution result\n\nReturns the execution result if complete, or status if still pending.",
+        "operationId": "get_execution_result_competitive_matches__match_id__execution__execution_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "match_id",
+            "required": true,
+            "schema": {
+              "title": "Match Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "execution_id",
+            "required": true,
+            "schema": {
+              "title": "Execution Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExecutionResultResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Get Execution Result",
+        "tags": [
+          "competitive"
+        ]
+      }
+    },
+    "/competitive/matches/{match_id}/hint": {
+      "post": {
+        "description": "Mark that a player used a hint (reduces potential XP bonus)",
+        "operationId": "use_hint_competitive_matches__match_id__hint_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "match_id",
+            "required": true,
+            "schema": {
+              "title": "Match Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Use Hint",
+        "tags": [
+          "competitive"
+        ]
+      }
+    },
+    "/competitive/matches/{match_id}/leave": {
+      "post": {
+        "description": "Leave/forfeit from a competitive match",
+        "operationId": "leave_match_competitive_matches__match_id__leave_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "match_id",
+            "required": true,
+            "schema": {
+              "title": "Match Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Leave Match",
+        "tags": [
+          "competitive"
+        ]
+      }
+    },
+    "/competitive/matches/{match_id}/questions": {
+      "get": {
+        "description": "Get a chunk of quiz questions for lazy loading (50-60 question quizzes)",
+        "operationId": "get_quiz_questions_chunk_competitive_matches__match_id__questions_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "match_id",
+            "required": true,
+            "schema": {
+              "title": "Match Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "start",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Start",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "end",
+            "required": false,
+            "schema": {
+              "default": 10,
+              "minimum": 1,
+              "title": "End",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Get Quiz Questions Chunk",
+        "tags": [
+          "competitive"
+        ]
+      }
+    },
+    "/competitive/matches/{match_id}/quiz-results": {
+      "get": {
+        "description": "Get detailed quiz results with correct answers and explanations",
+        "operationId": "get_quiz_results_competitive_matches__match_id__quiz_results_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "match_id",
+            "required": true,
+            "schema": {
+              "title": "Match Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Get Quiz Results",
+        "tags": [
+          "competitive"
+        ]
+      }
+    },
+    "/competitive/matches/{match_id}/save-progress": {
+      "post": {
+        "description": "Auto-save quiz progress (for 30+ question quizzes)",
+        "operationId": "save_quiz_progress_competitive_matches__match_id__save_progress_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "match_id",
+            "required": true,
+            "schema": {
+              "title": "Match Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MatchSubmit"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Save Quiz Progress",
+        "tags": [
+          "competitive"
+        ]
+      }
+    },
+    "/competitive/matches/{match_id}/start": {
+      "post": {
+        "description": "Start a competitive match",
+        "operationId": "start_match_competitive_matches__match_id__start_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "match_id",
+            "required": true,
+            "schema": {
+              "title": "Match Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Start Match",
+        "tags": [
+          "competitive"
+        ]
+      }
+    },
+    "/competitive/matches/{match_id}/submit": {
+      "post": {
+        "description": "Submit a solution for a competitive match (supports both 1v1 and multiplayer)",
+        "operationId": "submit_solution_competitive_matches__match_id__submit_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "match_id",
+            "required": true,
+            "schema": {
+              "title": "Match Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MatchSubmit"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Submit Solution",
+        "tags": [
+          "competitive"
+        ]
+      }
+    },
+    "/competitive/matches/{match_id}/submit-quiz": {
+      "post": {
+        "description": "Submit quiz answers for Code Quiz mode",
+        "operationId": "submit_quiz_competitive_matches__match_id__submit_quiz_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "match_id",
+            "required": true,
+            "schema": {
+              "title": "Match Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MatchSubmit"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuizSubmitResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Submit Quiz",
+        "tags": [
+          "competitive"
+        ]
+      }
+    },
+    "/competitive/matches/{match_id}/switch-language": {
+      "post": {
+        "description": "Switch to different language variant\n\nReturns buggy code in the new language while preserving timer/hints state.",
+        "operationId": "switch_language_competitive_matches__match_id__switch_language_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "match_id",
+            "required": true,
+            "schema": {
+              "title": "Match Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LanguageSwitchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LanguageSwitchResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Switch Language",
+        "tags": [
+          "competitive"
+        ]
+      }
+    },
+    "/competitive/matchmaking": {
+      "post": {
+        "description": "Find or create a competitive match (matchmaking) with specified game mode",
+        "operationId": "find_match_competitive_matchmaking_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MatchmakingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Find Match",
+        "tags": [
+          "competitive"
+        ]
+      }
+    },
+    "/execute/health": {
+      "get": {
+        "description": "Check if Judge0 API is accessible",
+        "operationId": "health_check_execute_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health Check",
+        "tags": [
+          "code-execution"
+        ]
+      }
+    },
+    "/execute/languages": {
+      "get": {
+        "description": "Get list of supported languages from Judge0",
+        "operationId": "get_supported_languages_execute_languages_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Supported Languages",
+        "tags": [
+          "code-execution"
+        ]
+      }
+    },
+    "/execute/run": {
+      "post": {
+        "description": "Execute code with given input.\nUsed for testing and debugging. No authentication required for testing.",
+        "operationId": "execute_code_execute_run_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/app__routers__execute__CodeExecutionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Execute Code",
+        "tags": [
+          "code-execution"
+        ]
+      }
+    },
+    "/execute/test": {
+      "post": {
+        "description": "Run all test cases against the code.\nNo authentication required for testing.",
+        "operationId": "run_test_cases_execute_test_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestCaseExecutionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Run Test Cases",
+        "tags": [
+          "code-execution"
+        ]
+      }
+    },
+    "/execute/validate": {
+      "post": {
+        "description": "Validate code syntax without execution.\nCan be used for quick feedback.",
+        "operationId": "validate_syntax_execute_validate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/app__routers__execute__CodeExecutionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Validate Syntax",
+        "tags": [
+          "code-execution"
+        ]
+      }
+    },
+    "/intuition/arena-evaluate": {
+      "post": {
+        "description": "Evaluate student's spoken/text defense of trade-offs in the post-solution AI Arena.",
+        "operationId": "evaluate_arena_defense_intuition_arena_evaluate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArenaEvaluateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArenaEvaluateResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Evaluate Arena Defense",
+        "tags": [
+          "Intuition Learning Engine"
+        ]
+      }
+    },
+    "/intuition/chaos-benchmark": {
+      "post": {
+        "description": "Simulate and benchmark algorithmic stress, operations, and CPU temperature scaling.",
+        "operationId": "run_chaos_benchmark_intuition_chaos_benchmark_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChaosBenchmarkRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChaosBenchmarkResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Run Chaos Benchmark",
+        "tags": [
+          "Intuition Learning Engine"
+        ]
+      }
+    },
+    "/intuition/problems": {
+      "get": {
+        "description": "Get all problems supporting the 4-D Intuition Loop.",
+        "operationId": "get_intuition_problems_intuition_problems_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  "title": "Response Get Intuition Problems Intuition Problems Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Intuition Problems",
+        "tags": [
+          "Intuition Learning Engine"
+        ]
+      }
+    },
+    "/intuition/problems/{problem_id}": {
+      "get": {
+        "description": "Fetch the full intuition package (Sandbox, Chaos, Logic Cards, Reference Code) for a problem.",
+        "operationId": "get_intuition_problem_intuition_problems__problem_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "problem_id",
+            "required": true,
+            "schema": {
+              "title": "Problem Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntuitionProblemResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Intuition Problem",
+        "tags": [
+          "Intuition Learning Engine"
+        ]
+      }
+    },
+    "/intuition/profile": {
+      "get": {
+        "description": "Fetch the user's cognitive radar vectors, blindspot analysis, and earned mastery badges.",
+        "operationId": "get_cognitive_profile_intuition_profile_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "user_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "demo_user",
+              "title": "User Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "username",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "Coder",
+              "title": "Username"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CognitiveProfileResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Cognitive Profile",
+        "tags": [
+          "Intuition Learning Engine"
+        ]
+      }
+    },
+    "/intuition/socratic-hint": {
+      "post": {
+        "description": "Generate a multi-tiered Socratic guiding hint targeting the student's cognitive mental model.",
+        "operationId": "get_socratic_hint_intuition_socratic_hint_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SocraticHintRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SocraticHintResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Socratic Hint",
+        "tags": [
+          "Intuition Learning Engine"
+        ]
+      }
+    },
+    "/leaderboard/problem/{problem_id}": {
+      "get": {
+        "operationId": "problem_leaderboard_leaderboard_problem__problem_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "problem_id",
+            "required": true,
+            "schema": {
+              "title": "Problem Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Problem Leaderboard",
+        "tags": [
+          "leaderboard"
+        ]
+      }
+    },
+    "/problems/": {
+      "get": {
+        "operationId": "list_problems_problems__get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ProblemPublic"
+                  },
+                  "title": "Response List Problems Problems  Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "List Problems",
+        "tags": [
+          "problems"
+        ]
+      },
+      "post": {
+        "operationId": "create_problem_problems__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProblemCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Create Problem",
+        "tags": [
+          "problems"
+        ]
+      }
+    },
+    "/problems/{problem_id}": {
+      "get": {
+        "operationId": "get_problem_problems__problem_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "problem_id",
+            "required": true,
+            "schema": {
+              "title": "Problem Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Get Problem",
+        "tags": [
+          "problems"
+        ]
+      }
+    },
+    "/test": {
+      "get": {
+        "operationId": "test_endpoint_test_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Test Endpoint"
+      }
+    },
+    "/users/friends": {
+      "get": {
+        "operationId": "get_friends_users_friends_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Get Friends",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/users/friends/accept/{username}": {
+      "post": {
+        "operationId": "accept_friend_request_users_friends_accept__username__post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "username",
+            "required": true,
+            "schema": {
+              "title": "Username",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Accept Friend Request",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/users/friends/reject/{username}": {
+      "post": {
+        "operationId": "reject_friend_request_users_friends_reject__username__post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "username",
+            "required": true,
+            "schema": {
+              "title": "Username",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Reject Friend Request",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/users/friends/request/{username}": {
+      "post": {
+        "operationId": "send_friend_request_users_friends_request__username__post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "username",
+            "required": true,
+            "schema": {
+              "title": "Username",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Send Friend Request",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/users/friends/requests/pending": {
+      "get": {
+        "operationId": "get_pending_friend_requests_users_friends_requests_pending_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Get Pending Friend Requests",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/users/invites": {
+      "get": {
+        "operationId": "get_invites_users_invites_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Get Invites",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/users/invites/clear": {
+      "post": {
+        "operationId": "clear_invites_users_invites_clear_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Clear Invites",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/users/invites/send/{username}": {
+      "post": {
+        "operationId": "send_invite_users_invites_send__username__post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "username",
+            "required": true,
+            "schema": {
+              "title": "Username",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InviteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Send Invite",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/users/me": {
+      "get": {
+        "operationId": "get_me_users_me_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Get Me",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/users/notifications": {
+      "get": {
+        "operationId": "get_user_notifications_users_notifications_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Get User Notifications",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/users/notifications/clear": {
+      "post": {
+        "operationId": "clear_user_notifications_users_notifications_clear_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Clear User Notifications",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/users/quests/claim": {
+      "post": {
+        "operationId": "claim_quest_xp_users_quests_claim_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClaimQuestXP"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Claim Quest Xp",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/users/search/{query}": {
+      "get": {
+        "operationId": "search_users_users_search__query__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "query",
+            "required": true,
+            "schema": {
+              "title": "Query",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Search Users",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/users/top": {
+      "get": {
+        "operationId": "get_top_users_users_top_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Get Top Users",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/{full_path}": {
+      "options": {
+        "operationId": "options_handler__full_path__options",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Options Handler"
+      }
+    }
+  }
+}
