@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { showToast } from "../ui/ToastProvider";
 import {
   Compass,
   Zap,
@@ -244,7 +245,7 @@ export function AlgorithmTrackHub({ onSelectTrack }) {
       }
     } catch (err) {
       console.error("AI Generation error:", err);
-      alert("AI synthesis fallback activated. Custom track created from structured baseline!");
+      showToast("AI synthesis fallback activated. Custom track created from structured baseline!", "info");
       setIsAiModalOpen(false);
     } finally {
       setIsGenerating(false);

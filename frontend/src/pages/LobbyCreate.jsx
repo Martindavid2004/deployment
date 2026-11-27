@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Zap, Bug, Target, Bot, Shuffle, Brain } from "lucide-react";
 import { API_BASE } from "../utils/api";
+import { showToast } from "../components/ui/ToastProvider";
 
 export default function LobbyCreate() {
   const navigate = useNavigate();
@@ -67,7 +68,7 @@ export default function LobbyCreate() {
       navigate(`/lobby/${data.game_id}`);
     } catch (err) {
       console.error("Error creating lobby:", err);
-      alert(err.message || "Failed to create lobby");
+      showToast(err.message || "Failed to create lobby", "error");
     } finally {
       setLoading(false);
     }

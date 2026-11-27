@@ -1050,6 +1050,8 @@
           },
           "time_limit_seconds": {
             "default": 900,
+            "maximum": 7200.0,
+            "minimum": 1.0,
             "title": "Time Limit Seconds",
             "type": "integer"
           }
@@ -1264,6 +1266,8 @@
           },
           "time_limit_seconds": {
             "default": 900,
+            "maximum": 7200.0,
+            "minimum": 1.0,
             "title": "Time Limit Seconds",
             "type": "integer"
           }
@@ -1725,6 +1729,7 @@
             "title": "Force Submit"
           },
           "language": {
+            "pattern": "^(python|cpp|java)$",
             "title": "Language",
             "type": "string"
           },
@@ -2486,6 +2491,11 @@
             "title": "Email",
             "type": "string"
           },
+          "faction": {
+            "default": "sorcerer",
+            "title": "Faction",
+            "type": "string"
+          },
           "password": {
             "minLength": 4,
             "title": "Password",
@@ -2529,6 +2539,49 @@
         "title": "UserLogin",
         "type": "object"
       },
+      "UserProfileUpdate": {
+        "properties": {
+          "faction": {
+            "anyOf": [
+              {
+                "pattern": "^(sorcerer|berserker|legend)$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Faction"
+          },
+          "preferred_language": {
+            "anyOf": [
+              {
+                "pattern": "^(python|cpp|java|javascript|c)$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preferred Language"
+          },
+          "username": {
+            "anyOf": [
+              {
+                "maxLength": 30,
+                "minLength": 3,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Username"
+          }
+        },
+        "title": "UserProfileUpdate",
+        "type": "object"
+      },
       "UserPublic": {
         "properties": {
           "achievements": {
@@ -2561,6 +2614,11 @@
               }
             ],
             "title": "Email"
+          },
+          "faction": {
+            "default": "sorcerer",
+            "title": "Faction",
+            "type": "string"
           },
           "friend_requests": {
             "default": [],
@@ -3151,6 +3209,8 @@
             "required": false,
             "schema": {
               "default": 50,
+              "maximum": 100,
+              "minimum": 1,
               "title": "Limit",
               "type": "integer"
             }
@@ -5254,6 +5314,48 @@
           }
         ],
         "summary": "Get Me",
+        "tags": [
+          "users"
+        ]
+      },
+      "patch": {
+        "operationId": "update_me_users_me_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserProfileUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Update Me",
         "tags": [
           "users"
         ]

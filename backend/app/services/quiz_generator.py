@@ -1,5 +1,7 @@
-import google.generativeai as genai
 from app.core.config import get_settings
+from app.harness.context import Budget
+from app.harness.contracts import GeneratedQuizQuestion
+from app.harness.provider import call_with_repair
 import json
 import random
 import asyncio
@@ -9,10 +11,6 @@ from typing import List, Dict, Optional
 from bson import ObjectId
 
 settings = get_settings()
-
-# Configure Gemini
-if settings.google_api_key:
-    genai.configure(api_key=settings.google_api_key)
 
 # Load question banks from JSON files
 QUESTION_BANKS = {}
@@ -457,35 +455,15 @@ async def generate_single_question(
         return generate_sample_question(language, difficulty, question_type)
     
     try:
-        # Use gemini-flash-latest (alias for latest stable flash model)
-        model = genai.GenerativeModel('gemini-flash-latest')
         prompt = build_question_prompt(language, difficulty, question_type)
-        
-        response = model.generate_content(prompt)
-        question_text = response.text.strip()
-        
-        # Remove markdown code blocks if present
-        if question_text.startswith("```"):
-            lines = question_text.split("\n")
-            question_text = "\n".join(lines[1:-1])
-            if question_text.startswith("json"):
-                question_text = question_text[4:].strip()
-        
-        question_data = json.loads(question_text)
-        
-        # Validate structure
-        required_fields = ["question", "options", "correct_answer", "explanation"]
-        if not all(field in question_data for field in required_fields):
-            print(f"⚠️ Missing required fields in generated question, using sample")
-            return generate_sample_question(language, difficulty, question_type)
-        
-        if len(question_data["options"]) != 4:
-            print(f"⚠️ Question must have exactly 4 options, using sample")
-            return generate_sample_question(language, difficulty, question_type)
-        
-        if not (0 <= question_data["correct_answer"] <= 3):
-            print(f"⚠️ correct_answer must be 0-3, using sample")
-            return generate_sample_question(language, difficulty, question_type)
+        parsed = await call_with_repair(
+            GeneratedQuizQuestion,
+            [{"role": "user", "content": prompt}],
+            Budget(),
+            feature="quiz_question",
+            max_tokens=500,
+        )
+        question_data = parsed.model_dump()
         
         # Add metadata
         question_data["question_type"] = question_type

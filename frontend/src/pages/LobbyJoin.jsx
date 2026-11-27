@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Gamepad2 } from "lucide-react";
 import { API_BASE } from "../utils/api";
+import { showToast } from "../components/ui/ToastProvider";
 
 export default function LobbyJoin() {
   const navigate = useNavigate();
@@ -11,14 +12,14 @@ export default function LobbyJoin() {
   const handleJoinLobby = async (e) => {
     e.preventDefault();
     if (!gameId.trim()) {
-      alert("Please enter a Game ID");
+      showToast("Please enter a Game ID", "error");
       return;
     }
 
     // Check authentication first
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("You must be logged in to join a lobby. Please login first.");
+      showToast("You must be logged in to join a lobby. Please login first.", "error");
       navigate("/login");
       return;
     }
@@ -42,7 +43,7 @@ export default function LobbyJoin() {
         
         // Handle specific error cases
         if (res.status === 401) {
-          alert("Your session has expired. Please login again.");
+          showToast("Your session has expired. Please login again.", "error");
           navigate("/login");
           return;
         }
@@ -57,7 +58,7 @@ export default function LobbyJoin() {
       navigate(`/lobby/${data.lobby.game_id}`);
     } catch (err) {
       console.error("Error joining lobby:", err);
-      alert(err.message || "Failed to join lobby. Check the Game ID and try again.");
+      showToast(err.message || "Failed to join lobby. Check the Game ID and try again.", "error");
     } finally {
       setLoading(false);
     }

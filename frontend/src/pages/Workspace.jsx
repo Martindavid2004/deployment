@@ -5,6 +5,7 @@ import MonacoEditorWrapper from "../components/MonacoEditorWrapper";
 import ProgressBar from "../components/ProgressBar";
 import LeaderboardTable from "../components/LeaderboardTable";
 import { API_BASE } from "../utils/api";
+import { showToast } from "../components/ui/ToastProvider";
 
 export default function Workspace({
   user,
@@ -160,7 +161,7 @@ export default function Workspace({
       const token = localStorage.getItem("token");
 
       if (!token) {
-        alert("Authentication required. Please login to run tests.");
+        showToast("Authentication required. Please login to run tests.", "error");
         setIsExecuting(false);
         return;
       }
@@ -179,7 +180,7 @@ export default function Workspace({
       });
 
       if (response.status === 401) {
-        alert("Session expired. Please login again to run tests.");
+        showToast("Session expired. Please login again to run tests.", "error");
         setIsExecuting(false);
         return;
       }
@@ -188,12 +189,12 @@ export default function Workspace({
       setTestResults(result);
 
       if (result.all_passed) {
-        alert(`All ${result.total} test cases passed!`);
+        showToast(`All ${result.total} test cases passed!`, "success");
       } else {
-        alert(`${result.passed}/${result.total} test cases passed. Check the results below.`);
+        showToast(`${result.passed}/${result.total} test cases passed. Check the results below.`, "info");
       }
     } catch (error) {
-      alert(`Failed to run tests: ${error.message}`);
+      showToast(`Failed to run tests: ${error.message}`, "error");
     } finally {
       setIsExecuting(false);
     }
@@ -296,7 +297,7 @@ export default function Workspace({
           localStorage.removeItem("username");
         }
         console.error("Failed to fetch user info, status:", userResponse.status);
-        alert("Warning: Could not authenticate. Progress not saved to database.");
+        showToast("Warning: Could not authenticate. Progress not saved to database.", "error");
         if (currentRound < 4) setCurrentRound((r) => r + 1);
         return;
       }
@@ -330,14 +331,14 @@ export default function Workspace({
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         console.error("Failed to save attempt. Status:", response.status, "Error:", errorData);
-        alert(`Warning: Progress was not saved to database. ${errorData.detail || 'Unknown error'}`);
+        showToast(`Warning: Progress was not saved to database. ${errorData.detail || 'Unknown error'}`, "error");
       } else {
         const savedData = await response.json();
         console.log("[SUCCESS] Attempt saved successfully to database:", savedData);
       }
     } catch (err) {
       console.error("Failed to save attempt to database:", err);
-      alert("Warning: Progress was not saved to database. Error: " + err.message);
+      showToast("Warning: Progress was not saved to database. Error: " + err.message, "error");
     }
 
     if (currentRound < 4) setCurrentRound((r) => r + 1);

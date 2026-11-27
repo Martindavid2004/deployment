@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Zap, Bug, Target, Crown, User, CheckCircle2, Copy, Clock, Gamepad2, Megaphone, Shuffle, UserPlus, X } from "lucide-react";
 import { API_BASE } from "../utils/api";
+import { showToast } from "../components/ui/ToastProvider";
 
 export default function LobbyRoom() {
   const { gameId } = useParams();
@@ -65,7 +66,7 @@ export default function LobbyRoom() {
       const token = localStorage.getItem("token");
       if (!token) {
         console.error("[ERROR] No authentication token found");
-        alert("You must be logged in to view this lobby");
+        showToast("You must be logged in to view this lobby", "error");
         navigate("/login");
         return;
       }
@@ -78,7 +79,7 @@ export default function LobbyRoom() {
 
       if (!res.ok) {
         if (res.status === 401) {
-          alert("Your session has expired. Please login again.");
+          showToast("Your session has expired. Please login again.", "error");
           navigate("/login");
           return;
         }
@@ -103,7 +104,7 @@ export default function LobbyRoom() {
     } catch (err) {
       console.error("Error fetching lobby:", err);
       setLoading(false);
-      alert("Lobby not found or has been closed");
+      showToast("Lobby not found or has been closed", "error");
       navigate("/competitive");
     }
   };
@@ -131,7 +132,7 @@ export default function LobbyRoom() {
       }
     } catch (err) {
       console.error("Error starting game:", err);
-      alert(err.message || "Failed to start game");
+      showToast(err.message || "Failed to start game", "error");
     }
   };
 
@@ -180,7 +181,7 @@ export default function LobbyRoom() {
         setInvitedFriends(prev => ({ ...prev, [friendUsername]: true }));
       } else {
         const error = await res.json();
-        alert(`Failed to invite: ${error.detail || "Error"}`);
+        showToast(`Failed to invite: ${error.detail || "Error"}`, "error");
       }
     } catch (err) {
       console.error("Error inviting friend:", err);

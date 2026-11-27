@@ -44,7 +44,7 @@ const languages = [
     name: "Python (3.x)",
     extension: "py", 
     compile: null,
-    run: "python3 {file}",
+    run: process.platform === "win32" ? "python {file}" : "python3 {file}",
     needsCompile: false
   },
   {

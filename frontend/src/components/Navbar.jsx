@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { Moon, Sun, Menu, X, Save, Edit3, Sparkles } from "lucide-react";
 import LanguageSelector from "./LanguageSelector";
+import { updateUserProfile } from "../api";
+import { showToast } from "./ui/ToastProvider";
 
 const FACTIONS = [
   {
@@ -215,13 +217,22 @@ export default function Navbar({ user, setUser, onLogout, theme, toggleTheme, cu
                 >
                   <div className="flex justify-between items-center border-b pb-2" style={{ borderColor: 'var(--border-color)' }}>
                     <h3 className="text-sm font-extrabold heading-font text-[var(--text-primary)]">Edit Profile Settings</h3>
-                    <button 
-                      onClick={() => setShowProfileDropdown(false)} 
-                      className="p-1 rounded-lg hover:bg-[var(--bg-hover)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors"
-                      aria-label="Close profile settings"
-                    >
-                      <X size={14} aria-hidden="true" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <Link
+                        to="/profile"
+                        onClick={() => setShowProfileDropdown(false)}
+                        className="text-[11px] font-semibold text-emerald-400 hover:underline"
+                      >
+                        Full Profile
+                      </Link>
+                      <button 
+                        onClick={() => setShowProfileDropdown(false)} 
+                        className="p-1 rounded-lg hover:bg-[var(--bg-hover)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors"
+                        aria-label="Close profile settings"
+                      >
+                        <X size={14} aria-hidden="true" />
+                      </button>
+                    </div>
                   </div>
 
                   {/* Username */}
@@ -292,17 +303,31 @@ export default function Navbar({ user, setUser, onLogout, theme, toggleTheme, cu
                       Cancel
                     </button>
                     <button
-                      onClick={() => {
-                        if (!editName.trim()) return;
-                        if (setUser) {
-                          setUser({
-                            ...user,
-                            name: editName.trim(),
+                      onClick={async () => {
+                        const trimmed = editName.trim();
+                        if (!trimmed) return;
+                        try {
+                          const updated = await updateUserProfile({
+                            name: trimmed,
                             preferredLanguage: editLanguage,
-                            faction: editFaction
+                            faction: editFaction,
                           });
+                          if (setUser) {
+                            setUser({
+                              ...user,
+                              name: updated.username || trimmed,
+                              preferredLanguage: updated.preferred_language || editLanguage,
+                              faction: updated.faction || editFaction,
+                            });
+                          }
+                          if (setCurrentLanguage) {
+                            setCurrentLanguage(updated.preferred_language || editLanguage);
+                          }
+                          showToast("Profile updated!", "success");
+                          setShowProfileDropdown(false);
+                        } catch (err) {
+                          showToast(err.message || "Failed to update profile", "error");
                         }
-                        setShowProfileDropdown(false);
                       }}
                       className="flex-1 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1 cc-btn-primary"
                     >

@@ -1,12 +1,13 @@
 import time
 import math
 import random
-import json
 import os
 from typing import Dict, Any, List, Optional
-import google.generativeai as genai
 
 from app.core.config import get_settings
+from app.harness.context import Budget, slice_code, trim_judge_output
+from app.harness.contracts import ArenaEvaluateLLMContract, SocraticHintLLMContract
+from app.harness.provider import call_with_repair
 from app.schemas.intuition import (
     IntuitionProblemResponse,
     SandboxConfig,
@@ -22,12 +23,6 @@ from app.schemas.intuition import (
 
 settings = get_settings()
 api_key = settings.google_api_key or os.getenv("GOOGLE_API_KEY", "")
-
-if api_key:
-    try:
-        genai.configure(api_key=api_key)
-    except Exception as e:
-        print(f"[WARNING] Failed to configure Gemini API: {e}")
 
 # Built-in Intuition Problems for Phase 1 MVP
 INTUITION_PROBLEMS: Dict[str, Dict[str, Any]] = {
@@ -531,17 +526,17 @@ class IntuitionService:
                 encouragement="Keep exploring! You are one thought away from the optimal insight."
             )
 
-        # Call Gemini with structured Socratic prompt
+        # Call LLM through harness with token budget and Pydantic contract
         try:
-            model_name = os.getenv("GOOGLE_MODEL", "gemini-flash-latest")
-            model = genai.GenerativeModel(model_name)
+            sliced = slice_code(req.student_code, req.language)
+            err_ctx = trim_judge_output("", req.failed_test_case or req.execution_error or "Student is stuck")
             prompt = f"""You are a master Socratic Computer Science Professor.
 The student is working on problem: {req.problem_id} in {req.language}.
 Student's Current Code:
 ```
-{req.student_code}
+{sliced}
 ```
-Failed Test/Error Context: {req.failed_test_case or req.execution_error or 'Student is stuck'}
+Failed Test/Error Context: {err_ctx}
 Requested Hint Tier: {tier} ({tier_name}).
 
 RULES:
@@ -550,26 +545,25 @@ RULES:
 - Tier 3: Provide a minimal breaking counter-example input without giving code.
 - Tier 4: Explain the high-level algorithmic concept.
 - NEVER write complete solution code.
-- Return ONLY valid JSON format with keys:
+- Return ONLY valid JSON with keys:
 {{"guided_question": "...", "target_concept": "...", "line_number_hint": 14, "suggested_counter_input": "...", "encouragement": "..."}}
 """
-            res = model.generate_content(prompt)
-            raw = res.text.strip()
-            # Clean markdown JSON wraps if present
-            if raw.startswith("```json"):
-                raw = raw[7:]
-            if raw.endswith("```"):
-                raw = raw[:-3]
-            data = json.loads(raw.strip())
-            
+            parsed = await call_with_repair(
+                SocraticHintLLMContract,
+                [{"role": "user", "content": prompt}],
+                Budget(),
+                feature="socratic_hint",
+                max_tokens=400,
+            )
+
             return SocraticHintResponse(
                 tier=tier,
                 tier_name=tier_name,
-                guided_question=data.get("guided_question", fb["question"]),
-                target_concept=data.get("target_concept", fb["concept"]),
-                line_number_hint=data.get("line_number_hint", 15),
-                suggested_counter_input=data.get("suggested_counter_input", fb["counter_input"]),
-                encouragement=data.get("encouragement", "Great problem-solving mindset! Keep pushing.")
+                guided_question=parsed.guided_question or fb["question"],
+                target_concept=parsed.target_concept or fb["concept"],
+                line_number_hint=parsed.line_number_hint if parsed.line_number_hint is not None else 15,
+                suggested_counter_input=parsed.suggested_counter_input or fb["counter_input"],
+                encouragement=parsed.encouragement or "Great problem-solving mindset! Keep pushing.",
             )
         except Exception as e:
             print(f"[WARNING] Socratic AI generation failed, using fallback: {e}")
@@ -614,15 +608,14 @@ RULES:
             )
 
         try:
-            model_name = os.getenv("GOOGLE_MODEL", "gemini-flash-latest")
-            model = genai.GenerativeModel(model_name)
+            sliced = slice_code(req.student_code, getattr(req, "language", "python"))
             prompt = f"""You are 'Senior Architect Alex' conducting a post-solution defense round for problem '{req.problem_id}'.
 Student's Code:
 ```
-{req.student_code}
+{sliced}
 ```
 Question asked to student: "{req.question_context}"
-Student's Defense Response: "{req.student_defense_response}"
+Student's Defense Response: "{req.student_defense_response[:600]}"
 
 Evaluate the student's explanation on:
 1. Time complexity reasoning.
@@ -631,33 +624,33 @@ Evaluate the student's explanation on:
 
 Return ONLY a JSON object with:
 {{
-  "passed_defense": true/false,
-  "score": 0-100,
+  "passed_defense": true,
+  "score": 85,
   "critique": "1-2 sentences on their defense",
   "time_complexity_accuracy": "Analysis of time complexity claim",
   "space_complexity_accuracy": "Analysis of space complexity claim",
-  "earned_badge": "Optimal Space Architect" (or null if score < 75),
+  "earned_badge": "Optimal Space Architect",
   "xp_awarded": 150,
   "senior_feedback": "Encouraging senior engineer feedback"
 }}
 """
-            res = model.generate_content(prompt)
-            raw = res.text.strip()
-            if raw.startswith("```json"):
-                raw = raw[7:]
-            if raw.endswith("```"):
-                raw = raw[:-3]
-            data = json.loads(raw.strip())
-            
+            parsed = await call_with_repair(
+                ArenaEvaluateLLMContract,
+                [{"role": "user", "content": prompt}],
+                Budget(),
+                feature="arena_evaluate",
+                max_tokens=400,
+            )
+
             return ArenaEvaluateResponse(
-                passed_defense=data.get("passed_defense", True),
-                score=data.get("score", base_score),
-                critique=data.get("critique", "Strong conceptual justification."),
-                time_complexity_accuracy=data.get("time_complexity_accuracy", "O(N) validated"),
-                space_complexity_accuracy=data.get("space_complexity_accuracy", "O(1) memory validated"),
-                earned_badge=data.get("earned_badge", badge),
-                xp_awarded=data.get("xp_awarded", 150),
-                senior_feedback=data.get("senior_feedback", "Excellent defense!")
+                passed_defense=parsed.passed_defense,
+                score=parsed.score,
+                critique=parsed.critique,
+                time_complexity_accuracy=parsed.time_complexity_accuracy,
+                space_complexity_accuracy=parsed.space_complexity_accuracy,
+                earned_badge=parsed.earned_badge,
+                xp_awarded=parsed.xp_awarded,
+                senior_feedback=parsed.senior_feedback,
             )
         except Exception as e:
             print(f"[WARNING] Arena AI evaluation failed, using fallback: {e}")
@@ -673,19 +666,58 @@ Return ONLY a JSON object with:
             )
 
     @staticmethod
-    def get_user_cognitive_profile(user_id: str, username: str) -> CognitiveProfileResponse:
-        return CognitiveProfileResponse(
-            user_id=user_id,
-            username=username,
-            level=3,
-            total_xp=1450,
-            radar_scores=CognitiveVectorScores(
+    def get_user_cognitive_profile(
+        user_id: str,
+        username: str,
+        user_doc: Optional[Dict[str, Any]] = None,
+        completed_count: int = 0,
+    ) -> CognitiveProfileResponse:
+        if user_doc is not None:
+            uid = str(user_doc.get("id") or user_doc.get("_id") or user_id)
+            uname = user_doc.get("username") or username
+            level = int(user_doc.get("level") or 1)
+            total_xp = int(user_doc.get("xp") or 0)
+            base = min(95, 55 + completed_count * 5 + min(20, total_xp // 50))
+            radar = CognitiveVectorScores(
+                edge_case_handling=min(98, base + 2),
+                time_optimization=min(98, base + 5),
+                space_optimization=min(98, base + 3),
+                syntax_translation=min(98, max(50, base - 2)),
+                articulation_score=min(98, base),
+            )
+            streak = max(1, min(30, completed_count)) if total_xp > 0 or completed_count > 0 else 0
+            badges = []
+            if total_xp >= 100:
+                badges.append({"name": "Chaos Slayer", "desc": "Benchmarked and defeated O(N^2) bottlenecks", "icon": "🔥"})
+            if completed_count >= 1:
+                badges.append({"name": "Optimal Space Architect", "desc": "Defended O(1) in-place memory solutions", "icon": "🏛️"})
+            if completed_count >= 3:
+                badges.append({"name": "Intuition Master", "desc": "Completed multiple coding & sandbox challenges", "icon": "🧠"})
+        else:
+            uid = user_id
+            uname = username
+            level = 3
+            total_xp = 1450
+            radar = CognitiveVectorScores(
                 edge_case_handling=82,
                 time_optimization=88,
                 space_optimization=85,
                 syntax_translation=78,
-                articulation_score=80
-            ),
+                articulation_score=80,
+            )
+            streak = 4
+            badges = [
+                {"name": "Chaos Slayer", "desc": "Benchmarked and defeated O(N^2) bottlenecks", "icon": "🔥"},
+                {"name": "Optimal Space Architect", "desc": "Defended O(1) in-place memory solutions", "icon": "🏛️"},
+                {"name": "Intuition Master", "desc": "Completed 5 Visual Sandbox puzzles", "icon": "🧠"},
+            ]
+
+        return CognitiveProfileResponse(
+            user_id=uid,
+            username=uname,
+            level=level,
+            total_xp=total_xp,
+            radar_scores=radar,
             active_blindspots=[
                 BlindspotItem(
                     id="bs_1",
@@ -702,10 +734,6 @@ Return ONLY a JSON object with:
                     drill_recommendation="Verify sign preservation when calculating sliding differences"
                 )
             ],
-            mastery_badges=[
-                {"name": "Chaos Slayer", "desc": "Benchmarked and defeated O(N^2) bottlenecks", "icon": "🔥"},
-                {"name": "Optimal Space Architect", "desc": "Defended O(1) in-place memory solutions", "icon": "🏛️"},
-                {"name": "Intuition Master", "desc": "Completed 5 Visual Sandbox puzzles", "icon": "🧠"}
-            ],
-            intuition_streak_days=4
+            mastery_badges=badges,
+            intuition_streak_days=streak
         )

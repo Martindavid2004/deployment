@@ -1,32 +1,32 @@
 import { useState } from "react";
+import { API_BASE } from "../utils/api";
+import { showToast } from "../components/ui/ToastProvider";
 
 export default function Admin({ problems, setProblems }) {
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [difficulty, setDifficulty] = useState("Easy");
   const [topics, setTopics] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleAdd = (e) => {
+  const handleAdd = async (e) => {
     e.preventDefault();
-    if (!title.trim()) return;
+    if (!title.trim() || isSubmitting) return;
 
-    const nextId = problems.length
-      ? Math.max(...problems.map((p) => p.id)) + 1
-      : 1;
-
-    const newProblem = {
-      id: nextId,
+    const payload = {
       title: title.trim(),
+      description: description.trim() || `Solve: ${title.trim()}`,
       difficulty,
       topics: topics
         .split(",")
         .map((t) => t.trim())
         .filter(Boolean),
-      videoUrl: videoUrl || "https://example.com",
+      videoUrl: videoUrl.trim() || "https://example.com",
       referenceCode: {
-        python: "# TODO: add Python reference solution",
-        cpp: "// TODO: add C++ reference solution",
-        java: "// TODO: add Java reference solution",
+        python: "# Add Python reference solution",
+        cpp: "// Add C++ reference solution",
+        java: "// Add Java reference solution",
       },
       explanations: {
         python: ["Explain your Python logic here."],
@@ -36,12 +36,41 @@ export default function Admin({ problems, setProblems }) {
       sampleTests: [{ id: 1, input: "", expected: "" }],
     };
 
-    setProblems([...problems, newProblem]);
-    setTitle("");
-    setDifficulty("Easy");
-    setTopics("");
-    setVideoUrl("");
-    alert("Problem added. Students can now see it in the Problems list.");
+    const token = localStorage.getItem("token");
+    if (!token) {
+      showToast("Admin authentication required to save problems.", "error");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const res = await fetch(`${API_BASE}/problems/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || `Failed to save problem (${res.status})`);
+      }
+
+      const created = await res.json();
+      setProblems([...problems, created]);
+      setTitle("");
+      setDescription("");
+      setDifficulty("Easy");
+      setTopics("");
+      setVideoUrl("");
+      showToast("Problem saved to database and added to the Problems list.", "success");
+    } catch (err) {
+      showToast(err.message || "Failed to add problem.", "error");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -60,6 +89,17 @@ export default function Admin({ problems, setProblems }) {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Check Prime Number"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="admin_description">Description</label>
+            <textarea
+              id="admin_description"
+              rows={2}
+              className="rounded-lg border border-theme-border bg-theme-bg-tertiary px-2 py-1 text-sm"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Problem statement and constraints..."
             />
           </div>
           <div className="flex flex-col gap-1">
@@ -97,9 +137,10 @@ export default function Admin({ problems, setProblems }) {
           </div>
           <button
             type="submit"
-            className="mt-2 px-4 py-2 rounded-full bg-emerald-500 text-theme-bg-primary text-base font-semibold hover:bg-emerald-400"
+            disabled={isSubmitting}
+            className="mt-2 px-4 py-2 rounded-full bg-emerald-500 text-theme-bg-primary text-base font-semibold hover:bg-emerald-400 disabled:opacity-50"
           >
-            Add problem
+            {isSubmitting ? "Saving..." : "Add problem"}
           </button>
         </form>
       </div>

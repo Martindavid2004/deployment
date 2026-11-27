@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { CheckCircle, XCircle, ChevronDown, ChevronUp, ArrowLeft, Bug, Search, BarChart3, AlertCircle, Lightbulb, HelpCircle } from "lucide-react";
 import { API_BASE } from "../utils/api";
+import { showToast } from "../components/ui/ToastProvider";
 
 export default function QuizResults() {
   const { matchId } = useParams();
@@ -31,7 +32,7 @@ export default function QuizResults() {
       setLoading(false);
     } catch (err) {
       console.error("Error loading results:", err);
-      alert("Failed to load quiz results");
+      showToast("Failed to load quiz results", "error");
       navigate("/competitive");
     }
   };

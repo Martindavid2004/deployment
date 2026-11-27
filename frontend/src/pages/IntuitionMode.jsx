@@ -36,6 +36,7 @@ import CognitiveRadar from "../components/intuition/CognitiveRadar";
 
 import { API_BASE } from "../utils/api";
 import { generateCustomAlgorithmTrack } from "../api";
+import { showToast } from "../components/ui/ToastProvider";
 
 const STAGES = [
   { id: 1, name: "Brute Force O(N²)", icon: Play, color: "text-rose-400", border: "border-rose-500" },
@@ -177,7 +178,7 @@ export default function IntuitionMode({ user }) {
       }
     } catch (err) {
       console.error("Failed to generate fresh scenario", err);
-      alert("Could not generate a new scenario right now. Please try again.");
+      showToast("Could not generate a new scenario right now. Please try again.", "error");
     } finally {
       setIsGeneratingMore(false);
     }
@@ -472,7 +473,7 @@ export default function IntuitionMode({ user }) {
                 language={language}
                 code={code}
                 onInsertCounterTest={(counterTest) => {
-                  alert(`Counter test '${counterTest}' injected into custom test runner!`);
+                  showToast(`Counter test '${counterTest}' injected into custom test runner!`, "info");
                 }}
               />
             </div>

@@ -9,7 +9,12 @@ export default function CognitiveRadar({ userId, username }) {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await fetch(`${API_BASE}/intuition/profile?user_id=${userId || "demo"}&username=${username || "Coder"}`);
+        const token = localStorage.getItem("token");
+        const headers = token ? { Authorization: `Bearer ${token}` } : {};
+        const res = await fetch(
+          `${API_BASE}/intuition/profile?user_id=${userId || "demo"}&username=${username || "Coder"}`,
+          { headers }
+        );
         if (res.ok) {
           const data = await res.json();
           setProfile(data);

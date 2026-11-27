@@ -146,7 +146,7 @@ async def create_lobby(
                 
                 for i, difficulty in enumerate(difficulties, 1):
                     print(f"   Generating problem {i}/5 ({difficulty})...")
-                    problem_data = generate_competitive_problem(difficulty)
+                    problem_data = await generate_competitive_problem(difficulty)
                     
                     difficulty_capitalized = difficulty.capitalize()
                     problem_doc = {
@@ -1793,7 +1793,7 @@ async def find_match(
                         # Fallback to AI generation
                         print(f"⚠️ No problems in pool, falling back to AI generation...")
                         difficulty = random.choice(["easy", "medium", "hard"])
-                        problem_data = generate_competitive_problem(difficulty)
+                        problem_data = await generate_competitive_problem(difficulty)
                         
                         difficulty_capitalized = difficulty.capitalize()
                         problem_doc = {
@@ -2015,7 +2015,7 @@ async def generate_random_problem(
     db = get_database()
     
     # Generate problem
-    problem_data = generate_competitive_problem(difficulty)
+    problem_data = await generate_competitive_problem(difficulty)
     
     # Capitalize difficulty for schema validation
     difficulty_capitalized = difficulty.capitalize() if difficulty in ["easy", "medium", "hard"] else "Easy"

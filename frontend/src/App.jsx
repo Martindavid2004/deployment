@@ -12,6 +12,7 @@ import LobbyJoin from "./pages/LobbyJoin";
 
 import Navbar from "./components/Navbar";
 import PageLoader from "./components/ui/PageLoader";
+import { ToastProvider } from "./components/ui/ToastProvider";
 
 // Heavy authenticated routes are code-split so the initial bundle stays small.
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -23,6 +24,7 @@ const QuizMatch = lazy(() => import("./pages/QuizMatch"));
 const QuizResults = lazy(() => import("./pages/QuizResults"));
 const Admin = lazy(() => import("./pages/Admin"));
 const IntuitionMode = lazy(() => import("./pages/IntuitionMode"));
+const Profile = lazy(() => import("./pages/Profile"));
 
 import { initialProblems } from "./data/problems";
 import { computeUserStats } from "./utils/stats";
@@ -100,6 +102,7 @@ export default function App() {
                   email: userData.email,
                   isAdmin: userData.is_admin,
                   preferredLanguage: userData.preferred_language || "python",
+                  faction: userData.faction || "sorcerer",
                   level: userData.level || 1,
                 });
                 setIsLoading(false); // Done loading
@@ -190,6 +193,40 @@ export default function App() {
     fetchAttempts();
   }, [user]);
 
+  // Sync custom/backend problems from API when user is logged in
+  useEffect(() => {
+    const fetchBackendProblems = async () => {
+      if (!user) return;
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/problems/`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) return;
+        const remote = await res.json();
+        if (!Array.isArray(remote) || remote.length === 0) return;
+
+        setProblems((prev) => {
+          const existingIds = new Set(prev.map((p) => String(p.id)));
+          const existingTitles = new Set(prev.map((p) => (p.title || "").toLowerCase()));
+          const additions = remote.filter(
+            (p) =>
+              !p.topics?.includes("competitive") &&
+              !existingIds.has(String(p.id)) &&
+              !existingTitles.has((p.title || "").toLowerCase())
+          );
+          return additions.length ? [...prev, ...additions] : prev;
+        });
+      } catch (err) {
+        console.error("Failed to sync problems from API", err);
+      }
+    };
+
+    fetchBackendProblems();
+  }, [user]);
+
   useEffect(() => {
     // Only save user, problems, language, and theme to localStorage
     // Attempts are stored in database
@@ -239,6 +276,7 @@ export default function App() {
             email: userData.email,
             isAdmin: userData.is_admin,
             preferredLanguage: userData.preferred_language || "python",
+            faction: userData.faction || "sorcerer",
             level: userData.level || 1,
           });
           return true; // Success
@@ -343,7 +381,8 @@ function AppContent({
   const isGamePage = location.pathname.match(/\/(competitive\/match\/|quiz\/|competitive\/)[^/]+/);
 
   return (
-    <div className="min-h-screen transition-colors duration-300" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
+    <ToastProvider>
+      <div className="min-h-screen transition-colors duration-300" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
       {location.pathname !== "/" && !isGamePage && user && (
         <Navbar
           user={user}
@@ -457,6 +496,19 @@ function AppContent({
             element={requireAuth(<QuizResults />)}
           />
           <Route
+            path="/profile"
+            element={requireAuth(
+              <Profile
+                user={user}
+                setUser={setUser}
+                attempts={attempts}
+                problems={problems}
+                currentLanguage={currentLanguage}
+                stats={stats}
+              />
+            )}
+          />
+          <Route
             path="/admin"
             element={requireAuth(
               user?.isAdmin ? (
@@ -472,5 +524,6 @@ function AppContent({
       </ErrorBoundary>
     </div>
   </div>
+    </ToastProvider>
   );
 }

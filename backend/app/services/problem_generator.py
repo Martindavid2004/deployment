@@ -1,26 +1,21 @@
-import google.generativeai as genai
 from app.core.config import get_settings
-import json
+from app.harness.context import Budget
+from app.harness.contracts import GeneratedCompetitiveProblem
+from app.harness.provider import call_with_repair
 import random
 import os
 
 settings = get_settings()
 
-# Configure Gemini - Check both settings and environment variable
+# Check both settings and environment variable
 api_key = settings.google_api_key or os.getenv("GOOGLE_API_KEY", "")
 
 print(f"[INIT] Problem Generator - Google API Key configured: {bool(api_key)}")
 
-if api_key:
-    genai.configure(api_key=api_key)
-    print(f"[SUCCESS] Gemini API configured successfully")
-else:
-    print(f"[WARNING] No Google API Key found - will use fallback problems")
-
 DIFFICULTY_LEVELS = ["easy", "medium", "hard"]
 TOPICS = ["arrays", "strings", "math", "loops", "conditionals", "recursion", "sorting"]
 
-def generate_competitive_problem(difficulty: str = "easy") -> dict:
+async def generate_competitive_problem(difficulty: str = "easy") -> dict:
     """
     Generate a random coding problem using Gemini API for competitive mode.
     Each call generates a unique problem for variety in competitive matches.
@@ -32,8 +27,6 @@ def generate_competitive_problem(difficulty: str = "easy") -> dict:
         return _get_fallback_problem(difficulty)
     
     try:
-        model = genai.GenerativeModel('gemini-pro')
-        
         # Enhanced prompt for harder, more diverse problems
         difficulty_instructions = {
             "easy": "Problem should be solvable in 5-10 minutes for beginners",
@@ -85,50 +78,20 @@ Return ONLY a valid JSON object (no markdown, no code blocks) with this exact st
 
 CRITICAL: The referenceCode MUST be COMPLETE and WORKING. It must handle all input parsing and output formatting correctly. Test it mentally against all test cases."""
 
-        print(f"   [INFO] Requesting {difficulty_level} problem from Gemini API...")
-        response = model.generate_content(prompt, safety_settings=[
-            {
-                "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
-                "threshold": "BLOCK_NONE"
-            },
-            {
-                "category": "HARM_CATEGORY_HARASSMENT",
-                "threshold": "BLOCK_NONE"
-            }
-        ])
-        
-        problem_text = response.text.strip()
-        print(f"   [INFO] Received response from API ({len(problem_text)} chars)")
-        
-        # Remove markdown code blocks if present
-        if problem_text.startswith("```"):
-            problem_text = problem_text.split("```")[1]
-            if problem_text.startswith("json"):
-                problem_text = problem_text[4:]
-            problem_text = problem_text.strip()
-        
-        # Parse JSON
-        problem_data = json.loads(problem_text)
-        
-        # Validate required fields
-        required_fields = ["title", "description", "testCases", "referenceCode"]
-        missing_fields = [f for f in required_fields if f not in problem_data]
-        if missing_fields:
-            raise ValueError(f"Missing required fields: {missing_fields}")
-        
-        # Ensure test cases have proper format
-        if not problem_data.get("testCases"):
-            raise ValueError("testCases cannot be empty")
-        
+        print(f"   [INFO] Requesting {difficulty_level} problem via harness...")
+        parsed = await call_with_repair(
+            GeneratedCompetitiveProblem,
+            [{"role": "user", "content": prompt}],
+            Budget(),
+            feature="competitive_problem",
+            max_tokens=1600,
+        )
+        problem_data = parsed.model_dump()
         print(f"   [SUCCESS] Generated '{problem_data['title']}' ({difficulty_level})")
         return problem_data
-        
-    except json.JSONDecodeError as je:
-        print(f"   [ERROR] Failed to parse JSON response: {je}")
-        print(f"   [INFO] Falling back to local problem database...")
-        return _get_fallback_problem(difficulty)
+
     except Exception as e:
-        print(f"   [ERROR] Gemini API error: {str(e)}")
+        print(f"   [ERROR] Problem generation error: {str(e)}")
         print(f"   [INFO] Using fallback {difficulty} problem")
         return _get_fallback_problem(difficulty)
 

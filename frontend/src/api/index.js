@@ -54,3 +54,37 @@ export async function generateCustomAlgorithmTrack(topic, category = "arrays", d
   }
   return await res.json();
 }
+
+/**
+ * Persist user profile settings (username, preferred language, faction) to backend.
+ */
+export async function updateUserProfile({ name, preferredLanguage, faction }) {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    throw new Error("Authentication required");
+  }
+
+  const res = await fetch(`${API_BASE}/users/me`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      username: name,
+      preferred_language: preferredLanguage,
+      faction,
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || `Failed to update profile (${res.status})`);
+  }
+
+  const updated = await res.json();
+  if (updated.username) {
+    localStorage.setItem("username", updated.username);
+  }
+  return updated;
+}

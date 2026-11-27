@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import ProgressBar from "../components/ProgressBar";
 import { API_BASE } from "../utils/api";
+import { showToast } from "../components/ui/ToastProvider";
 
 export default function Competitive({ attempts, problems, stats }) {
   const navigate = useNavigate();
@@ -179,14 +180,14 @@ export default function Competitive({ attempts, problems, stats }) {
         }));
         
         setQuests(prev => prev.map(q => q.uniqueId === quest.uniqueId ? { ...q, claimed: true } : q));
-        alert(`Successfully claimed +${quest.xp} Competitive XP!`);
+        showToast(`Successfully claimed +${quest.xp} Competitive XP!`, "success");
       } else {
         const err = await res.json();
-        alert(`Failed to claim XP: ${err.detail || "Unknown error"}`);
+        showToast(`Failed to claim XP: ${err.detail || "Unknown error"}`, "error");
       }
     } catch (err) {
       console.error(err);
-      alert("Error claiming XP");
+      showToast("Error claiming XP", "error");
     }
   };
 
@@ -323,7 +324,7 @@ export default function Competitive({ attempts, problems, stats }) {
         fetchLeaderboard(leaderboardFilter);
       } else {
         const error = await res.json();
-        alert(`Failed to accept: ${error.detail || "Error"}`);
+        showToast(`Failed to accept: ${error.detail || "Error"}`, "error");
       }
     } catch (err) {
       console.error("Error accepting request:", err);
@@ -341,7 +342,7 @@ export default function Competitive({ attempts, problems, stats }) {
         fetchFriendRequests();
       } else {
         const error = await res.json();
-        alert(`Failed to reject: ${error.detail || "Error"}`);
+        showToast(`Failed to reject: ${error.detail || "Error"}`, "error");
       }
     } catch (err) {
       console.error("Error rejecting request:", err);
@@ -472,10 +473,10 @@ export default function Competitive({ attempts, problems, stats }) {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {
-        alert("Friend request sent!");
+        showToast("Friend request sent!", "success");
       } else {
         const error = await res.json();
-        alert(`Failed: ${error.detail || "Could not add friend"}`);
+        showToast(`Failed: ${error.detail || "Could not add friend"}`, "error");
       }
     } catch (err) {
       console.error("Error adding friend:", err);
@@ -497,10 +498,10 @@ export default function Competitive({ attempts, problems, stats }) {
         body: JSON.stringify({ game_id: gameId })
       });
       if (res.ok) {
-        alert(`Invite sent! Tell them to join Lobby ID: ${gameId}`);
+        showToast(`Invite sent! Tell them to join Lobby ID: ${gameId}`, "success");
       } else {
         const error = await res.json();
-        alert(`Failed: ${error.detail || "Could not invite friend"}`);
+        showToast(`Failed: ${error.detail || "Could not invite friend"}`, "error");
       }
     } catch (err) {
       console.error("Error inviting friend:", err);
@@ -538,7 +539,7 @@ export default function Competitive({ attempts, problems, stats }) {
       if (!res.ok) {
         const errorText = await res.text();
         console.error(`HTTP ${res.status}: ${errorText}`);
-        alert(`Failed to start matchmaking: ${res.status} ${res.statusText}`);
+        showToast(`Failed to start matchmaking: ${res.status} ${res.statusText}`, "error");
         setLoading(false);
         return;
       }
@@ -550,7 +551,7 @@ export default function Competitive({ attempts, problems, stats }) {
       fetchMatches();
     } catch (err) {
       console.error("Error starting matchmaking:", err);
-      alert("Failed to start matchmaking: " + err.message);
+      showToast("Failed to start matchmaking: " + err.message, "error");
     } finally {
       setLoading(false);
     }

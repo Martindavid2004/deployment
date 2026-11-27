@@ -5,6 +5,13 @@ class UserBase(BaseModel):
     username: str = Field(..., min_length=3, max_length=30)
     email: Optional[str] = Field(None, min_length=3, max_length=100)
     preferred_language: str = "python"
+    faction: str = "sorcerer"
+
+
+class UserProfileUpdate(BaseModel):
+    username: Optional[str] = Field(None, min_length=3, max_length=30)
+    preferred_language: Optional[str] = Field(None, pattern="^(python|cpp|java|javascript|c)$")
+    faction: Optional[str] = Field(None, pattern="^(sorcerer|berserker|legend)$")
 
 class UserCreate(UserBase):
     email: str = Field(..., min_length=3, max_length=100, pattern=r"^\S+@\S+\.\S+$")

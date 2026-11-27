@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 import ProgressBar from "../components/ProgressBar";
 import AchievementsPanel from "../components/AchievementsPanel";
+import { updateUserProfile } from "../api";
+import { showToast } from "../components/ui/ToastProvider";
 
 const FACTIONS = [
   {
@@ -85,17 +87,28 @@ export default function Profile({
 
   const activeFaction = FACTIONS.find(f => f.id === (user?.faction || "sorcerer")) || FACTIONS[0];
 
-  const handleSave = () => {
-    if (!editName.trim()) return;
-    if (setUser) {
-      setUser({
-        ...user,
-        name: editName.trim(),
+  const handleSave = async () => {
+    const trimmed = editName.trim();
+    if (!trimmed) return;
+    try {
+      const updated = await updateUserProfile({
+        name: trimmed,
         preferredLanguage: editLanguage,
-        faction: editFaction
+        faction: editFaction,
       });
+      if (setUser) {
+        setUser({
+          ...user,
+          name: updated.username || trimmed,
+          preferredLanguage: updated.preferred_language || editLanguage,
+          faction: updated.faction || editFaction,
+        });
+      }
+      showToast("Profile updated!", "success");
+      setIsEditing(false);
+    } catch (err) {
+      showToast(err.message || "Failed to update profile", "error");
     }
-    setIsEditing(false);
   };
 
   const handleCancel = () => {

@@ -8,9 +8,10 @@ from bson import ObjectId
 from datetime import datetime, timezone
 from app.security.auth import get_current_user
 from app.db.mongo import get_database
-from app.schemas.user import UserPublic
+from app.schemas.user import UserPublic, UserProfileUpdate
 
 router = APIRouter(prefix="/users", tags=["users"])
+logger = logging.getLogger(__name__)
 
 @router.get("/me")
 async def get_me(current_user = Depends(get_current_user)):
@@ -19,6 +20,39 @@ async def get_me(current_user = Depends(get_current_user)):
     user.pop("_id", None)  # Remove the ObjectId field
     user.pop("hashed_password", None)
     return user
+
+
+@router.patch("/me")
+async def update_me(profile_in: UserProfileUpdate, current_user = Depends(get_current_user)):
+    db = get_database()
+    updates = {}
+
+    if profile_in.username is not None:
+        new_name = profile_in.username.strip()
+        if len(new_name) < 3:
+            raise HTTPException(status_code=400, detail="Username must be at least 3 characters")
+        if new_name != current_user.get("username"):
+            existing = await db.users.find_one({"username": new_name, "_id": {"$ne": current_user["_id"]}})
+            if existing:
+                raise HTTPException(status_code=409, detail="Username already taken")
+            updates["username"] = new_name
+
+    if profile_in.preferred_language is not None:
+        updates["preferred_language"] = profile_in.preferred_language
+
+    if profile_in.faction is not None:
+        updates["faction"] = profile_in.faction
+
+    if updates:
+        await db.users.update_one({"_id": current_user["_id"]}, {"$set": updates})
+
+    updated = await db.users.find_one({"_id": current_user["_id"]})
+    if not updated:
+        raise HTTPException(status_code=404, detail="User not found")
+    updated["id"] = str(updated["_id"])
+    updated.pop("_id", None)
+    updated.pop("hashed_password", None)
+    return updated
 
 @router.get("/search/{query}")
 async def search_users(query: str, current_user = Depends(get_current_user)):

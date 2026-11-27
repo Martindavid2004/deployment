@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Mic, MicOff, Send, Award, Sparkles, CheckCircle2, ShieldAlert, X, Volume2, Bot } from "lucide-react";
 import { API_BASE } from "../../utils/api";
+import { showToast } from "../ui/ToastProvider";
 
 export default function ArenaModal({ isOpen, onClose, problemId, language, code, onDefenseCompleted }) {
   const [defenseText, setDefenseText] = useState("");
@@ -71,7 +72,7 @@ export default function ArenaModal({ isOpen, onClose, problemId, language, code,
   // Web Speech API initialization with non-duplicating final/interim separation
   const toggleRecording = () => {
     if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) {
-      alert("Speech recognition is not supported in this browser. Please type your defense below.");
+      showToast("Speech recognition is not supported in this browser. Please type your defense below.", "info");
       return;
     }
 
